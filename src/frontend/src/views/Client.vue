@@ -161,7 +161,7 @@
 
                 let data = {element: "barium"};
 
-                fetch("/admin", {
+                fetch("/api/test", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'}, 
                 body: JSON.stringify(data)
