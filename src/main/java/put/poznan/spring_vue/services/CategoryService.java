@@ -1,4 +1,6 @@
-package org.example;
+package put.poznan.spring_vue.services;
+
+import put.poznan.spring_vue.entities.Category;
 
 import javax.persistence.*;
 

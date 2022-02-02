@@ -1,4 +1,4 @@
-package org.example;
+package put.poznan.spring_vue.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
