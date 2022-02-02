@@ -36,7 +36,10 @@
     </div>
     <div v-if="roomWindow" id="room_selection_window">
         <div id="room_selection_window_title_bar">
-            <div id="room_selection_window_title">Rooms</div>
+            <div id="navbar">
+                  <div id="room_selection_window_title">Rooms</div>&nbsp;/&nbsp;
+                  <div id="room_selection_window_title">Personal info</div>
+              </div>
             <img id="exit_icon" src="../assets/delete.png" @click="roomWindow = false"/>
         </div>
         <div id="room_configuration_selection_bar">
@@ -51,11 +54,12 @@
                 <button class="room_select_button">Select Room</button>
             </div>
         </div>
-        <button class="room_confirm_button">Confirm</button>
+        <button class="room_confirm_button">Continue</button>
     </div>
 </template>
 
 <script>
+    // const axios = require('axios');
     export default {
         name: "Client",
         components: {},
@@ -434,16 +438,21 @@
 
     #room_selection_window_title_bar{
         grid-area: 1/1/2/-2;
-        font-size: 24px;
+        font-size: 20px;
         display: grid;
-        grid-template-columns: 50px 1fr 50px;
+        grid-template-columns: 1fr 50px;
         grid-template-rows: 1fr;
     }
 
-    #room_selection_window_title{
-        grid-area: 1/2/2/3;
-        margin-top: 20px;
+    #navbar{
+        text-align: left;
+        grid-area: 1/1/2/2;
+        display: inline-flex;
+        margin-left: 20px;
+        margin-top: 25px;
     }
+
+
 
     #exit_icon{
         grid-area: 1/3/2/4;
