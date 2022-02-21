@@ -34,27 +34,66 @@
             </div>
         </div>
     </div>
-    <div v-if="roomWindow" id="room_selection_window">
+    <div v-if="popUpWindow" id="room_selection_window">
         <div id="room_selection_window_title_bar">
-            <div id="navbar">
-                  <div id="room_selection_window_title">Rooms</div>&nbsp;/&nbsp;
-                  <div id="room_selection_window_title">Personal info</div>
-              </div>
-            <img id="exit_icon" src="../assets/delete.png" @click="roomWindow = false"/>
-        </div>
-        <div id="room_configuration_selection_bar">
-            <div class="room_configuration" :key="room.id" v-for="(room, index) in rooms_added">Room {{index+1}} | {{room.no_of_guests}} Guests</div>
-        </div>
-        <div id="room_selection_window_room_list">
-            <div class="room_container" :key="room.id" v-for="room in rooms_added">
-                <img class="room_image" src="../assets/background.jpg"/>
-                <div class="room_name">Double Premium</div>
-                <div class="room_price">$100</div>
-                <div class="room_description">Description description description description description description description description</div>
-                <button class="room_select_button">Select Room</button>
+                <div id="navbar">
+                    <div id="room_selection_window_title">Rooms</div>&nbsp;/&nbsp;
+                    <div id="room_selection_window_title">Personal info</div>
+                </div>
+                <img id="exit_icon" src="../assets/delete.png" @click="popUpWindow = false"/>
+            </div>
+        <div id="room_window" v-if="roomWindow">
+            <div id="room_configuration_selection_bar">
+                <div class="room_configuration" :key="room.id" v-for="(room, index) in rooms_added">Room {{index+1}} | {{room.no_of_guests}} Guests</div>
+            </div>
+            <div id="room_selection_window_room_list">
+                <div class="room_container" :key="room.id" v-for="room in rooms_added">
+                    <img class="room_image" src="../assets/background.jpg"/>
+                    <div class="room_name">Double Premium</div>
+                    <div class="room_price">$100</div>
+                    <div class="room_description">Description description description description description description description description</div>
+                    <button class="room_select_button">Select Room</button>
+                </div>
             </div>
         </div>
-        <button class="room_confirm_button">Continue</button>
+
+        <div id="personal_info_window" v-if="personalInfoWindow">
+            <form id="form">
+                <label for="fname">First name</label><br>
+                <input type="text" class="form_input" name="fname"><br>
+                <label for="lname">Last name</label><br>
+                <input type="text" class="form_input" name="lname"><br>
+                <label for="birth">Date of Birth</label><br>
+                <input type="text" class="form_input" name="birth"><br>
+                <label for="country">Country</label><br>
+                <input type="text" class="form_input" name="country"><br>
+                <label for="city">City</label><br>
+                <input type="text" class="form_input" name="city"><br>
+                <label for="street">Street</label><br>
+                <input type="text" class="form_input" name="street"><br>
+                <label for="telephone">Telephone</label><br>
+                <input type="text" class="form_input" name="telephone"><br>
+            </form> 
+            <div id="reservation_summary">
+                <div id="reservation_summary_title">Reservation Summary</div>
+                <div id="reservation_info">
+                    <div class="reservation_summary_label">Start Date:</div>
+                    <div class="reservation_summary_value">22-02-2022</div>
+                    <div class="reservation_summary_label">End Date:</div>
+                    <div class="reservation_summary_value">23-02-2022</div>
+                </div>
+                <div class="separator" style="grid-area: 3/2/4/4"></div>
+                <div id="room_info">
+                    <div class="reservation_summary_label">Start Date:</div>
+                    <div class="reservation_summary_value">22-02-2022</div>
+                    <div class="reservation_summary_label">End Date:</div>
+                    <div class="reservation_summary_value">23-02-2022</div>
+                </div>
+                <div class="separator" style="grid-area: 5/2/6/4"></div>
+                <div id="total_price"></div>
+            </div>
+        </div>
+        <button class="room_confirm_button" @click="continueReservation()">Continue</button>
     </div>
 </template>
 
@@ -66,7 +105,9 @@
         data(){
             return{
                 roomDropdownVisible: false,
+                popUpWindow: false,
                 roomWindow: false,
+                personalInfoWindow: false,
                 startDate: "",
                 endDate: "",
                 startDateAlert: false,
@@ -155,6 +196,7 @@
                     this.endDateAlert = true;
                 } else this.endDateAlert = false;
                 if (this.rooms_added.length != 0 & this.startDate != "" & this.endDate != ""){
+                    this.popUpWindow = true;
                     this.roomWindow = true;
                     var rooms_to_find = this.rooms_added.filter(function (el) {
                             return el.no_of_guests != null
@@ -199,7 +241,18 @@
             },
             handleDates(){
                 if(this.startDate >= this.endDate){
-                    this.endDate = ""
+                    this.endDate = "";
+                }
+            },
+            continueReservation(){
+                if(this.roomWindow){
+                    this.roomWindow = false;
+                    console.log(this.personalInfoWindow);
+                    this.personalInfoWindow = true;
+                    console.log(this.personalInfoWindow);
+                }
+                else if (this.personalInfoWindow){
+                    console.log('Reservation succesful!');
                 }
             }
 
@@ -269,7 +322,7 @@
         height: 32px;
         box-sizing: border-box;
         border: 1px #9CA7AB solid;
-        border-radius: 2px;
+        /* border-radius: 2px; */
         align-self: center;
         justify-self: center;
         font-family: sans-serif;
@@ -305,7 +358,7 @@
         border: 2px #3A86FF solid;
         box-shadow: 0px 0px 2px #3A86FF;
         border-top: none;
-        border-radius: 2px;
+        /* border-radius: 2px; */
         padding-top: 32px;
         display: grid;
         grid-template-rows: 1fr 60px;
@@ -336,7 +389,7 @@
         font-size: 14px;
         align-self: center;
         justify-self: center;
-        border-radius: 5px;
+        /* border-radius: 5px; */
         border: none;
 	    padding: 0;
         cursor: pointer;
@@ -396,7 +449,7 @@
         font-size: 16px;
         align-self: center;
         justify-self: center;
-        border-radius: 5px;
+        /* border-radius: 5px; */
         border: none;
 	    padding: 0;
         cursor: pointer;
@@ -431,7 +484,7 @@
         box-shadow: 0px 1px 5px rgba(50,50,50,0.4);
         display: grid;
         grid-template-columns: 15px 1fr 15px;
-        grid-template-rows: 80px 40px 10px 1fr 100px;
+        grid-template-rows: 80px 1fr 80px;
         overflow: hidden;
         visibility: visible;
     }
@@ -463,7 +516,7 @@
     }
 
     #room_configuration_selection_bar{
-        grid-area: 2/2/3/3;
+        grid-area: 1/2/2/3;
         display: inline-flex;
         gap: 10px;
         padding-left: 5px;
@@ -473,7 +526,7 @@
         height: 100%;
         width: 184px;
         border: 1px #9CA7AB solid;
-        border-radius: 4px;
+        /* border-radius: 4px; */
         font-family: sans-serif;
         font-size: 14px;
         color: #0A141F;
@@ -492,7 +545,7 @@
     }
 
     #room_selection_window_room_list{
-        grid-area: 4/2/5/3;
+        grid-area: 3/2/5/3;
         padding-top: 10px;
         overflow-y: scroll;
     }
@@ -500,7 +553,7 @@
     .room_container{
         width: 98%;
         height: 200px;
-        border-radius: 10px;
+        /* border-radius: 10px; */
         box-shadow: 0px 2px 5px #9CA7AB;
         margin-bottom: 20px;
         margin-left: 5px;
@@ -545,7 +598,7 @@
         font-size: 16px;
         align-self: center;
         justify-self: end;
-        border-radius: 5px;
+        /* border-radius: 5px; */
         border: none;
 	    padding: 0;
         cursor: pointer;
@@ -564,7 +617,7 @@
     }
 
     .room_confirm_button{
-        grid-area: 5/2/6/3;
+        grid-area: 3/2/4/3;
         width: 200px;
         height: 40px;
         background: #28323F;
@@ -572,11 +625,108 @@
         font-size: 16px;
         align-self: center;
         justify-self: center;
-        border-radius: 5px;
+        /* border-radius: 5px; */
         border: none;
 	    padding: 0;
         cursor: pointer;
         margin-right: 20px;
     }
+
+    #room_window{
+        grid-area: 2/2/3/5;
+        display: grid;
+        grid-template-rows: 40px 10px 1fr 100px;
+        grid-template-columns: 1fr;
+        overflow-y: scroll;
+    }
+
+    #personal_info_window{
+        grid-area: 2/2/3/5;
+        display: grid;
+        grid-template-rows: 1fr 539px 1fr;
+        grid-template-columns: 70px 410px 1fr 360px 70px;
+    }
+
+    /*  FORM  */
+
+    #form{
+        grid-area: 2/2/3/3;
+        text-align: start;
+        align-self: center;
+    }
+    
+    .form_input{
+        margin-bottom: 20px;
+        width: 400px;
+        height: 32px;
+    }
+
+    label{
+        font-size: 16px;
+    }
+
+    #reservation_summary{
+        grid-area: 2/4/3/5;
+        border: #28323F 0.5px solid;
+        display: grid;
+        grid-template-columns: 20px 1fr 1fr 20px;
+        grid-template-rows: 65px 130px 1px 280px 1px 1fr;
+    }
+
+    #reservation_summary_title{
+        grid-area: 1/1/2/5;
+        background: #181E26;
+        color: white;
+        text-align: center;
+        padding-top: 22.5px;
+        font-size: 20px;
+    }
+
+    .reservation_summary_label{
+        font-size: 18px;
+        align-self: center;
+        justify-self: start;
+        margin-left: 20px;
+        grid-column: 1/2;
+    }
+
+    .reservation_summary_value{
+        font-size: 18px;
+        font-weight: 600;
+        align-self: center;
+        justify-self: end;
+        margin-right: 20px;
+        grid-column: 2/3;
+    }
+
+    #reservation_info{
+        grid-area: 2/2/3/4;
+        display: grid;
+        grid-gap: 12px;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 29px;
+    }
+
+    #reservation_summary_row{
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #room_info{
+        grid-area: 4/2/5/4;
+        display: grid;
+        grid-gap: 12px;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr repeat(5, 30px) 1fr;
+    }
+
+    #total_price{
+        grid-area: 6/2/7/4;
+    }
+    
+    .separator{
+        background: #181E26;
+        opacity: 0.5;
+    }
+    
 
 </style>

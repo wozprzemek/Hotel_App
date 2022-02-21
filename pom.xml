@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>put.poznan</groupId>
-    <artifactId>spring_vue</artifactId>
+    <artifactId>Hotel_App</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>spring_vue</name>
     <description>spring_vue</description>
