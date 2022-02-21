@@ -34,7 +34,7 @@ export default {
 
 
     onMounted(() => {
-        fetch('https://api.npoint.io/4954ac84ccd9bb0388a6')
+        fetch('/api/reservations')
           .then(result => result.json())
           .then(remoteRowData => rowData.value = remoteRowData);
     })
