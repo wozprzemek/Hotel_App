@@ -48,4 +48,7 @@ public class AdminService {
         // code that validates signing in
 
     }
+
+    public void addAdmin(Admin admin) {
+    }
 }
