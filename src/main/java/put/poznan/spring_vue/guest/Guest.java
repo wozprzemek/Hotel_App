@@ -1,7 +1,12 @@
-package put.poznan.spring_vue.entities;
+package put.poznan.spring_vue.guest;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import put.poznan.spring_vue.address.Address;
+import put.poznan.spring_vue.room.Room;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 import javax.persistence.*;
 
 @Entity
@@ -9,6 +14,7 @@ import javax.persistence.*;
 public class Guest implements Serializable{
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "GUEST_ID", unique = true)
     private int id;
 
@@ -24,9 +30,9 @@ public class Guest implements Serializable{
     @Column(name = "DATE_OF_BIRTH", nullable = false)
     private Date dateOfBirth;
 
-    @Column(name = "ADDRESS_ID", nullable = false)
-    private int addressId;
-
+    @ManyToOne
+    @JoinColumn(name="ADDRESS_ID")
+    private Address address;;
 
     public int getId() {
         return id;
@@ -68,11 +74,11 @@ public class Guest implements Serializable{
         this.dateOfBirth = dateOfBirth;
     }
 
-    public int getAddress_id() {
-        return addressId;
+    public Address getAddress() {
+        return address;
     }
 
-    public void setAddress_id(int address_id) {
-        this.addressId = address_id;
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }

@@ -1,5 +1,6 @@
 package put.poznan.spring_vue.hotel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import put.poznan.spring_vue.address.Address;
 import put.poznan.spring_vue.room.Room;
 
@@ -26,6 +27,7 @@ public class Hotel implements Serializable{
     @Column(name = "TELEPHONE", nullable = false)
     private String telephone;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "hotel")
     private List<Room> rooms;
 

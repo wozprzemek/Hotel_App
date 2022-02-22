@@ -1,5 +1,6 @@
 package put.poznan.spring_vue.room;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import put.poznan.spring_vue.hotel.Hotel;
 
 import javax.persistence.*;
@@ -27,6 +28,7 @@ public class Room {
     @Column(name = "DOUBLE_BEDS", nullable = false)
     private int doubleBeds;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="HOTEL_ID")
     private Hotel hotel;

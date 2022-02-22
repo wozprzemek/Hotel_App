@@ -18,13 +18,13 @@ public class HotelController {
     private HotelRepository hotelRepository;
 
     @PostMapping(path="/add") // Map ONLY POST Requests
-    public ResponseEntity<String> addNewHotel (@RequestBody Hotel hotel, @RequestParam(name = "addressID") int addressID) {
+    public ResponseEntity<Hotel> addNewHotel (@RequestBody Hotel hotel, @RequestParam(name = "addressID") int addressID) {
         try{
             Address address = hotelRepository.findAddressByID(addressID);
             System.out.println(address.getFirstName());
             hotel.setAddress(address);
             Hotel _hotel = hotelRepository.save(hotel);
-            return new ResponseEntity<>(_hotel.getHotelName(), HttpStatus.CREATED);
+            return new ResponseEntity<>(_hotel, HttpStatus.CREATED);
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -40,6 +40,19 @@ public class HotelController {
             }
             return new ResponseEntity<>(hotels, HttpStatus.OK);
         } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(path="/rooms")
+    public @ResponseBody ResponseEntity<List<Room>> getAllRooms(@RequestParam(name = "hotelID") int hotelID){
+        try{
+            List<Room> rooms = new ArrayList<Room>(hotelRepository.findById(hotelID).getRooms());
+            if (rooms.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(rooms, HttpStatus.OK);
+        }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
