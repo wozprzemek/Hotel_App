@@ -37,17 +37,17 @@
     <div v-if="popUpWindow" id="room_selection_window">
         <div id="room_selection_window_title_bar">
                 <div id="navbar">
-                    <div id="room_selection_window_title">Rooms</div>&nbsp;/&nbsp;
-                    <div id="room_selection_window_title">Personal info</div>
+                    <div id="room_selection_window_title" @click="if(personalInfoWindow){personalInfoWindow = false; roomWindow = true}"><span>Rooms</span></div>
+                    <div id="room_selection_window_title" v-if="personalInfoWindow"><span>&nbsp;/&nbsp;Personal info</span></div>
                 </div>
-                <img id="exit_icon" src="../assets/delete.png" @click="popUpWindow = false"/>
+                <img id="exit_icon" src="../assets/delete.png" @click="popUpWindow = false; roomWindow = false; personalInfoWindow = false"/>
             </div>
         <div id="room_window" v-if="roomWindow">
             <div id="room_configuration_selection_bar">
-                <div class="room_configuration" :key="room.id" v-for="(room, index) in rooms_added">Room {{index+1}} | {{room.no_of_guests}} Guests</div>
+                <div class="room_configuration" :key="room.id" v-for="(room, index) in rooms_added" @click="selectedConfiguration=index; selectConfiguration()">Room {{index+1}} | {{room.no_of_guests}} Guests</div>
             </div>
             <div id="room_selection_window_room_list">
-                <div class="room_container" :key="room.id" v-for="room in rooms_added">
+                <div class="room_container" :key="room.id" v-for="room in rooms_returned[selectedConfiguration]">
                     <img class="room_image" src="../assets/background.jpg"/>
                     <div class="room_name">Double Premium</div>
                     <div class="room_price">$100</div>
@@ -64,7 +64,7 @@
                 <label for="lname">Last name</label><br>
                 <input type="text" class="form_input" name="lname"><br>
                 <label for="birth">Date of Birth</label><br>
-                <input type="text" class="form_input" name="birth"><br>
+                <input type="date" class="form_input" name="birth"><br>
                 <label for="country">Country</label><br>
                 <input type="text" class="form_input" name="country"><br>
                 <label for="city">City</label><br>
@@ -77,20 +77,29 @@
             <div id="reservation_summary">
                 <div id="reservation_summary_title">Reservation Summary</div>
                 <div id="reservation_info">
-                    <div class="reservation_summary_label">Start Date:</div>
-                    <div class="reservation_summary_value">22-02-2022</div>
-                    <div class="reservation_summary_label">End Date:</div>
-                    <div class="reservation_summary_value">23-02-2022</div>
+                    <div class="reservation_summary_row">
+                        <div class="reservation_summary_label">Start Date:</div>
+                        <div class="reservation_summary_value">{{startDate}}</div>
+                    </div>
+                    <div class="reservation_summary_row">
+                        <div class="reservation_summary_label">End Date:</div>
+                        <div class="reservation_summary_value">{{endDate}}</div>
+                    </div>
                 </div>
                 <div class="separator" style="grid-area: 3/2/4/4"></div>
                 <div id="room_info">
-                    <div class="reservation_summary_label">Start Date:</div>
-                    <div class="reservation_summary_value">22-02-2022</div>
-                    <div class="reservation_summary_label">End Date:</div>
-                    <div class="reservation_summary_value">23-02-2022</div>
+                    <div class="reservation_summary_row" :key="room.id" v-for="room in rooms_added">
+                        <div class="reservation_summary_label">Double Premium</div>
+                        <div class="reservation_summary_value">$100</div>
+                    </div>
                 </div>
                 <div class="separator" style="grid-area: 5/2/6/4"></div>
-                <div id="total_price"></div>
+                <div id="total_price">
+                    <div class="reservation_summary_row">
+                        <div class="reservation_summary_label">Total:</div>
+                        <div class="reservation_summary_value">${{rooms_added.length * 100}}</div>
+                    </div>
+                </div>
             </div>
         </div>
         <button class="room_confirm_button" @click="continueReservation()">Continue</button>
@@ -98,7 +107,6 @@
 </template>
 
 <script>
-    // const axios = require('axios');
     export default {
         name: "Client",
         components: {},
@@ -113,6 +121,7 @@
                 startDateAlert: false,
                 endDateAlert: false,
                 roomsAlert: false,
+                selectedConfiguration: 0,
                 rooms_added: [],
                 today: new Date(),
             }
@@ -120,22 +129,31 @@
         },
         created(){
             this.rooms_added,
-            this.rooms_requested = [
-                {
-                    id: null,
-                    name: null,
-                    price: null,
-                    description: null,
+            this.rooms_returned = [
+                [
+                    {
+                        id: 1,
+                        no_of_guests: 3,
+                    },
+                ],
+                [
+                    {
+                        id: 2,
+                        no_of_guests: 5,
+                    },
+                    {
+                        id: 3,
+                        no_of_guests: 5,
                 }
+                ],
+            ];
+            this.rooms_requested = [
+
             ];
             this.rooms_selected = [
-            {
-                    id: null,
-                    name: null,
-                    price: null,
-                    description: null,
-                }
+
             ];
+            console.log(this.rooms_selected);
             var dd = String(this.today.getDate()).padStart(2, '0');
             var mm = String(this.today.getMonth() + 1).padStart(2, '0'); //January is 0!
             var yyyy = this.today.getFullYear();
@@ -184,6 +202,22 @@
                 room_add_menu.style.height = (this.rooms_added.length*50 + 100).toString() + "px";
                 this.updateAddRoomMenu();
             },
+
+            selectConfiguration(){
+                var index = (this.selectedConfiguration + 1).toString();
+                console.log(index);
+                const all = document.querySelectorAll('.room_configuration');
+                // Change the text of multiple elements with a loop
+                all.forEach(element => {
+                    element.style.background = "white";
+                    element.style.color = "#0A141F";
+                });
+
+                var child = document.querySelector(".room_configuration:nth-child(" +  index + ")")
+                child.style.background = '#080A0D';
+                child.style.color = 'white';
+            },
+            
             findRoomsRequest(){
                 console.log(this.addDays(this.today, 2))
                 if (this.rooms_added.length == 0){
@@ -201,16 +235,13 @@
                     var rooms_to_find = this.rooms_added.filter(function (el) {
                             return el.no_of_guests != null
                         });
-                    console.log(rooms_to_find)
-            
+                    console.log(JSON.stringify(rooms_to_find)) // THIS IS TO BE SENT AS A REQUEST
                 }
-
-                let data = {element: "barium"};
 
                 fetch("/api/test", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(data)
+                body: JSON.stringify(rooms_to_find)
                 }).then(res => {
                 console.log("Request complete! response:", res);
                 });
@@ -250,17 +281,19 @@
                     console.log(this.personalInfoWindow);
                     this.personalInfoWindow = true;
                     console.log(this.personalInfoWindow);
+                    console.log(this.selectedConfiguration);
                 }
                 else if (this.personalInfoWindow){
                     console.log('Reservation succesful!');
                 }
-            }
+            },
 
         }
     }
 </script>
 
 <style scoped>
+
     body{
         margin: 0;
         padding: 0;
@@ -497,6 +530,10 @@
         grid-template-rows: 1fr;
     }
 
+    #room_selection_window_title span{
+        cursor:pointer;
+    }
+
     #navbar{
         text-align: left;
         grid-area: 1/1/2/2;
@@ -516,7 +553,7 @@
     }
 
     #room_configuration_selection_bar{
-        grid-area: 1/2/2/3;
+        grid-area: 1/1/2/2;
         display: inline-flex;
         gap: 10px;
         padding-left: 5px;
@@ -545,7 +582,7 @@
     }
 
     #room_selection_window_room_list{
-        grid-area: 3/2/5/3;
+        grid-area: 3/1/5/4;
         padding-top: 10px;
         overflow-y: scroll;
     }
@@ -670,8 +707,8 @@
         border: #28323F 0.5px solid;
         display: grid;
         grid-template-columns: 20px 1fr 1fr 20px;
-        grid-template-rows: 65px 130px 1px 280px 1px 1fr;
-    }
+        grid-template-rows: 65px 100px 1px 280px 1px 1fr;
+    } 
 
     #reservation_summary_title{
         grid-area: 1/1/2/5;
@@ -682,11 +719,22 @@
         font-size: 20px;
     }
 
+
+    #reservation_info{
+        grid-area: 2/2/3/4;
+    }
+
+    .reservation_summary_row{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 20px;
+    }
+
     .reservation_summary_label{
         font-size: 18px;
         align-self: center;
         justify-self: start;
-        margin-left: 20px;
+        margin-left: 10px;
         grid-column: 1/2;
     }
 
@@ -695,29 +743,14 @@
         font-weight: 600;
         align-self: center;
         justify-self: end;
-        margin-right: 20px;
+        margin-right: 10px;
         grid-column: 2/3;
-    }
-
-    #reservation_info{
-        grid-area: 2/2/3/4;
-        display: grid;
-        grid-gap: 12px;
-        grid-template-columns: 1fr 1fr;
-        margin-top: 29px;
-    }
-
-    #reservation_summary_row{
-        grid-template-columns: 1fr 1fr;
     }
 
     #room_info{
         grid-area: 4/2/5/4;
-        display: grid;
-        grid-gap: 12px;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr repeat(5, 30px) 1fr;
     }
+    
 
     #total_price{
         grid-area: 6/2/7/4;
@@ -728,5 +761,9 @@
         opacity: 0.5;
     }
     
+    .room_configuration:first-child{
+        background: #080A0D;
+        color: white;
+    }
 
 </style>
