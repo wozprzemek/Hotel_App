@@ -50,6 +50,7 @@ public class RoomController {
     @PostMapping(path="/av")
     public @ResponseBody ResponseEntity<List<Room>> getAvailableRooms(@RequestBody RoomAvailibility roomAvailibility) {
 
+        System.out.println(roomAvailibility.getStartDate().toString());
         return new ResponseEntity<>(roomRepository.findAll(), HttpStatus.OK);
     }
 }
