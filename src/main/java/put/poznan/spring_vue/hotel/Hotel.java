@@ -1,5 +1,6 @@
 package put.poznan.spring_vue.hotel;
 
+import put.poznan.spring_vue.address.Address;
 import put.poznan.spring_vue.room.Room;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.util.List;
 public class Hotel implements Serializable{
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "HOTEL_ID", unique = true)
     private int id;
 
@@ -24,11 +26,12 @@ public class Hotel implements Serializable{
     @Column(name = "TELEPHONE", nullable = false)
     private String telephone;
 
-    @Column(name = "ADDRESS_ID", nullable = false)
-    private int addressId;
-
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hotel")
     private List<Room> rooms;
+
+    @ManyToOne
+    @JoinColumn(name="ADDRESS_ID")
+    private Address address;
 
     public int getId() {
         return id;
@@ -62,12 +65,19 @@ public class Hotel implements Serializable{
         this.telephone = telephone;
     }
 
-    public int getAddressId() {
-        return addressId;
+    public List<Room> getRooms() {
+        return rooms;
     }
 
-    public void setAddressId(int addressId) {
-        this.addressId = addressId;
+    public void setRooms(List<Room> rooms) {
+        this.rooms = rooms;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 }

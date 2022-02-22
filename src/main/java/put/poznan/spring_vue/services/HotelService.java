@@ -21,7 +21,6 @@ public class HotelService {
             hotel.setHotelName(hotelName);
             hotel.setHotelRating(hotelRating);
             hotel.setTelephone(telephone);
-            hotel.setAddressId(addressId);
             em.persist(hotel);
             et.commit();
         }
