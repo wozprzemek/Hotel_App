@@ -1,4 +1,4 @@
-package put.poznan.spring_vue.entities;
+package put.poznan.spring_vue.hotel;
 
 import put.poznan.spring_vue.room.Room;
 

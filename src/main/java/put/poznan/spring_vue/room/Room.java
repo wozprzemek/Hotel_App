@@ -1,6 +1,6 @@
 package put.poznan.spring_vue.room;
 
-import put.poznan.spring_vue.entities.Hotel;
+import put.poznan.spring_vue.hotel.Hotel;
 
 import javax.persistence.*;
 

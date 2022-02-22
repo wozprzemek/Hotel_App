@@ -1,11 +1,8 @@
 package put.poznan.spring_vue.services;
 
-import put.poznan.spring_vue.entities.Hotel;
+import put.poznan.spring_vue.hotel.Hotel;
 
 import javax.persistence.*;
-import java.text.Normalizer;
-import java.sql.Date;
-import java.util.List;
 
 public class HotelService {
     private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("HotelManagementSystem");
