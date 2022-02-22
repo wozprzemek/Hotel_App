@@ -1,4 +1,4 @@
-package put.poznan.spring_vue.entities;
+package put.poznan.spring_vue.admin;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -10,10 +10,6 @@ import java.io.Serializable;
 public class Admin implements Serializable{
 
     @Id
-    @Column(name = "ADMIN_ID", unique = true, nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
     @Column(name = "LOGIN", unique = true)
     private String login;
 

@@ -1,11 +1,11 @@
 package put.poznan.spring_vue.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import put.poznan.spring_vue.room.Room;
+
+import javax.persistence.*;
 import java.sql.Date;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "HOTEL")
@@ -26,6 +26,9 @@ public class Hotel implements Serializable{
 
     @Column(name = "ADDRESS_ID", nullable = false)
     private int addressId;
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+    private List<Room> rooms;
 
     public int getId() {
         return id;

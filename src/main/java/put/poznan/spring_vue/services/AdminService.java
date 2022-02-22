@@ -1,10 +1,9 @@
 package put.poznan.spring_vue.services;
 
-import put.poznan.spring_vue.entities.Admin;
+import put.poznan.spring_vue.admin.Admin;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 
 public class AdminService {
 
