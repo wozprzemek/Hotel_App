@@ -37,14 +37,14 @@
     <div v-if="popUpWindow" id="room_selection_window">
         <div id="room_selection_window_title_bar">
                 <div id="navbar">
-                    <div id="room_selection_window_title" @click="if(personalInfoWindow){personalInfoWindow = false; roomWindow = true;}"><span>Rooms</span></div>
+                    <div id="room_selection_window_title" @click="if(personalInfoWindow){personalInfoWindow = false; roomWindow = true}"><span>Rooms</span></div>
                     <div id="room_selection_window_title" v-if="personalInfoWindow"><span>&nbsp;/&nbsp;Personal info</span></div>
                 </div>
                 <img id="exit_icon" src="../assets/delete.png" @click="popUpWindow = false; roomWindow = false; personalInfoWindow = false"/>
             </div>
         <div id="room_window" v-if="roomWindow">
             <div id="room_configuration_selection_bar">
-                <div class="room_configuration" :key="room.id" v-for="(room, index) in rooms_added" @click="selectedConfiguration=index">Room {{index+1}} | {{room.no_of_guests}} Guests</div>
+                <div class="room_configuration" :key="room.id" v-for="(room, index) in rooms_added" @click="selectedConfiguration=index; selectConfiguration()">Room {{index+1}} | {{room.no_of_guests}} Guests</div>
             </div>
             <div id="room_selection_window_room_list">
                 <div class="room_container" :key="room.id" v-for="room in rooms_returned[selectedConfiguration]">
@@ -202,6 +202,22 @@
                 room_add_menu.style.height = (this.rooms_added.length*50 + 100).toString() + "px";
                 this.updateAddRoomMenu();
             },
+
+            selectConfiguration(){
+                var index = (this.selectedConfiguration + 1).toString();
+                console.log(index);
+                const all = document.querySelectorAll('.room_configuration');
+                // Change the text of multiple elements with a loop
+                all.forEach(element => {
+                    element.style.background = "white";
+                    element.style.color = "#0A141F";
+                });
+
+                var child = document.querySelector(".room_configuration:nth-child(" +  index + ")")
+                child.style.background = '#080A0D';
+                child.style.color = 'white';
+            },
+            
             findRoomsRequest(){
                 console.log(this.addDays(this.today, 2))
                 if (this.rooms_added.length == 0){
@@ -270,13 +286,14 @@
                 else if (this.personalInfoWindow){
                     console.log('Reservation succesful!');
                 }
-            }
+            },
 
         }
     }
 </script>
 
 <style scoped>
+
     body{
         margin: 0;
         padding: 0;
