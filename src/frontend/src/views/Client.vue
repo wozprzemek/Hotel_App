@@ -153,6 +153,7 @@
             this.rooms_selected = [
 
             ];
+            this.roomRequestJson = {};
             console.log(this.rooms_selected);
             var dd = String(this.today.getDate()).padStart(2, '0');
             var mm = String(this.today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -236,9 +237,14 @@
                             return el.no_of_guests != null
                         });
                     console.log(JSON.stringify(rooms_to_find)) // THIS IS TO BE SENT AS A REQUEST
+                    
+                    this.roomRequestJson.startDate = this.startDate;
+                    this.roomRequestJson.endDate = this.endDate;
+                    this.roomRequestJson.rooms = rooms_to_find;
+                    console.log(JSON.stringify(this.roomRequestJson));
                 }
 
-                fetch("/api/test", {
+                fetch("/api/room/av", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'}, 
                 body: JSON.stringify(rooms_to_find)
