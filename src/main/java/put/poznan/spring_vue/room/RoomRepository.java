@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-    List<Room> findByNumber (int number);
+    List<Room> findByNumber(int number);
+
     @Query("SELECT ht FROM Hotel ht WHERE ht.id = :ht_id")
     Hotel findHotelByID(@Param("ht_id") int ht_id);
 }

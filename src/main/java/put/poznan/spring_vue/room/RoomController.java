@@ -24,19 +24,18 @@ public class RoomController {
             Room _room = roomRepository.save(room);
             return new ResponseEntity<>(_room, HttpStatus.CREATED);
         } catch (Exception e){
-            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody ResponseEntity<List<Room>> getAllRooms(@RequestParam(name = "number", required = false) int number) {
+    public @ResponseBody ResponseEntity<List<Room>> getAllRooms(@RequestParam(name = "number", required = false) Long number) {
         try {
             List<Room> rooms = new ArrayList<Room>();
-            if (number == 0) {
+            if (number == null) {
                 rooms.addAll(roomRepository.findAll());
             } else {
-                rooms.addAll(roomRepository.findByNumber(number));
+                rooms.addAll(roomRepository.findByNumber(Math.toIntExact(number)));
             }
             if (rooms.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -46,5 +45,11 @@ public class RoomController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping(path="/av")
+    public @ResponseBody ResponseEntity<List<Room>> getAvailableRooms(@RequestBody RoomAvailibility roomAvailibility) {
+
+        return new ResponseEntity<>(roomRepository.findAll(), HttpStatus.OK);
     }
 }
