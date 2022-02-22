@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.entities.Hotel;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class RoomController {
     }
 
     @PostMapping(path="/av")
-    public @ResponseBody ResponseEntity<List<Room>> getAvailableRooms(@RequestBody RoomAvailibility roomAvailibility) {
+    public @ResponseBody ResponseEntity<List<Room>> getAvailableRooms(@RequestBody RoomAvailibility roomAvailibility, HttpServletRequest request) {
 
         System.out.println(roomAvailibility.getStartDate().toString());
         return new ResponseEntity<>(roomRepository.findAll(), HttpStatus.OK);

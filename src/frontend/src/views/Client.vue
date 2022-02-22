@@ -238,19 +238,23 @@
                         });
                     console.log(JSON.stringify(rooms_to_find)) // THIS IS TO BE SENT AS A REQUEST
                     
-                    this.roomRequestJson.startDate = this.startDate;
-                    this.roomRequestJson.endDate = this.endDate;
-                    this.roomRequestJson.rooms = rooms_to_find;
+                    this.roomRequestJson.startDate = "2012-04-23T18:25:43.511Z";
+                    this.roomRequestJson.endDate = "2012-04-23T18:25:43.511Z";
+                    this.roomRequestJson.rooms = ["Siema"];
                     console.log(JSON.stringify(this.roomRequestJson));
                 }
 
-                fetch("/api/room/av", {
+              fetch("/api/room/av", {
                 method: "POST",
-                headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(rooms_to_find)
-                }).then(res => {
-                console.log("Request complete! response:", res);
-                });
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(this.roomRequestJson)
+              }).then(response => response.json()).then(data => {
+                console.log(data);
+                var test = data;
+                console.log(test)
+              });
+
+
 
   
             },
