@@ -44,10 +44,10 @@
             </div>
         <div id="room_window" v-if="roomWindow">
             <div id="room_configuration_selection_bar">
-                <div class="room_configuration" :key="room.id" v-for="(room, index) in rooms_added">Room {{index+1}} | {{room.no_of_guests}} Guests</div>
+                <div class="room_configuration" :key="room.id" v-for="(room, index) in rooms_added" @click="selectedConfiguration=index">Room {{index+1}} | {{room.no_of_guests}} Guests</div>
             </div>
             <div id="room_selection_window_room_list">
-                <div class="room_container" :key="room.id" v-for="room in rooms_added">
+                <div class="room_container" :key="room.id" v-for="room in rooms_returned[selectedConfiguration]">
                     <img class="room_image" src="../assets/background.jpg"/>
                     <div class="room_name">Double Premium</div>
                     <div class="room_price">$100</div>
@@ -79,11 +79,11 @@
                 <div id="reservation_info">
                     <div class="reservation_summary_row">
                         <div class="reservation_summary_label">Start Date:</div>
-                        <div class="reservation_summary_value">22-02-2022</div>
+                        <div class="reservation_summary_value">{{startDate}}</div>
                     </div>
                     <div class="reservation_summary_row">
                         <div class="reservation_summary_label">End Date:</div>
-                        <div class="reservation_summary_value">23-02-2022</div>
+                        <div class="reservation_summary_value">{{endDate}}</div>
                     </div>
                 </div>
                 <div class="separator" style="grid-area: 3/2/4/4"></div>
@@ -107,7 +107,6 @@
 </template>
 
 <script>
-    // const axios = require('axios');
     export default {
         name: "Client",
         components: {},
@@ -122,6 +121,7 @@
                 startDateAlert: false,
                 endDateAlert: false,
                 roomsAlert: false,
+                selectedConfiguration: 0,
                 rooms_added: [],
                 today: new Date(),
             }
@@ -129,22 +129,31 @@
         },
         created(){
             this.rooms_added,
-            this.rooms_requested = [
-                {
-                    id: null,
-                    name: null,
-                    price: null,
-                    description: null,
+            this.rooms_returned = [
+                [
+                    {
+                        id: 1,
+                        no_of_guests: 3,
+                    },
+                ],
+                [
+                    {
+                        id: 2,
+                        no_of_guests: 5,
+                    },
+                    {
+                        id: 3,
+                        no_of_guests: 5,
                 }
+                ],
+            ];
+            this.rooms_requested = [
+
             ];
             this.rooms_selected = [
-            {
-                    id: null,
-                    name: null,
-                    price: null,
-                    description: null,
-                }
+
             ];
+            console.log(this.rooms_selected);
             var dd = String(this.today.getDate()).padStart(2, '0');
             var mm = String(this.today.getMonth() + 1).padStart(2, '0'); //January is 0!
             var yyyy = this.today.getFullYear();
@@ -210,16 +219,13 @@
                     var rooms_to_find = this.rooms_added.filter(function (el) {
                             return el.no_of_guests != null
                         });
-                    console.log(rooms_to_find)
-            
+                    console.log(JSON.stringify(rooms_to_find)) // THIS IS TO BE SENT AS A REQUEST
                 }
-
-                let data = {element: "barium"};
 
                 fetch("/api/test", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify(data)
+                body: JSON.stringify(rooms_to_find)
                 }).then(res => {
                 console.log("Request complete! response:", res);
                 });
@@ -259,6 +265,7 @@
                     console.log(this.personalInfoWindow);
                     this.personalInfoWindow = true;
                     console.log(this.personalInfoWindow);
+                    console.log(this.selectedConfiguration);
                 }
                 else if (this.personalInfoWindow){
                     console.log('Reservation succesful!');
@@ -529,7 +536,7 @@
     }
 
     #room_configuration_selection_bar{
-        grid-area: 1/2/2/3;
+        grid-area: 1/1/2/2;
         display: inline-flex;
         gap: 10px;
         padding-left: 5px;
@@ -558,7 +565,7 @@
     }
 
     #room_selection_window_room_list{
-        grid-area: 3/2/5/3;
+        grid-area: 3/1/5/4;
         padding-top: 10px;
         overflow-y: scroll;
     }
