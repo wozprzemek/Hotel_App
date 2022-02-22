@@ -37,10 +37,10 @@
     <div v-if="popUpWindow" id="room_selection_window">
         <div id="room_selection_window_title_bar">
                 <div id="navbar">
-                    <div id="room_selection_window_title">Rooms</div>&nbsp;/&nbsp;
-                    <div id="room_selection_window_title">Personal info</div>
+                    <div id="room_selection_window_title" @click="if(personalInfoWindow){personalInfoWindow = false; roomWindow = true;}"><span>Rooms</span></div>
+                    <div id="room_selection_window_title" v-if="personalInfoWindow"><span>&nbsp;/&nbsp;Personal info</span></div>
                 </div>
-                <img id="exit_icon" src="../assets/delete.png" @click="popUpWindow = false"/>
+                <img id="exit_icon" src="../assets/delete.png" @click="popUpWindow = false; roomWindow = false; personalInfoWindow = false"/>
             </div>
         <div id="room_window" v-if="roomWindow">
             <div id="room_configuration_selection_bar">
@@ -64,7 +64,7 @@
                 <label for="lname">Last name</label><br>
                 <input type="text" class="form_input" name="lname"><br>
                 <label for="birth">Date of Birth</label><br>
-                <input type="text" class="form_input" name="birth"><br>
+                <input type="date" class="form_input" name="birth"><br>
                 <label for="country">Country</label><br>
                 <input type="text" class="form_input" name="country"><br>
                 <label for="city">City</label><br>
@@ -77,20 +77,29 @@
             <div id="reservation_summary">
                 <div id="reservation_summary_title">Reservation Summary</div>
                 <div id="reservation_info">
-                    <div class="reservation_summary_label">Start Date:</div>
-                    <div class="reservation_summary_value">22-02-2022</div>
-                    <div class="reservation_summary_label">End Date:</div>
-                    <div class="reservation_summary_value">23-02-2022</div>
+                    <div class="reservation_summary_row">
+                        <div class="reservation_summary_label">Start Date:</div>
+                        <div class="reservation_summary_value">22-02-2022</div>
+                    </div>
+                    <div class="reservation_summary_row">
+                        <div class="reservation_summary_label">End Date:</div>
+                        <div class="reservation_summary_value">23-02-2022</div>
+                    </div>
                 </div>
                 <div class="separator" style="grid-area: 3/2/4/4"></div>
                 <div id="room_info">
-                    <div class="reservation_summary_label">Start Date:</div>
-                    <div class="reservation_summary_value">22-02-2022</div>
-                    <div class="reservation_summary_label">End Date:</div>
-                    <div class="reservation_summary_value">23-02-2022</div>
+                    <div class="reservation_summary_row" :key="room.id" v-for="room in rooms_added">
+                        <div class="reservation_summary_label">Double Premium</div>
+                        <div class="reservation_summary_value">$100</div>
+                    </div>
                 </div>
                 <div class="separator" style="grid-area: 5/2/6/4"></div>
-                <div id="total_price"></div>
+                <div id="total_price">
+                    <div class="reservation_summary_row">
+                        <div class="reservation_summary_label">Total:</div>
+                        <div class="reservation_summary_value">${{rooms_added.length * 100}}</div>
+                    </div>
+                </div>
             </div>
         </div>
         <button class="room_confirm_button" @click="continueReservation()">Continue</button>
@@ -497,6 +506,10 @@
         grid-template-rows: 1fr;
     }
 
+    #room_selection_window_title span{
+        cursor:pointer;
+    }
+
     #navbar{
         text-align: left;
         grid-area: 1/1/2/2;
@@ -670,8 +683,8 @@
         border: #28323F 0.5px solid;
         display: grid;
         grid-template-columns: 20px 1fr 1fr 20px;
-        grid-template-rows: 65px 130px 1px 280px 1px 1fr;
-    }
+        grid-template-rows: 65px 100px 1px 280px 1px 1fr;
+    } 
 
     #reservation_summary_title{
         grid-area: 1/1/2/5;
@@ -682,11 +695,22 @@
         font-size: 20px;
     }
 
+
+    #reservation_info{
+        grid-area: 2/2/3/4;
+    }
+
+    .reservation_summary_row{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 20px;
+    }
+
     .reservation_summary_label{
         font-size: 18px;
         align-self: center;
         justify-self: start;
-        margin-left: 20px;
+        margin-left: 10px;
         grid-column: 1/2;
     }
 
@@ -695,29 +719,14 @@
         font-weight: 600;
         align-self: center;
         justify-self: end;
-        margin-right: 20px;
+        margin-right: 10px;
         grid-column: 2/3;
-    }
-
-    #reservation_info{
-        grid-area: 2/2/3/4;
-        display: grid;
-        grid-gap: 12px;
-        grid-template-columns: 1fr 1fr;
-        margin-top: 29px;
-    }
-
-    #reservation_summary_row{
-        grid-template-columns: 1fr 1fr;
     }
 
     #room_info{
         grid-area: 4/2/5/4;
-        display: grid;
-        grid-gap: 12px;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr repeat(5, 30px) 1fr;
     }
+    
 
     #total_price{
         grid-area: 6/2/7/4;
@@ -728,5 +737,9 @@
         opacity: 0.5;
     }
     
+    .room_configuration:first-child{
+        background: #080A0D;
+        color: white;
+    }
 
 </style>
