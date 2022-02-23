@@ -2,7 +2,7 @@
 
 # Frontend - Get Started
 
-1. Set up vue with the following commands (use them within the /frontend direcotry):
+1. Set up vue with the following commands (use them within the /src/frontend direcotry!!!!):
 
 `sudo apt install npm`
 
@@ -14,6 +14,6 @@
 
 `npm install ag-grid-vue3 ag-grid-community vue-class-component@next`
 
-2. Run the project from the /frontend directory:
+2. Run the project from the /src/frontend directory:
 
 `npm run serve`
