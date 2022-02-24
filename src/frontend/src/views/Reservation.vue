@@ -23,8 +23,6 @@
                 <div class="details_text" id="details_field_value">27/01/2022</div>
                 <div class="details_text" id="details_field_value">Cash</div>
                 <div class="details_text" id="details_field_value">Registered</div>
-
-                <button id="button">Edit</button>
             </div>
             <div class="details_box" id="guest_details_box">
                 <div id="title_box">Guest Details</div>
@@ -41,7 +39,6 @@
                 <div class="details_text" id="details_field_value">17/08/2000</div>
                 <div class="details_text" id="details_field_value">48123654879</div>
                 <div class="details_text" id="details_field_value">Polanka 30b, 61-131 Poznan</div>
-                <button id="button">Edit</button>
             </div>
             <div class="details_box" id="rooms_details_box">
                 <div id="title_box">Rooms</div>
@@ -50,7 +47,6 @@
                   :columnDefs="columnDefs"
                   :rowData="rowData.value">
                 </ag-grid-vue>
-                <button id="button_add">Add</button>
             </div>
             <div class="details_box" id="orders_details_box">
                 <div id="title_box">Orders</div>
@@ -59,10 +55,44 @@
                   :columnDefs="columnDefs"
                   :rowData="rowData.value">
                 </ag-grid-vue>
-                <button id="button_add">Add</button>
+                <button id="button_add" @click="showOrderWindow()">Add</button>
             </div>
         </div>
     </div>
+    <div id="order_window">
+        <div id="order_window_title_bar">
+                <div id="order_window_navbar">
+                    <div id="order_window_title"><span>Add order</span></div>
+                </div>
+            <img id="order_window_exit_icon" src="../assets/delete.png" @click="popUpWindow = false; closeOrderWindow()"/>
+        </div>
+        <div id="order_list">
+            <div class="order_list_row" style="margin-bottom: 0;">
+                <div id="category">Category</div>
+                <div id="product">Product</div>
+                <div id="qty">Qty</div>
+                <div id="time">Time</div>
+                <div id="subtotal">Subtotal</div>
+            </div>
+            <hr>
+            <form class="order_list_row" :key="item.id" v-for="item in orderItems" name=item>
+                <select name="category" id="category" form=item>
+
+                </select>
+                <select name="product" id="product" form=item>
+
+                </select>
+                <input id="qty" type="text" name="qty">
+                <input id="time" type="text" name="time">
+                <div id="subtotal">$15</div>
+            </form>
+        </div>
+        <div id="order_window_footer">
+            <button class="order_window_add_item_button" @click="addOrderItem()">Add item</button>
+            <button class="order_window_confirm_order_button">Confirm order</button>
+        </div>
+    </div>
+
 </template>
 
 <script>
@@ -73,17 +103,45 @@
         components: {
     AgGridVue,
   },
+  data(){
+      return{
+          popUpWindow: false,
+          orderItems: [
+            {
+                id: 1,
+                category: "",
+                product: "",
+                qty: 0,
+                time: "",
+                subtotal: 0,
+            },
+          ],
+          items: [
+              {
+                  category: "breakfast",
+                  product: ["egg", "pancake"],
+              },
+              {
+                  category: "dinner",
+                  product: ["chicken", "spaghetti"],
+              },
+          ],
+      }
+  },
   setup() {
     let rowData = reactive([]);
 
     onMounted(() => {
         fetch('https://www.ag-grid.com/example-assets/small-row-data.json')
-          .then(result => result.json())
-          .then(remoteRowData => rowData.value = remoteRowData);
+            .then(result => result.json())
+            .then(remoteRowData => rowData.value = remoteRowData);
 
-          fetch("https://api.npoint.io/4954ac84ccd9bb0388a6")
+        fetch("https://api.npoint.io/4954ac84ccd9bb0388a6")
             .then(res => res.json())
             .then(data => console.log(data));
+
+
+        
     })
 
     return {
@@ -102,6 +160,84 @@
     onSelectionChanged() {
       const selectedRows = this.rowData.getSelectedRows();
       console.log(selectedRows.length === 1 ? selectedRows[0].reservation_id : '');
+    },
+    fillDropdowns(){
+        // fill the categories dropdown menus
+        var categories = document.querySelectorAll("select#category");
+        categories.forEach(element => {
+            if (element.options.length == 0){
+                for(var i = 0, l = this.items.length; i < l; i++){
+                    var item = this.items[i];
+                    element.options.add(new Option(item.category));
+                }  
+            }
+        });
+        // fill the products dropdown menus
+        var products = document.querySelectorAll("select#product");
+        products.forEach(element => {
+            var categoryValue = element.parentNode.querySelector("#category").value;
+            console.log(categoryValue);
+            
+            let obj = this.items.find(o => o.category === categoryValue);
+            obj.product.forEach(prod => {
+                element.options.add(new Option(prod));
+            });
+        });
+
+    },
+    updateDropdowns(){
+        console.log('aa');
+        // var categoryElement = selectedObj.parentNode.querySelector("#category");
+        // var categoryValue = categoryElement.value;
+        // console.log(categoryValue);
+        
+        // let obj = this.items.find(o => o.category === categoryValue);
+        // obj.product.forEach(prod => {
+        //     categoryElement.options.add(new Option(prod));
+        // });
+        // var categories = document.querySelectorAll("select#category");
+        // categories.forEach(element => {
+        //     if (element.options.length == 0){
+        //         for(var i = 0, l = this.items.length; i < l; i++){
+        //             var item = this.items[i];
+        //             element.options.add(new Option(item.category));
+        //         }  
+        //     }
+        // });
+    },
+    addOrderItem(){
+        this.orderItems.push({
+            id: this.orderItems[this.orderItems.length-1].id,
+            category: "",
+            product: "",
+            qty: 0,
+            time: "",
+            subtotal: 0,
+        });
+        this.fillDropdowns();
+    },
+    emptyOrderItems(){
+        this.orderItems = [
+            {
+                id: 1,
+                category: "",
+                product: "",
+                qty: 0,
+                time: "",
+                subtotal: 0,
+            },
+        ]
+    },
+    showOrderWindow(){
+        this.popUpWindow = true;
+        var orderWindow = document.querySelector("#order_window");
+        orderWindow.style.visibility = "visible";
+        this.fillDropdowns();
+    },
+    closeOrderWindow(){
+        this.popUpWindow = false;
+        var orderWindow = document.querySelector("#order_window");
+        orderWindow.style.visibility = "hidden";
     },
   },
 }
@@ -222,7 +358,7 @@
     }
 
     #table_rooms{
-        grid-area: 2/1/-2/-1;
+        grid-area: 2/1/-1/-1;
     }
 
     #table_orders{
@@ -281,8 +417,8 @@
     }
 
     #title_box{
-        background-color: #C3C8D5;
-        color: #080A0D;
+        background-color: #28323F;
+        color: #C3C8D5;
         font-size: 18px;
         font-weight: 300;
         text-align: left;
@@ -290,4 +426,133 @@
         padding-left: 15px;
         grid-area: 1/1/1/-1;
     }
+
+    #order_window{
+        width: 1000px;
+        z-index: 100;
+        height: 800px;
+        position: absolute;
+        top: calc(50% - 400px);
+        left: calc(50% - 500px);
+        background-color: white;
+        box-shadow: 0px 1px 5px rgba(50,50,50,0.4);
+        display: grid;
+        grid-template-columns: 15px 1fr 15px;
+        grid-template-rows: 80px 1fr 80px;
+        overflow: hidden;
+        visibility: hidden;
+    }
+
+    #order_window_title_bar{
+        grid-area: 1/1/2/-2;
+        font-size: 20px;
+        display: grid;
+        grid-template-columns: 1fr 50px;
+        grid-template-rows: 1fr;
+    }
+
+    #order_window_navbar{
+        text-align: left;
+        grid-area: 1/1/2/2;
+        display: inline-flex;
+        margin-left: 20px;
+        margin-top: 25px;
+    }
+
+    #order_window_exit_icon{
+        grid-area: 1/3/2/4;
+        width: 40px;
+        margin-top: 10px;
+        justify-self: end;
+        cursor: pointer;
+    }
+
+    #order_window_footer{
+        grid-area: 3/2/4/3;
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr 200px 200px;
+        grid-gap: 20px;
+        justify-items: center;
+        align-items: center;
+    }
+
+    .order_window_confirm_order_button{
+        grid-area: 1/4/2/5;
+        width: 200px;
+        height: 40px;
+        background: #28323F;
+        color: white;
+        font-size: 16px;
+        align-self: center;
+        justify-self: center;
+        border: none;
+	    padding: 0;
+        cursor: pointer;
+    }
+
+    .order_window_add_item_button{
+        grid-area: 1/3/2/4;
+        width: 200px;
+        height: 40px;
+        background: #35d38c;
+        color: white;
+        font-size: 16px;
+        align-self: center;
+        justify-self: center;
+        border: none;
+	    padding: 0;
+        cursor: pointer;
+    }
+
+    #order_list{
+        grid-area: 2/2/3/3;
+        padding-top: 20px;
+    }
+
+    .order_list_row{
+        width: 970px;
+        height: 36px;
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: 210px 210px 50px 210px 210px;
+        grid-gap: 20px;
+        justify-items: start;
+        margin-bottom: 15px;
+        text-align: left;
+        line-height: 36px;
+    }
+
+    #category{
+        grid-area: 1/1/2/2;
+        width: 100%;
+    }
+
+    #product{
+        grid-area: 1/2/2/3;
+        width: 100%;
+    }
+
+    #qty{
+        grid-area: 1/3/2/4;
+        width: 100%;
+    }
+
+    #time{
+        grid-area: 1/4/2/5;
+        width: 100%;
+    }
+
+    #subtotal{
+        grid-area: 1/5/2/6;
+        width: 100%;
+        padding-left: 35px;
+    }
+
+    hr{
+        margin: 0;
+        margin-bottom: 20px;
+        color: rgba(50,50,50,0.4);
+    }
+
 </style>
