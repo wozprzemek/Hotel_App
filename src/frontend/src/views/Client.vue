@@ -40,8 +40,8 @@
                     <div id="room_selection_window_title" @click="if(personalInfoWindow){personalInfoWindow = false; roomWindow = true}"><span>Rooms</span></div>
                     <div id="room_selection_window_title" v-if="personalInfoWindow"><span>&nbsp;/&nbsp;Personal info</span></div>
                 </div>
-                <img id="exit_icon" src="../assets/delete.png" @click="popUpWindow = false; roomWindow = false; personalInfoWindow = false"/>
-            </div>
+            <img id="exit_icon" src="../assets/delete.png" @click="popUpWindow = false; roomWindow = false; personalInfoWindow = false"/>
+        </div>
         <div id="room_window" v-if="roomWindow">
             <div id="room_configuration_selection_bar">
                 <div class="room_configuration" :key="room.id" v-for="(room, index) in rooms_added" @click="selectedConfiguration=index; selectConfiguration()">Room {{index+1}} | {{room.no_of_guests}} Guests</div>
