@@ -3,11 +3,11 @@ package put.poznan.spring_vue.room;
 import java.util.Date;
 import java.util.List;
 
-public class RoomAvailibility {
+public class RoomAvailability {
 
     private Date startDate;
     private Date endDate;
-    private List<String> roomsDetailsList;
+    private List<Integer> roomsDetailsList;
 
     public Date getStartDate() {
         return startDate;
@@ -25,11 +25,11 @@ public class RoomAvailibility {
         this.endDate = endDate;
     }
 
-    public List<String> getRoomsDetailsList() {
+    public List<Integer> getRoomsDetailsList() {
         return roomsDetailsList;
     }
 
-    public void setRoomsDetailsList(List<String> roomsDetailsList) {
+    public void setRoomsDetailsList(List<Integer> roomsDetailsList) {
         this.roomsDetailsList = roomsDetailsList;
     }
 }

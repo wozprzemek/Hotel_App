@@ -8,6 +8,7 @@ import put.poznan.spring_vue.hotel.Hotel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController // This means that this class is a Controller
@@ -36,7 +37,7 @@ public class RoomController {
             if (number == null) {
                 rooms.addAll(roomRepository.findAll());
             } else {
-                rooms.addAll(roomRepository.findByNumber(Math.toIntExact(number)));
+                rooms.add(roomRepository.findByNumber(Math.toIntExact(number)));
             }
             if (rooms.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -49,9 +50,30 @@ public class RoomController {
     }
 
     @PostMapping(path="/av")
-    public @ResponseBody ResponseEntity<List<Room>> getAvailableRooms(@RequestBody RoomAvailibility roomAvailibility, HttpServletRequest request) {
+    public @ResponseBody ResponseEntity<List<List<Room>>> getAvailableRooms(@RequestBody RoomAvailability roomAvailability, HttpServletRequest request) {
 
-        System.out.println(roomAvailibility.getStartDate().toString());
-        return new ResponseEntity<>(roomRepository.findAll(), HttpStatus.OK);
+        Date start_date = roomAvailability.getStartDate();
+        Date end_date = roomAvailability.getEndDate();
+        List<Integer> roomDetailsList = roomAvailability.getRoomsDetailsList();
+        List<Integer> allNumbers = roomRepository.findAllNumbers();
+
+        List<List<Room>> totalAvailableRooms = new ArrayList<>();
+        ArrayList<Room> availableRooms = new ArrayList<Room>();
+        int number_of_people;
+
+        for(int i=0; i<roomDetailsList.size(); i++){
+            availableRooms.clear();
+            number_of_people = roomDetailsList.get(i);
+            for(int j=0; j<allNumbers.size(); j++){
+                if (roomRepository.checkAvailability(allNumbers.get(j), start_date, end_date) && number_of_people <= roomRepository.checkCapacity(allNumbers.get(j))){
+                    Room room = roomRepository.findByNumber(allNumbers.get(j));
+                    availableRooms.add(room);
+                }
+            }
+            ArrayList<Room> to_add = new ArrayList<Room>(availableRooms);
+            totalAvailableRooms.add(to_add);
+        }
+
+        return new ResponseEntity<>(totalAvailableRooms, HttpStatus.OK);
     }
 }
