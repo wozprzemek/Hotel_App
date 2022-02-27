@@ -7,15 +7,15 @@ import put.poznan.spring_vue.hotel.Hotel;
 import put.poznan.spring_vue.room.Room;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Table(name = "ROOM_IN_RESERVATION")
 public class RoomInReservation {
 
     @Id
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID uuid;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "ROOM_IN_RESERVATION_ID")
+    private int id;
 
     @Column(name = "ROOM_TOTAL_PRICE")
     private float roomTotalPrice;
@@ -52,10 +52,17 @@ public class RoomInReservation {
 
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public float getRoomTotalPrice() {
         return roomTotalPrice;
     }
-
 
     public void setRoomTotalPrice(float roomTotalPrice) {
         this.roomTotalPrice = roomTotalPrice;

@@ -1,4 +1,4 @@
-package put.poznan.spring_vue.entities;
+package put.poznan.spring_vue.OrdersStuff;
 
 import javax.persistence.Column;
 import javax.persistence.Id;

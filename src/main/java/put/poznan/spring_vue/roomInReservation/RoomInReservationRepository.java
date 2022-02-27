@@ -8,6 +8,8 @@ import put.poznan.spring_vue.hotel.Hotel;
 import put.poznan.spring_vue.reservation.Reservation;
 import put.poznan.spring_vue.room.Room;
 
+import java.util.Date;
+
 public interface RoomInReservationRepository extends JpaRepository<RoomInReservation, Long> {
 
     @Query("SELECT rm FROM Room rm WHERE rm.number = :rm_id")
@@ -22,4 +24,8 @@ public interface RoomInReservationRepository extends JpaRepository<RoomInReserva
     @Query("SELECT gs FROM Guest gs WHERE gs.id = :gs_id")
     Guest findGuestByID(@Param("gs_id") int gs_id);
 
+    @Query(value = "CALL SET_FULL_ROOM_PRICE(:start_date, :end_date, :number, :rir_id);", nativeQuery = true)
+    void setFullRoomPrice(@Param("start_date") Date start_date, @Param("end_date") Date end_date, @Param("number") int number, @Param("rir_id") int rir_id);
+
+    RoomInReservation findById(int id);
 }
