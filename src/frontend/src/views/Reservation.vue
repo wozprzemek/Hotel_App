@@ -80,7 +80,6 @@
                     <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>
                 </select>
                 <select name="product" id="product" form=item v-model=selectedProducts[index]>
-                    <!-- <option v-for="category in (items.map(a => a.category))" :key=category>{{ selectedCategories[index] }}</option> -->
                     <option v-for="product in typeof selectedCategories[index] !== 'undefined' ? (items.find(o => o.category === selectedCategories[index]).product) : []" :key=product>{{product}}</option>
                 </select>
                 <input id="qty" type="number" name="qty" min=1 v-model=selectedQty[index]>
@@ -103,116 +102,127 @@
         name: "Reservation",
         components: {
     AgGridVue,
-  },
-  data(){
-      return{
-          popUpWindow: false,
-          orderItems: [
-            {
-                id: 1,
-                category: "",
-                product: "",
-                qty: 0,
-                time: "",
-                subtotal: 0,
-            },
-          ],
-          items: [
-              {
-                  category: "breakfast",
-                  product: ["egg", "pancake"],
-              },
-              {
-                  category: "dinner",
-                  product: ["chicken", "spaghetti"],
-              },
-              {
-                  category: "SPA",
-                  product: ["massage", "sauna"],
-              },
-          ],
-          categories: ["breakfast", "dinner", "SPA"],
-          selectedCategories: [],
-          selectedProducts: [],
-          selectedQty: [],
-          selectedItems: [],
-      }
-  },
-  setup() {
-    let rowData = reactive([]);
-
-    onMounted(() => {
-        fetch('https://www.ag-grid.com/example-assets/small-row-data.json')
-            .then(result => result.json())
-            .then(remoteRowData => rowData.value = remoteRowData);
-
-        fetch("https://api.npoint.io/4954ac84ccd9bb0388a6")
-            .then(res => res.json())
-            .then(data => console.log(data));
-
-        
-    })
-
-    return {
-        columnDefs: [
-            { field: 'make', sortable: true, filter: true, width: 200 },
-            { field: 'model', sortable: true, filter: true, width: 200 },
-            { field: 'price', sortable: true, filter: true, width: 150 }
-      ],
-      rowData
-    };
-  },
-  created() {
-    this.rowSelection = 'single';
-    
-  },
-  methods: {
-    onSelectionChanged() {
-      const selectedRows = this.rowData.getSelectedRows();
-      console.log(selectedRows.length === 1 ? selectedRows[0].reservation_id : '');
     },
-    addOrderItem(){
-        this.orderItems.push({
-            id: this.orderItems[this.orderItems.length-1].id,
-            category: "",
-            product: "",
-            qty: 0,
-            time: "",
-            subtotal: 0,
-        });
-        console.log('categories: ', this.selectedCategories);
-        console.log('products: ', this.selectedProducts);
-    },
-    emptyOrderItems(){
-        this.orderItems = [
-            {
-                id: 1,
-                category: "",
-                product: "",
-                qty: 0,
-                time: "",
-                subtotal: 0,
-            },
-        ]
-    },
-    showOrderWindow(){
-        this.popUpWindow = true;
-        var orderWindow = document.querySelector("#order_window");
-        orderWindow.style.visibility = "visible";
-        console.log(this.selectedCategories);
-    },
-    closeOrderWindow(){
-        if (confirm('Are you sure you want to cancel this order?')) {
-            this.popUpWindow = false;
-            var orderWindow = document.querySelector("#order_window");
-            orderWindow.style.visibility = "hidden";
-            this.emptyOrderItems();
-            this.selectedCategories =  [],
-            this.selectedProducts = [],
-            this.selectedQty = [],
-            this.selectedItems = []
-            console.log('Order canceled');
+    data(){
+        return{
+            popUpWindow: false,
+            orderItems: [
+                {
+                    id: 1,
+                    category: "",
+                    product: "",
+                    qty: 0,
+                    time: "",
+                    subtotal: 0,
+                },
+            ],
+            items: [
+                {
+                    category: "breakfast",
+                    product: ["egg", "pancake"],
+                },
+                {
+                    category: "dinner",
+                    product: ["chicken", "spaghetti"],
+                },
+                {
+                    category: "SPA",
+                    product: ["massage", "sauna"],
+                },
+            ],
+            // categories: ["breakfast", "dinner", "SPA"],
+            selectedCategories: [],
+            selectedProducts: [],
+            selectedQty: [],
+            selectedItems: [],
         }
+    },
+    setup() {
+        let rowData = reactive([]);
+
+        onMounted(() => {
+            fetch('https://www.ag-grid.com/example-assets/small-row-data.json')
+                .then(result => result.json())
+                .then(remoteRowData => rowData.value = remoteRowData);
+
+            fetch("https://api.npoint.io/4954ac84ccd9bb0388a6")
+                .then(res => res.json())
+                .then(data => console.log(data));
+
+            
+        })
+
+        return {
+            columnDefs: [
+                { field: 'make', sortable: true, filter: true, width: 200 },
+                { field: 'model', sortable: true, filter: true, width: 200 },
+                { field: 'price', sortable: true, filter: true, width: 150 }
+        ],
+        rowData
+        };
+    },
+    created() {
+        this.rowSelection = 'single';
+
+        // FETCH ALL CATEGORIES AT LOAD
+        fetch("/api/cat/all", {
+            method: "GET",
+            headers: {'Content-Type': 'application/json'},
+        }).then(response => response.json()).then(data => {
+            this.rooms_returned = data;
+            this.popUpWindow = true;
+            this.roomWindow = true;
+            console.log(this.rooms_returned);
+        });
+        
+    },
+    methods: {
+        onSelectionChanged() {
+        const selectedRows = this.rowData.getSelectedRows();
+        console.log(selectedRows.length === 1 ? selectedRows[0].reservation_id : '');
+        },
+        addOrderItem(){
+            this.orderItems.push({
+                id: this.orderItems[this.orderItems.length-1].id,
+                category: "",
+                product: "",
+                qty: 0,
+                time: "",
+                subtotal: 0,
+            });
+            console.log('categories: ', this.selectedCategories);
+            console.log('products: ', this.selectedProducts);
+        },
+        emptyOrderItems(){
+            this.orderItems = [
+                {
+                    id: 1,
+                    category: "",
+                    product: "",
+                    qty: 0,
+                    time: "",
+                    subtotal: 0,
+                },
+            ]
+        },
+        showOrderWindow(){
+            this.popUpWindow = true;
+            var orderWindow = document.querySelector("#order_window");
+            orderWindow.style.visibility = "visible";
+            console.log(this.selectedCategories);
+        },
+        closeOrderWindow(){
+            if (confirm('Are you sure you want to cancel this order?')) {
+                this.popUpWindow = false;
+                var orderWindow = document.querySelector("#order_window");
+                orderWindow.style.visibility = "hidden";
+                this.emptyOrderItems();
+                this.selectedCategories =  [],
+                this.selectedProducts = [],
+                this.selectedQty = [],
+                this.selectedItems = []
+                console.log('Order canceled');
+            }
     },
   },
 }

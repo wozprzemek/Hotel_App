@@ -49,10 +49,9 @@
             <div id="room_selection_window_room_list">
                 <div class="room_container" :key="room" v-for="room in rooms_returned[selectedConfiguration]">
                     <img class="room_image" src="../assets/background.jpg"/>
-                    <!-- <div class="room_name">Double Premium</div> -->
                     <div class="room_name">{{room.roomName}}</div>
-                    <div class="room_price">$100</div>
-                    <div class="room_description">Description description description description description description description description</div>
+                    <div class="room_price">{{room.pricePerNight}}</div>
+                    <div class="room_description">Single Beds: {{room.singleBeds}} <br> Double Beds: {{room.doubleBeds}}</div>
                     <button class="room_select_button">Select Room</button>
                 </div>
             </div>
@@ -144,6 +143,7 @@
             var yyyy = this.today.getFullYear();
 
             this.today = yyyy + '-' + mm + '-' + dd;
+
         },
         methods: {
             toggleMenu(){
@@ -216,7 +216,7 @@
 
                     this.roomRequestJson.startDate = this.startDate;
                     this.roomRequestJson.endDate = this.endDate;
-                    this.roomRequestJson.roomsDetailsList = [2];
+                    this.roomRequestJson.roomsDetailsList = this.rooms_added;
                     console.log(JSON.stringify(this.roomRequestJson));
 
                     fetch("/api/room/av", {
