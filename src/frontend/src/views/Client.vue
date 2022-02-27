@@ -221,11 +221,12 @@
 
                     fetch("/api/room/av", {
                         method: "POST",
-                        headers: {'Content-Type': 'applicatio
-                    var rooms_to_find = this.rooms_added.filter(function (el) {
-                            return el.no_of_guests != null
-                        });
-                    console.log(JSON.stringify(rooms_to_find)) // THIS IS TO BE SENT AS A REQUEST
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(this.roomRequestJson)
+                    }).then(response => response.json()).then(data => {
+                        this.rooms_returned = data;
+                        this.popUpWindow = true;
+                        this.roomWindow = true;
                         console.log(this.rooms_returned);
                     });
                 }
