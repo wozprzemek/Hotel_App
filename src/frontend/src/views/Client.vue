@@ -47,9 +47,10 @@
                 <div class="room_configuration" :key="room" v-for="(room, index) in rooms_added" @click="selectedConfiguration=index; selectConfiguration()">Room {{index+1}} | {{room}} Guests</div>
             </div>
             <div id="room_selection_window_room_list">
-                <div class="room_container" :key="room" v-for="room.number in rooms_returned[selectedConfiguration]">
+                <div class="room_container" :key="room" v-for="room in rooms_returned[selectedConfiguration]">
                     <img class="room_image" src="../assets/background.jpg"/>
-                    <div class="room_name">Double Premium</div>
+                    <!-- <div class="room_name">Double Premium</div> -->
+                    <div class="room_name">{{room.roomName}}</div>
                     <div class="room_price">$100</div>
                     <div class="room_description">Description description description description description description description description</div>
                     <button class="room_select_button">Select Room</button>
@@ -210,26 +211,24 @@
                 if (this.endDate == ""){
                     this.endDateAlert = true;
                 } else this.endDateAlert = false;
+                
                 if (this.rooms_added.length != 0 & this.startDate != "" & this.endDate != ""){
-                    this.popUpWindow = true;
-                    this.roomWindow = true;
-                    var rooms_to_find = this.rooms_added.filter(function (el) {
-                            return el.no_of_guests != null
-                        });
-                    console.log(JSON.stringify(rooms_to_find)) // THIS IS TO BE SENT AS A REQUEST
+
                     this.roomRequestJson.startDate = this.startDate;
                     this.roomRequestJson.endDate = this.endDate;
                     this.roomRequestJson.roomsDetailsList = [3];
                     console.log(JSON.stringify(this.roomRequestJson));
-                }
 
-            fetch("/api/room/av", {
-                method: "POST",
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(this.roomRequestJson)
-            }).then(response => response.json()).then(data => {
-                this.rooms_returned = data;
-            });
+                    fetch("/api/room/av", {
+                        method: "POST",
+                        headers: {'Content-Type': 'applicatio
+                    var rooms_to_find = this.rooms_added.filter(function (el) {
+                            return el.no_of_guests != null
+                        });
+                    console.log(JSON.stringify(rooms_to_find)) // THIS IS TO BE SENT AS A REQUEST
+                        console.log(this.rooms_returned);
+                    });
+                }
   
             },
             sum(items, prop){
