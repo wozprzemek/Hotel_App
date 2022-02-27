@@ -18,12 +18,12 @@
                 <div class="selection_area" id="rooms">
                     <div class="empty_alert" v-if="roomsAlert">Add at least 1 room</div>
                     <div class="selection_text">Rooms</div>
-                    <button class="selection_box" id="room_selection_box" @click="toggleMenu()">{{this.rooms_added.length}} Rooms | {{sum(this.rooms_added, 'no_of_guests')}} People</button>
+                    <button class="selection_box" id="room_selection_box" @click="toggleMenu()">{{this.rooms_added.length}} Rooms | {{this.rooms_added.reduce((a,b)=>a+b,0)}} People</button>
                     <div id="room_add_menu">
                         <div id="room_add_list">
-                            <div class="add_room_row" :key="room.id" v-for="(room, index) in rooms_added">
+                            <div class="add_room_row" :key="room" v-for="(room, index) in rooms_added">
                                 <div class="room_number">Room {{index+1}}</div>
-                                <input type='text' v-model="room.no_of_guests" class="guest_number_input">
+                                <input type='number' min=1 v-model="rooms_added[index]" class="guest_number_input">
                                 <img class="delete_icon" src="../assets/delete.png" @click="removeRoom(index)"/>
                             </div>
                         </div>
@@ -44,10 +44,10 @@
         </div>
         <div id="room_window" v-if="roomWindow">
             <div id="room_configuration_selection_bar">
-                <div class="room_configuration" :key="room.id" v-for="(room, index) in rooms_added" @click="selectedConfiguration=index; selectConfiguration()">Room {{index+1}} | {{room.no_of_guests}} Guests</div>
+                <div class="room_configuration" :key="room" v-for="(room, index) in rooms_added" @click="selectedConfiguration=index; selectConfiguration()">Room {{index+1}} | {{room}} Guests</div>
             </div>
             <div id="room_selection_window_room_list">
-                <div class="room_container" :key="room.id" v-for="room in rooms_returned[selectedConfiguration]">
+                <div class="room_container" :key="room" v-for="room in rooms_returned[selectedConfiguration]">
                     <img class="room_image" src="../assets/background.jpg"/>
                     <div class="room_name">Double Premium</div>
                     <div class="room_price">$100</div>
@@ -88,7 +88,7 @@
                 </div>
                 <div class="separator" style="grid-area: 3/2/4/4"></div>
                 <div id="room_info">
-                    <div class="reservation_summary_row" :key="room.id" v-for="room in rooms_added">
+                    <div class="reservation_summary_row" :key="room" v-for="room in rooms_added">
                         <div class="reservation_summary_label">Double Premium</div>
                         <div class="reservation_summary_value">$100</div>
                     </div>
@@ -189,10 +189,7 @@
             },
             addRoom(){
                 if(this.rooms_added.length <= 4){
-                this.rooms_added.push({
-                    id: this.rooms_added.length > 0 ? this.rooms_added.at(-1).id + 1 : 1,
-                    no_of_guests: 1,
-                });
+                this.rooms_added.push(1);
                 this.updateAddRoomMenu();
                 }
                 
@@ -237,9 +234,8 @@
                             return el.no_of_guests != null
                         });
                     console.log(JSON.stringify(rooms_to_find)) // THIS IS TO BE SENT AS A REQUEST
-                    
-                    this.roomRequestJson.startDate = "2012-04-23T18:25:43.511Z";
-                    this.roomRequestJson.endDate = "2012-04-23T18:25:43.511Z";
+                    this.roomRequestJson.startDate = this.startDate;
+                    this.roomRequestJson.endDate = this.endDate;
                     this.roomRequestJson.rooms = ["Siema"];
                     console.log(JSON.stringify(this.roomRequestJson));
                 }
