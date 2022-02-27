@@ -17,15 +17,6 @@ public class AdminController {
 
     @PostMapping(path="/add") // Map ONLY POST Requests
     public ResponseEntity<Admin> addNewAdmin (@RequestBody Admin admin) {
-        /*** SAMPLE INPUT
-        {
-            "login":"logincurlnowy",
-            "password":"haslocurlnowe",
-            "firstName":"Jakub",
-            "lastName":"Wrobel",
-            "lastLogin":"2012-04-23T18:25:43.511Z"
-        }
-         ***/
         try{
             Admin _admin = adminRepository.save(admin);
             return new ResponseEntity<>(_admin, HttpStatus.CREATED);
