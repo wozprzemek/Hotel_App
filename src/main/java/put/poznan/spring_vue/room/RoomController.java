@@ -61,6 +61,8 @@ public class RoomController {
         ArrayList<Room> availableRooms = new ArrayList<Room>();
         int number_of_people;
 
+        System.out.println(roomAvailability.toString());
+
         for(int i=0; i<roomDetailsList.size(); i++){
             availableRooms.clear();
             number_of_people = roomDetailsList.get(i);

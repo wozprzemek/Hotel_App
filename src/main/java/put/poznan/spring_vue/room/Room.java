@@ -17,7 +17,7 @@ public class Room {
     private String roomName;
 
     @Column(name = "FLOOR", nullable = false)
-    private String floor;
+    private int floor;
 
     @Column(name = "PRICE_PER_NIGHT", nullable = false)
     private float pricePerNight;
@@ -49,11 +49,11 @@ public class Room {
         this.roomName = roomName;
     }
 
-    public String getFloor() {
+    public int getFloor() {
         return floor;
     }
 
-    public void setFloor(String floor) {
+    public void setFloor(int floor) {
         this.floor = floor;
     }
 

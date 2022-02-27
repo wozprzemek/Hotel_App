@@ -32,4 +32,13 @@ public class RoomAvailability {
     public void setRoomsDetailsList(List<Integer> roomsDetailsList) {
         this.roomsDetailsList = roomsDetailsList;
     }
+
+    @Override
+    public String toString() {
+        return "RoomAvailability{" +
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", roomsDetailsList=" + roomsDetailsList +
+                '}';
+    }
 }
