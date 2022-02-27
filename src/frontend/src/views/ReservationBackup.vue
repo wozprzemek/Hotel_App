@@ -76,14 +76,14 @@
             </div>
             <hr>
             <form class="order_list_row" :key="item.id" v-for="(item, index) in orderItems" name=item>
-                <select name="category" id="category" form=item v-model=orderItems[index].category>
+                <select name="category" id="category" form=item v-model=selectedItems[index].category>
                     <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>
                 </select>
-                <select name="product" id="product" form=item v-model=orderItems[index].product>
-                    <option v-for="product in orderItems[index].category.length != 0 ? (items.find(o => o.category === orderItems[index].category).product) : []" :key=product>{{product}}</option>
+                <select name="product" id="product" form=item v-model=selectedItems[index].product>
+                    <option v-for="product in typeof selectedItems[index].category !== '' ? (items.find(o => o.category === selectedItems[index].category).product) : []" :key=product>{{product}}</option>
                 </select>
-                <input id="qty" type="number" name="qty" min=1 v-model=orderItems[index].qty>
-                <input id="time" type="datetime-local" name="time" v-model=orderItems[index].time>
+                <input id="qty" type="number" name="qty" min=1 v-model=selectedItems[index].qty>
+                <input id="time" type="datetime-local" name="time">
                 <div id="subtotal">$15</div>
             </form>
         </div>
@@ -111,7 +111,7 @@
                     id: 1,
                     category: "",
                     product: "",
-                    qty: 1,
+                    qty: 0,
                     time: "",
                     subtotal: 0,
                 },
@@ -130,16 +130,10 @@
                     product: ["massage", "sauna"],
                 },
             ],
-            itemsFetched: [],
             selectedCategories: [],
             selectedProducts: [],
             selectedQty: [],
-            selectedItems: [{
-                category: "",
-                product: "",
-                qty: 1,
-                time: "",
-            }],
+            selectedItems: [],
         }
     },
     setup() {
@@ -154,6 +148,7 @@
                 .then(res => res.json())
                 .then(data => console.log(data));
 
+            
         })
 
         return {
@@ -167,16 +162,16 @@
     },
     created() {
         this.rowSelection = 'single';
-        console.log(this.orderItems[0].category);
-        console.log(this.items.find(o => o.category === this.orderItems[0].category));
 
         // FETCH ALL CATEGORIES AT LOAD
-        fetch("/api/cat/products", {
+        fetch("/api/cat/all", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         }).then(response => response.json()).then(data => {
-            this.itemsFetched = data;
-            console.log(this.itemsFetched);
+            this.rooms_returned = data;
+            this.popUpWindow = true;
+            this.roomWindow = true;
+            console.log(this.rooms_returned);
         });
         
     },
@@ -190,7 +185,7 @@
                 id: this.orderItems[this.orderItems.length-1].id,
                 category: "",
                 product: "",
-                qty: 1,
+                qty: 0,
                 time: "",
                 subtotal: 0,
             });
