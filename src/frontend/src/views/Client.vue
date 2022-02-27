@@ -51,8 +51,8 @@
                     <img class="room_image" src="../assets/background.jpg"/>
                     <!-- <div class="room_name">Double Premium</div> -->
                     <div class="room_name">{{room.roomName}}</div>
-                    <div class="room_price">$100</div>
-                    <div class="room_description">Description description description description description description description description</div>
+                    <div class="room_price">{{room.pricePerNight}}</div>
+                    <div class="room_description">Single Beds: {{room.singleBeds}} <br> Double Beds: {{room.doubleBeds}}</div>
                     <button class="room_select_button">Select Room</button>
                 </div>
             </div>
@@ -216,7 +216,7 @@
 
                     this.roomRequestJson.startDate = this.startDate;
                     this.roomRequestJson.endDate = this.endDate;
-                    this.roomRequestJson.roomsDetailsList = [3];
+                    this.roomRequestJson.roomsDetailsList = rooms_added;
                     console.log(JSON.stringify(this.roomRequestJson));
 
                     fetch("/api/room/av", {
