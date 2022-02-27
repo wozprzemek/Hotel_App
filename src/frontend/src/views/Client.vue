@@ -216,7 +216,7 @@
 
                     this.roomRequestJson.startDate = this.startDate;
                     this.roomRequestJson.endDate = this.endDate;
-                    this.roomRequestJson.roomsDetailsList = [3];
+                    this.roomRequestJson.roomsDetailsList = [2];
                     console.log(JSON.stringify(this.roomRequestJson));
 
                     fetch("/api/room/av", {

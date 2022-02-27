@@ -1,21 +1,20 @@
-package put.poznan.spring_vue.OrdersStuff;
+package put.poznan.spring_vue.category;
 
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.sql.Date;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import put.poznan.spring_vue.hotel.Hotel;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "CATEGORY")
-public class Category implements Serializable{
+public class Category {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CATEGORY_ID", unique = true)
     private int id;
 
-    @Column(name = "CATEGORY_NAME", unique = true)
+    @Column(name = "CATEGORY_NAME", nullable = false)
     private String categoryName;
 
     @Column(name = "START_SERVING_TIME", nullable = false)
@@ -23,6 +22,14 @@ public class Category implements Serializable{
 
     @Column(name = "END_SERVING_TIME", nullable = false)
     private int endServingTime;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getCategoryName() {
         return categoryName;
