@@ -75,15 +75,16 @@
                 <div id="subtotal">Subtotal</div>
             </div>
             <hr>
-            <form class="order_list_row" :key="item.id" v-for="item in orderItems" name=item>
-                <select name="category" id="category" form=item>
-
+            <form class="order_list_row" :key="item.id" v-for="(item, index) in orderItems" name=item>
+                <select name="category" id="category" form=item v-model=selectedCategories[index]>
+                    <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>
                 </select>
-                <select name="product" id="product" form=item>
-
+                <select name="product" id="product" form=item v-model=selectedProducts[index]>
+                    <!-- <option v-for="category in (items.map(a => a.category))" :key=category>{{ selectedCategories[index] }}</option> -->
+                    <option v-for="product in typeof selectedCategories[index] !== 'undefined' ? (items.find(o => o.category === selectedCategories[index]).product) : []" :key=product>{{product}}</option>
                 </select>
-                <input id="qty" type="text" name="qty">
-                <input id="time" type="text" name="time">
+                <input id="qty" type="number" name="qty" min=1 v-model=selectedQty[index]>
+                <input id="time" type="datetime-local" name="time">
                 <div id="subtotal">$15</div>
             </form>
         </div>
@@ -125,7 +126,16 @@
                   category: "dinner",
                   product: ["chicken", "spaghetti"],
               },
+              {
+                  category: "SPA",
+                  product: ["massage", "sauna"],
+              },
           ],
+          categories: ["breakfast", "dinner", "SPA"],
+          selectedCategories: [],
+          selectedProducts: [],
+          selectedQty: [],
+          selectedItems: [],
       }
   },
   setup() {
@@ -139,7 +149,6 @@
         fetch("https://api.npoint.io/4954ac84ccd9bb0388a6")
             .then(res => res.json())
             .then(data => console.log(data));
-
 
         
     })
@@ -155,55 +164,12 @@
   },
   created() {
     this.rowSelection = 'single';
+    
   },
   methods: {
     onSelectionChanged() {
       const selectedRows = this.rowData.getSelectedRows();
       console.log(selectedRows.length === 1 ? selectedRows[0].reservation_id : '');
-    },
-    fillDropdowns(){
-        // fill the categories dropdown menus
-        var categories = document.querySelectorAll("select#category");
-        categories.forEach(element => {
-            if (element.options.length == 0){
-                for(var i = 0, l = this.items.length; i < l; i++){
-                    var item = this.items[i];
-                    element.options.add(new Option(item.category));
-                }  
-            }
-        });
-        // fill the products dropdown menus
-        var products = document.querySelectorAll("select#product");
-        products.forEach(element => {
-            var categoryValue = element.parentNode.querySelector("#category").value;
-            console.log(categoryValue);
-            
-            let obj = this.items.find(o => o.category === categoryValue);
-            obj.product.forEach(prod => {
-                element.options.add(new Option(prod));
-            });
-        });
-
-    },
-    updateDropdowns(){
-        console.log('aa');
-        // var categoryElement = selectedObj.parentNode.querySelector("#category");
-        // var categoryValue = categoryElement.value;
-        // console.log(categoryValue);
-        
-        // let obj = this.items.find(o => o.category === categoryValue);
-        // obj.product.forEach(prod => {
-        //     categoryElement.options.add(new Option(prod));
-        // });
-        // var categories = document.querySelectorAll("select#category");
-        // categories.forEach(element => {
-        //     if (element.options.length == 0){
-        //         for(var i = 0, l = this.items.length; i < l; i++){
-        //             var item = this.items[i];
-        //             element.options.add(new Option(item.category));
-        //         }  
-        //     }
-        // });
     },
     addOrderItem(){
         this.orderItems.push({
@@ -214,7 +180,8 @@
             time: "",
             subtotal: 0,
         });
-        this.fillDropdowns();
+        console.log('categories: ', this.selectedCategories);
+        console.log('products: ', this.selectedProducts);
     },
     emptyOrderItems(){
         this.orderItems = [
@@ -232,12 +199,20 @@
         this.popUpWindow = true;
         var orderWindow = document.querySelector("#order_window");
         orderWindow.style.visibility = "visible";
-        this.fillDropdowns();
+        console.log(this.selectedCategories);
     },
     closeOrderWindow(){
-        this.popUpWindow = false;
-        var orderWindow = document.querySelector("#order_window");
-        orderWindow.style.visibility = "hidden";
+        if (confirm('Are you sure you want to cancel this order?')) {
+            this.popUpWindow = false;
+            var orderWindow = document.querySelector("#order_window");
+            orderWindow.style.visibility = "hidden";
+            this.emptyOrderItems();
+            this.selectedCategories =  [],
+            this.selectedProducts = [],
+            this.selectedQty = [],
+            this.selectedItems = []
+            console.log('Order canceled');
+        }
     },
   },
 }

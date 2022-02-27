@@ -22,9 +22,9 @@
                     <div id="room_add_menu">
                         <div id="room_add_list">
                             <div class="add_room_row" :key="room.id" v-for="(room, index) in rooms_added">
-                            <div class="room_number">Room {{index+1}}</div>
-                            <input type='text' v-model="room.no_of_guests" class="guest_number_input">
-                            <img class="delete_icon" src="../assets/delete.png" @click="removeRoom(index)"/>
+                                <div class="room_number">Room {{index+1}}</div>
+                                <input type='text' v-model="room.no_of_guests" class="guest_number_input">
+                                <img class="delete_icon" src="../assets/delete.png" @click="removeRoom(index)"/>
                             </div>
                         </div>
                         <button id="add_room_button" @click="addRoom()">Add Room</button>
