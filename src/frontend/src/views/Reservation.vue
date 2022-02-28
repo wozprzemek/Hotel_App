@@ -80,7 +80,7 @@
                     <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>
                 </select>
                 <select name="product" id="product" form=item v-model=orderItems[index].product>
-                    <option v-for="product in orderItems[index].category.length != 0 ? (items.find(o => o.category === orderItems[index].category).product) : []" :key=product>{{product}}</option>
+                    <option v-for="product in orderItems[index].category.length != 0 ? (this.items.find(o => o.category === orderItems[index].category).products.map(a => a.productName)) : []" :key=product>{{product}}</option>
                 </select>
                 <input id="qty" type="number" name="qty" min=1 v-model=orderItems[index].qty>
                 <input id="time" type="datetime-local" name="time" v-model=orderItems[index].time>
@@ -116,20 +116,7 @@
                     subtotal: 0,
                 },
             ],
-            items: [
-                {
-                    category: "breakfast",
-                    product: ["egg", "pancake"],
-                },
-                {
-                    category: "dinner",
-                    product: ["chicken", "spaghetti"],
-                },
-                {
-                    category: "SPA",
-                    product: ["massage", "sauna"],
-                },
-            ],
+            items: [],
             itemsFetched: [],
             selectedCategories: [],
             selectedProducts: [],
@@ -175,8 +162,8 @@
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         }).then(response => response.json()).then(data => {
-            this.itemsFetched = data;
-            console.log(this.itemsFetched);
+            this.items= data;
+            console.log(this.items);
         });
         
     },
@@ -214,7 +201,6 @@
             this.popUpWindow = true;
             var orderWindow = document.querySelector("#order_window");
             orderWindow.style.visibility = "visible";
-            console.log(this.selectedCategories);
         },
         closeOrderWindow(){
             if (confirm('Are you sure you want to cancel this order?')) {
