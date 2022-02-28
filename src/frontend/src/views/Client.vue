@@ -50,7 +50,7 @@
                 <div class="room_container" :key="room" v-for="room in availableRooms(selectedConfiguration)">
                     <img class="room_image" src="../assets/background.jpg"/>
                     <div class="room_name">{{room.roomName}}</div>
-                    <div class="room_price">{{room.pricePerNight}}</div>
+                    <div class="room_price">${{room.pricePerNight}}</div>
                     <div class="room_description">Single Beds: {{room.singleBeds}} <br> Double Beds: {{room.doubleBeds}}</div>
                     <button class="room_select_button" @click="selectRoom(room)">Select Room</button>
                 </div>
@@ -266,16 +266,24 @@
             selectRoom(room){
                 if (!this.rooms_selected[this.selectedConfiguration].includes(room)){
                     this.rooms_selected[this.selectedConfiguration].push(room);
-                    room.available = false;
-                    for (var configuration in this.rooms_added){
-                        for (var room_in_configuration in this.rooms_added[configuration]){
-                            console.log(configuration, room_in_configuration);
+                    for (var configuration in this.rooms_returned){
+                        for (var room_in_configuration in this.rooms_returned[configuration]){
+                            if (this.compare_rooms(this.rooms_returned[configuration][room_in_configuration], room) && configuration != this.selectedConfiguration){
+                                this.rooms_returned[configuration][room_in_configuration].available = false;
+                            }
                         }
                     }
                 }
                 else{
                     this.rooms_selected[this.selectedConfiguration].splice(this.rooms_selected[this.selectedConfiguration].indexOf(room), 1);
-                    room.available = true;
+                    for (configuration in this.rooms_returned){
+                        for (room_in_configuration in this.rooms_returned[configuration]){
+                            if (this.compare_rooms(this.rooms_returned[configuration][room_in_configuration], room)){
+                                this.rooms_returned[configuration][room_in_configuration].available = true;
+                                console.log(this.rooms_returned[configuration][room_in_configuration]);
+                            }
+                        }
+                    }
                 }
                 console.log(this.rooms_selected);
             },
@@ -285,7 +293,15 @@
                     return el.available == true;
                 });
                 return result;
-            }
+            },
+            compare_rooms(a, b) {
+                return a.doubleBeds == b.doubleBeds && 
+                a.floor == b.floor &&
+                a.number == b.number &&
+                a.pricePerNight == b.pricePerNight &&
+                a.roomName == b.roomName &&
+                a.singleBeds == b.singleBeds
+            },
 
         }
     }
