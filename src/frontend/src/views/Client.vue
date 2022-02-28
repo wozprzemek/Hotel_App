@@ -47,12 +47,12 @@
                 <div class="room_configuration" :key="room" v-for="(room, index) in rooms_added" @click="selectedConfiguration=index; selectConfiguration()">Room {{index+1}} | {{room}} Guests</div>
             </div>
             <div id="room_selection_window_room_list">
-                <div class="room_container" :key="room" v-for="room in rooms_returned[selectedConfiguration]">
+                <div class="room_container" :key="room" v-for="room in availableRooms(selectedConfiguration)">
                     <img class="room_image" src="../assets/background.jpg"/>
                     <div class="room_name">{{room.roomName}}</div>
                     <div class="room_price">{{room.pricePerNight}}</div>
                     <div class="room_description">Single Beds: {{room.singleBeds}} <br> Double Beds: {{room.doubleBeds}}</div>
-                    <button class="room_select_button">Select Room</button>
+                    <button class="room_select_button" @click="selectRoom(room)">Select Room</button>
                 </div>
             </div>
         </div>
@@ -127,15 +127,12 @@
             }
             
         },
+
         created(){
             this.rooms_added,
             this.rooms_returned,
-            this.rooms_requested = [
-
-            ];
-            this.rooms_selected = [
-
-            ];
+            this.rooms_requested = [];
+            this.rooms_selected = [];
             this.roomRequestJson = {};
             console.log(this.rooms_selected);
             var dd = String(this.today.getDate()).padStart(2, '0');
@@ -213,7 +210,10 @@
                 } else this.endDateAlert = false;
                 
                 if (this.rooms_added.length != 0 & this.startDate != "" & this.endDate != ""){
-
+                    // fill the array with empty arrays for storing selected rooms for each configuration
+                    for (var i = 0; i<this.rooms_added.length; i++){
+                        this.rooms_selected.push([]);
+                    }
                     this.roomRequestJson.startDate = this.startDate;
                     this.roomRequestJson.endDate = this.endDate;
                     this.roomRequestJson.roomsDetailsList = this.rooms_added;
@@ -225,26 +225,18 @@
                         body: JSON.stringify(this.roomRequestJson)
                     }).then(response => response.json()).then(data => {
                         this.rooms_returned = data;
+
+                        //make all rooms initially visible for selection
+                        for (var configuration in this.rooms_returned){
+                            for (var room in this.rooms_returned[configuration]){
+                                this.rooms_returned[configuration][room].available = true;
+                            }
+                        }
                         this.popUpWindow = true;
                         this.roomWindow = true;
-                        console.log(this.rooms_returned);
                     });
                 }
-  
             },
-            sum(items, prop){
-            return items.reduce( function(a, b){
-                if(b[prop] != null){
-                    return a + parseInt(b[prop]);
-                }
-                else{
-                    return a
-                }
-
-            }, 0);
-
-            },
-
             addDays(date, days) {
                 var result = new Date(date);
                 result.setDate(result.getDate() + days);
@@ -260,7 +252,7 @@
                 }
             },
             continueReservation(){
-                if(this.roomWindow){
+                if(this.roomWindow && this.rooms_selected.length == this.rooms_added.length){
                     this.roomWindow = false;
                     console.log(this.personalInfoWindow);
                     this.personalInfoWindow = true;
@@ -271,6 +263,29 @@
                     console.log('Reservation succesful!');
                 }
             },
+            selectRoom(room){
+                if (!this.rooms_selected[this.selectedConfiguration].includes(room)){
+                    this.rooms_selected[this.selectedConfiguration].push(room);
+                    room.available = false;
+                    for (var configuration in this.rooms_added){
+                        for (var room_in_configuration in this.rooms_added[configuration]){
+                            console.log(configuration, room_in_configuration);
+                        }
+                    }
+                }
+                else{
+                    this.rooms_selected[this.selectedConfiguration].splice(this.rooms_selected[this.selectedConfiguration].indexOf(room), 1);
+                    room.available = true;
+                }
+                console.log(this.rooms_selected);
+            },
+            availableRooms(selectedConfiguration){
+                console.log(this.rooms_returned);
+                var result = this.rooms_returned[selectedConfiguration].filter(function (el) {
+                    return el.available == true;
+                });
+                return result;
+            }
 
         }
     }
