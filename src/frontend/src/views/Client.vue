@@ -189,7 +189,7 @@
                 var index = (this.selectedConfiguration + 1).toString();
                 console.log(index);
                 const all = document.querySelectorAll('.room_configuration');
-                // Change the text of multiple elements with a loop
+                // Change the style of multiple elements with a loop
                 all.forEach(element => {
                     element.style.background = "white";
                     element.style.color = "#0A141F";

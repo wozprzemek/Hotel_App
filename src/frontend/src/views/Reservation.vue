@@ -75,11 +75,11 @@
                 <div id="subtotal">Subtotal</div>
             </div>
             <hr>
-            <form class="order_list_row" :key="item.id" v-for="(item, index) in orderItems" name=item>
-                <select name="category" id="category" form=item v-model=orderItems[index].category>
+            <form class="order_list_row" :key="item.id" v-for="(item, index) in orderItems" name=index>
+                <select name="category" id="category" v-model=orderItems[index].category>
                     <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>
                 </select>
-                <select name="product" id="product" form=item v-model=orderItems[index].product>
+                <select name="product" id="product" v-model=orderItems[index].product>
                     <option v-for="product in orderItems[index].category.length != 0 ? (this.items.find(o => o.category === orderItems[index].category).products.map(a => a.productName)) : []" :key=product>{{product}}</option>
                 </select>
                 <input id="qty" type="number" name="qty" min=1 v-model=orderItems[index].qty>
@@ -89,7 +89,7 @@
         </div>
         <div id="order_window_footer">
             <button class="order_window_add_item_button" @click="addOrderItem()">Add item</button>
-            <button class="order_window_confirm_order_button">Confirm order</button>
+            <button class="order_window_confirm_order_button" @click="confirmOrder()">Confirm order</button>
         </div>
     </div>
 
@@ -116,7 +116,48 @@
                     subtotal: 0,
                 },
             ],
-            items: [],
+            items: [
+                {
+                    "category": "BREAKFAST",
+                    "products": [
+                        {
+                            "id": 1,
+                            "productName": "SCRAMBLED EGGS",
+                            "productPrice": 10.0
+                        },
+                        {
+                            "id": 4,
+                            "productName": "TOAST",
+                            "productPrice": 15.0
+                        }
+                    ]
+                },
+                {
+                    "category": "LUNCH",
+                    "products": [
+                        {
+                            "id": 2,
+                            "productName": "SALMON",
+                            "productPrice": 20.0
+                        }
+                    ]
+                },
+                {
+                    "category": "DINNER",
+                    "products": [
+                        {
+                            "id": 3,
+                            "productName": "HARNAS",
+                            "productPrice": 2.0
+                        },
+                        {
+                            "id": 5,
+                            "productName": "WODECZKA",
+                            "productPrice": 25.0
+                        }
+                    ]
+                }
+            ],
             itemsFetched: [],
             selectedCategories: [],
             selectedProducts: [],
@@ -162,8 +203,8 @@
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         }).then(response => response.json()).then(data => {
-            this.items= data;
-            console.log(this.items);
+            this.itemsFetched = data;
+            console.log(this.itemsFetched);
         });
         
     },
@@ -214,7 +255,29 @@
                 this.selectedItems = []
                 console.log('Order canceled');
             }
-    },
+        },
+        confirmOrder(){
+            const all = document.querySelectorAll('form.order_list_row');
+                // Change the text of multiple elements with a loop
+                var orderJson = [];
+                all.forEach(element => {
+                    var formData = new FormData(element);
+                    var orderRow = {};
+                    formData.forEach((value, key) => orderRow[key] = value);
+                    orderJson.push(orderRow);
+            });
+            console.log(JSON.stringify(orderJson));
+            fetch("/api/order/add", {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(orderJson)
+            }).then(response => response.json()).then(data => {
+                this.rooms_returned = data;
+                this.popUpWindow = true;
+                this.roomWindow = true;
+                console.log(this.rooms_returned);
+            });
+        },
   },
 }
 </script>
