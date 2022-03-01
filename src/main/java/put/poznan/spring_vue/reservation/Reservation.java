@@ -3,9 +3,11 @@ package put.poznan.spring_vue.reservation;
 import put.poznan.spring_vue.address.Address;
 import put.poznan.spring_vue.guest.Guest;
 import put.poznan.spring_vue.hotel.Hotel;
+import put.poznan.spring_vue.paymentMethod.PaymentMethod;
+import put.poznan.spring_vue.reservationState.ReservationState;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "RESERVATION")
@@ -38,7 +40,31 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name="HOTEL_ADDRESS_ID")
-    private Address address;
+    private Address hotelAddress;
+
+    @ManyToOne
+    @JoinColumn(name="RESERVATION_STATE_ID")
+    private ReservationState reservationState;
+
+    @ManyToOne
+    @JoinColumn(name="PAYMENT_METHOD_ID")
+    private PaymentMethod paymentMethod;
+
+    public Reservation(int numberOfGuests, float price, Date startDate, Date endDate, Guest guest, Hotel hotel, Address hotelAddress, ReservationState reservationState, PaymentMethod paymentMethod) {
+        this.numberOfGuests = numberOfGuests;
+        this.price = price;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.guest = guest;
+        this.hotel = hotel;
+        this.hotelAddress = hotelAddress;
+        this.reservationState = reservationState;
+        this.paymentMethod = paymentMethod;
+    }
+
+    public Reservation() {
+
+    }
 
     public int getId() {
         return id;
@@ -96,11 +122,11 @@ public class Reservation {
         this.hotel = hotel;
     }
 
-    public Address getAddress() {
-        return address;
+    public Address getHotelAddress() {
+        return hotelAddress;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setHotelAddress(Address hotelAddress) {
+        this.hotelAddress = hotelAddress;
     }
 }
