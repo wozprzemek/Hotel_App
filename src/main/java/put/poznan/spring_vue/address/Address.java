@@ -1,5 +1,6 @@
 package put.poznan.spring_vue.address;
 
+import com.carrotsearch.hppc.HashOrderMixing;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import put.poznan.spring_vue.hotel.Hotel;
 import put.poznan.spring_vue.room.Room;
@@ -15,6 +16,7 @@ import java.util.List;
 public class Address implements Serializable{
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ADDRESS_ID", unique = true)
     private int id;
 
@@ -22,14 +24,26 @@ public class Address implements Serializable{
     private String streetName;
 
     @Column(name = "BUILDING_NUMBER", nullable = false)
-    private String firstName;
+    private String buildingNumber;
 
     @Column(name = "APARTMENT_NUMBER")
-    private String lastName;
+    private String apartmentNumber;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "address")
-    private List<Hotel> hotels;
+    @ManyToOne
+    @JoinColumn(name="CITY_ID")
+    private City city;
+
+    public Address(String streetName, String buildingNumber, String apartmentNumber, City city) {
+        this.streetName = streetName;
+        this.buildingNumber = buildingNumber;
+        this.apartmentNumber = apartmentNumber;
+        this.city = city;
+    }
+
+    public Address() {
+
+    }
 
     public int getId() {
         return id;
@@ -47,27 +61,19 @@ public class Address implements Serializable{
         this.streetName = streetName;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getBuildingNumber() {
+        return buildingNumber;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setBuildingNumber(String buildingNumber) {
+        this.buildingNumber = buildingNumber;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getApartmentNumber() {
+        return apartmentNumber;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public List<Hotel> getHotels() {
-        return hotels;
-    }
-
-    public void setHotels(List<Hotel> hotels) {
-        this.hotels = hotels;
+    public void setApartmentNumber(String apartmentNumber) {
+        this.apartmentNumber = apartmentNumber;
     }
 }

@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class RoomInReservation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ROOM_IN_RESERVATION_ID")
     private int id;
 

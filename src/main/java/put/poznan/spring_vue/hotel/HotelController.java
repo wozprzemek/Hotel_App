@@ -21,7 +21,6 @@ public class HotelController {
     public ResponseEntity<Hotel> addNewHotel (@RequestBody Hotel hotel, @RequestParam(name = "addressID") int addressID) {
         try{
             Address address = hotelRepository.findAddressByID(addressID);
-            System.out.println(address.getFirstName());
             hotel.setAddress(address);
             Hotel _hotel = hotelRepository.save(hotel);
             return new ResponseEntity<>(_hotel, HttpStatus.CREATED);

@@ -5,7 +5,7 @@ import put.poznan.spring_vue.address.Address;
 import put.poznan.spring_vue.room.Room;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 
@@ -33,6 +33,18 @@ public class Guest implements Serializable{
     @ManyToOne
     @JoinColumn(name="ADDRESS_ID")
     private Address address;;
+
+    public Guest(String firstName, String lastName, String telephone, Date dateOfBirth, Address address) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.telephone = telephone;
+        this.dateOfBirth = dateOfBirth;
+        this.address = address;
+    }
+
+    public Guest() {
+
+    }
 
     public int getId() {
         return id;

@@ -19,7 +19,7 @@ public class RoomInReservationController {
     private RoomInReservationRepository roomInReservationRepository;
 
     @PostMapping(path="/add") // Map ONLY POST Requests
-    public ResponseEntity<List<RoomInReservation>> addNewRoomInReservation (@RequestBody RoomInReservationDetails roomInReservationDetails) {
+    public ResponseEntity<List<Room>> addNewRoomInReservation (@RequestBody RoomInReservationDetails roomInReservationDetails) {
         try{
             int reservationID = roomInReservationDetails.getReservationID();
             Reservation reservation = roomInReservationRepository.findReservationByID(reservationID);
@@ -28,7 +28,7 @@ public class RoomInReservationController {
             List<Integer> rooms = roomInReservationDetails.getRooms();
 
             RoomInReservation roomInReservation;
-            List<RoomInReservation> toReturn = new ArrayList<>();
+            List<Room> toReturn = new ArrayList<>();
 
             for(int i=0; i<rooms.size(); i++){
                 Room roomToAdd = roomInReservationRepository.findRoomByNumber(rooms.get(i));
@@ -36,7 +36,7 @@ public class RoomInReservationController {
                 RoomInReservation _roomInReservation = roomInReservationRepository.save(roomInReservation);
                 roomInReservationRepository.setFullRoomPrice(reservation.getStartDate(), reservation.getEndDate(), rooms.get(i), _roomInReservation.getId());
                 roomInReservation.setRoomTotalPrice(roomInReservationRepository.findById(_roomInReservation.getId()).getRoomTotalPrice());
-                toReturn.add(roomInReservation);
+                toReturn.add(roomInReservation.getRoom());
             }
 
             return new ResponseEntity<>(toReturn, HttpStatus.CREATED);

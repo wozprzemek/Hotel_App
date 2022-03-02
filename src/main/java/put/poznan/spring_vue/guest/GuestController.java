@@ -18,12 +18,12 @@ public class GuestController {
     private GuestRepository guestRepository;
 
     @PostMapping(path="/add") // Map ONLY POST Requests
-    public ResponseEntity<Guest> addNewGuest (@RequestBody Guest guest, @RequestParam(name = "addressID") int addressID) {
+    public ResponseEntity<Integer> addNewGuest (@RequestBody GuestDetails guestDetails) {
         try{
-            Address address = guestRepository.findAddressByID(addressID);
-            guest.setAddress(address);
-            Guest _guest = guestRepository.save(guest);
-            return new ResponseEntity<>(_guest, HttpStatus.CREATED);
+            Address address = guestRepository.findAddressByID(guestDetails.getAddressID());
+            Guest _guest = new Guest(guestDetails.getFirstName(), guestDetails.getLastName(), guestDetails.getTelephone(), guestDetails.getDateOfBirth(), address);
+            _guest = guestRepository.save(_guest);
+            return new ResponseEntity<>(_guest.getId(), HttpStatus.CREATED);
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

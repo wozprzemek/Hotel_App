@@ -24,22 +24,23 @@ public class ReservationController {
     private ReservationRepository reservationRepository;
 
     @PostMapping(path="/add")
-    public ResponseEntity<Reservation> addNewReservation (@RequestBody ReservationDetails reservationDetails) {
+    public ResponseEntity<Integer> addNewReservation (@RequestBody ReservationDetails reservationDetails) {
         try{
             int numberOfGuests = reservationDetails.getNumberOfGuests();
             float price = 0;
             Date startDate = reservationDetails.getStartDate();
             Date endDate = reservationDetails.getEndDate();
             Guest guest = reservationRepository.findGuestByID(reservationDetails.getGuestID());
-            Hotel hotel = reservationRepository.findHotelByID(reservationDetails.getHotelID());
+            Hotel hotel = reservationRepository.findHotelByID(1);
             Address hotelAddress = hotel.getAddress();
             ReservationState reservationState = reservationRepository.findReservationStateByID(1);
             PaymentMethod paymentMethod = reservationRepository.findPaymentMethodByName(reservationDetails.getPaymentMethodName());
 
             Reservation _reservation = new Reservation(numberOfGuests, price, startDate, endDate, guest, hotel, hotelAddress, reservationState, paymentMethod);
             reservationRepository.save(_reservation);
-            return new ResponseEntity<>(_reservation, HttpStatus.CREATED);
+            return new ResponseEntity<>(_reservation.getId(), HttpStatus.CREATED);
         } catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

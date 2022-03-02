@@ -7,7 +7,6 @@ public class ReservationDetails {
     private Date startDate;
     private Date endDate;
     private int guestID;
-    private int hotelID;
     private String paymentMethodName;
 
     public int getNumberOfGuests() {
@@ -40,14 +39,6 @@ public class ReservationDetails {
 
     public void setGuestID(int guestID) {
         this.guestID = guestID;
-    }
-
-    public int getHotelID() {
-        return hotelID;
-    }
-
-    public void setHotelID(int hotelID) {
-        this.hotelID = hotelID;
     }
 
     public String getPaymentMethodName() {
