@@ -11,6 +11,7 @@
                   class="ag-theme-alpine" id="table"
                   :columnDefs="columnDefs"
                   :rowData="rowData.value"
+                  @rowClicked="onRowClicked"
               >
               </ag-grid-vue>
           </div>
@@ -112,6 +113,10 @@ export default {
       const selectedRows = this.rowData.getSelectedRows();
       console.log(selectedRows.length === 1 ? selectedRows[0].reservation_id : '');
     },
+    onRowClicked(params) {
+      console.log(params);
+      console.log(params.node.data);
+    }
   },
 };
 </script>

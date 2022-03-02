@@ -52,13 +52,14 @@
                     <div class="room_name">{{room.roomName}}</div>
                     <div class="room_price">${{room.pricePerNight}}</div>
                     <div class="room_description">Single Beds: {{room.singleBeds}} <br> Double Beds: {{room.doubleBeds}}</div>
-                    <button class="room_select_button" @click="selectRoom(room)">Select Room</button>
+                    <button class="room_select_button_active" @click="selectRoom(room, $event)" v-if="isRoomSelected(room)">Selected</button>
+                    <button class="room_select_button_inactive" @click="selectRoom(room, $event)" v-else>Select Room</button>
                 </div>
             </div>
         </div>
 
         <div id="personal_info_window" v-if="personalInfoWindow">
-            <form id="form">
+            <form id="reservation_form" name="reservation_form">
                 <label for="fname">First name</label><br>
                 <input type="text" class="form_input" name="fname"><br>
                 <label for="lname">Last name</label><br>
@@ -73,6 +74,12 @@
                 <input type="text" class="form_input" name="street"><br>
                 <label for="telephone">Telephone</label><br>
                 <input type="text" class="form_input" name="telephone"><br>
+                <label for="payment">Payment Method</label><br>
+                <select name="payment" class="form_input">
+                    <option>CASH</option>
+                    <option>CARD</option>
+                    <!-- <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>> -->
+                </select>
             </form> 
             <div id="reservation_summary">
                 <div id="reservation_summary_title">Reservation Summary</div>
@@ -124,6 +131,8 @@
                 selectedConfiguration: 0,
                 rooms_added: [],
                 today: new Date(),
+                addresses: [{}],  // array of countries + [cities] objects
+                paymentMethods: [],
             }
             
         },
@@ -252,40 +261,69 @@
                 }
             },
             continueReservation(){
-                if(this.roomWindow && this.rooms_selected.length == this.rooms_added.length){
+                if(this.roomWindow && this.allRoomsSelected()){
                     this.roomWindow = false;
-                    console.log(this.personalInfoWindow);
                     this.personalInfoWindow = true;
-                    console.log(this.personalInfoWindow);
-                    console.log(this.selectedConfiguration);
                 }
                 else if (this.personalInfoWindow){
+                    this.confirmReservation();
                     console.log('Reservation succesful!');
                 }
             },
-            selectRoom(room){
+            isRoomSelected(room){
                 if (!this.rooms_selected[this.selectedConfiguration].includes(room)){
-                    this.rooms_selected[this.selectedConfiguration].push(room);
-                    for (var configuration in this.rooms_returned){
-                        for (var room_in_configuration in this.rooms_returned[configuration]){
-                            if (this.compare_rooms(this.rooms_returned[configuration][room_in_configuration], room) && configuration != this.selectedConfiguration){
-                                this.rooms_returned[configuration][room_in_configuration].available = false;
+                    return false;
+                }
+                else{
+                    return true;
+                }
+            },
+            allRoomsSelected(){
+                if(this.roomWindow && this.rooms_selected.filter(el => el.length != 0).length == this.rooms_added.length){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            },
+            selectRoom(room, event){
+                if (!this.isRoomSelected(room)){
+                    if (this.rooms_selected[this.selectedConfiguration].length == 0){
+                        event.target.style.background = "#6A8EAE";
+                        event.target.textContent = "Selected";
+                        this.rooms_selected[this.selectedConfiguration].push(room);
+                        for (var configuration in this.rooms_returned){
+                            for (var room_in_configuration in this.rooms_returned[configuration]){
+                                if (this.compareRooms(this.rooms_returned[configuration][room_in_configuration], room) && configuration != this.selectedConfiguration){
+                                    this.rooms_returned[configuration][room_in_configuration].available = false;
+                                }
                             }
                         }
                     }
                 }
                 else{
+                    event.target.style.background = "#28323F";
+                    event.target.textContent = "Select Room";
                     this.rooms_selected[this.selectedConfiguration].splice(this.rooms_selected[this.selectedConfiguration].indexOf(room), 1);
                     for (configuration in this.rooms_returned){
                         for (room_in_configuration in this.rooms_returned[configuration]){
-                            if (this.compare_rooms(this.rooms_returned[configuration][room_in_configuration], room)){
+                            if (this.compareRooms(this.rooms_returned[configuration][room_in_configuration], room)){
                                 this.rooms_returned[configuration][room_in_configuration].available = true;
                                 console.log(this.rooms_returned[configuration][room_in_configuration]);
                             }
                         }
                     }
                 }
-                console.log(this.rooms_selected);
+                var button = document.querySelector(".room_confirm_button");
+                if(this.allRoomsSelected()){
+                    console.log(button);
+                    button.style.background = "#28323F";
+                    button.style.cursor = "pointer";
+                }
+                else{
+                    button.style.background = "#bfc1c4";
+                    button.style.cursor = "not-allowed";
+                }
             },
             availableRooms(selectedConfiguration){
                 console.log(this.rooms_returned);
@@ -294,7 +332,7 @@
                 });
                 return result;
             },
-            compare_rooms(a, b) {
+            compareRooms(a, b) {
                 return a.doubleBeds == b.doubleBeds && 
                 a.floor == b.floor &&
                 a.number == b.number &&
@@ -302,7 +340,87 @@
                 a.roomName == b.roomName &&
                 a.singleBeds == b.singleBeds
             },
+            confirmReservation(){
+                // convert personal data form into JSON
+                var formData = new FormData(document.querySelector("#reservation_form"));
+                var object = {};
+                formData.forEach((value, key) => object[key] = value);
 
+                // create an address JSON and POST
+                var addressObject = {
+                    country: object.country,
+                    city: object.city,
+                    street: object.street
+                };
+                
+                var addressId;
+
+                fetch("/api/address/add", {
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(addressObject)
+                }).then(response => response.json()).then(data => {
+                    addressId = data;
+                });
+
+                // create a guest JSON and POST
+                var guestObject = {
+                    firstName: object.fname,
+                    lastName: object.lname,
+                    dateOfBirth: object.birth,
+                    telephone: object.telephone,
+                    addressId: addressId
+                };
+
+                var guestId;
+
+                fetch("/api/guest/add", {
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(guestObject)
+                }).then(response => response.json()).then(data => {
+                    guestId = data;
+                });
+
+                // create a reservation JSON and POST
+
+                var numberOfGuests = this.rooms_added.reduce((a,b)=>a+b,0);
+                var startDate = this.startDate;
+                var endDate = this.endDate;
+
+                var reservationObject = {
+                    numberOfGuests: numberOfGuests,
+                    startDate: startDate,
+                    endDate: endDate,
+                    guestId: guestId,
+                    paymentMethodName: object.payment
+                };
+                
+                var reservationId;
+
+                fetch("/api/rsv/add", {
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(reservationObject)
+                }).then(response => response.json()).then(data => {
+                    reservationId = data;
+                });
+
+                // create a room list JSON and POST
+
+                var roomListObject = {
+                    reservationId: reservationId,
+                    rooms: [1,2]
+                };
+
+                fetch("/api/roominrsv/add", {
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(roomListObject)
+                }).then(response => response.json()).then(data => {
+                    console.log(data);
+                });
+            },
         }
     }
 </script>
@@ -641,11 +759,27 @@
         margin-top: 20px;
     }
     
-    .room_select_button{
+    .room_select_button_inactive{
         grid-area: 3/3/4/4;
         width: 200px;
         height: 40px;
         background: #28323F;
+        color: white;
+        font-size: 16px;
+        align-self: center;
+        justify-self: end;
+        /* border-radius: 5px; */
+        border: none;
+	    padding: 0;
+        cursor: pointer;
+        margin-right: 20px;
+    }
+
+    .room_select_button_active{
+        grid-area: 3/3/4/4;
+        width: 200px;
+        height: 40px;
+        background: #6A8EAE;
         color: white;
         font-size: 16px;
         align-self: center;
@@ -672,7 +806,7 @@
         grid-area: 3/2/4/3;
         width: 200px;
         height: 40px;
-        background: #28323F;
+        background: #bfc1c4;
         color: white;
         font-size: 16px;
         align-self: center;
@@ -680,9 +814,10 @@
         /* border-radius: 5px; */
         border: none;
 	    padding: 0;
-        cursor: pointer;
+        cursor: not-allowed;
         margin-right: 20px;
     }
+
 
     #room_window{
         grid-area: 2/2/3/5;
@@ -701,7 +836,7 @@
 
     /*  FORM  */
 
-    #form{
+    #reservation_form{
         grid-area: 2/2/3/3;
         text-align: start;
         align-self: center;

@@ -266,17 +266,23 @@
                     formData.forEach((value, key) => orderRow[key] = value);
                     orderJson.push(orderRow);
             });
-            console.log(JSON.stringify(orderJson));
-            fetch("/api/order/add", {
-                method: "POST",
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(orderJson)
-            }).then(response => response.json()).then(data => {
-                this.rooms_returned = data;
-                this.popUpWindow = true;
-                this.roomWindow = true;
-                console.log(this.rooms_returned);
-            });
+            console.log(orderJson);
+            console.log(orderJson.filter(el => Object.keys(el).length != 4));
+            console.log(orderJson.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length); // number of not-full order rows; must be 0 to confirm order
+
+            if (orderJson.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length === 0){
+                fetch("/api/order/add", {
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(orderJson)
+                }).then(response => response.json()).then(data => {
+                    console.log(data);
+                });
+            }
+            else{
+                alert("You have unfinished order items.");
+            }
+            
         },
   },
 }
