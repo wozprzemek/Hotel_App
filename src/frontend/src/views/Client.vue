@@ -76,6 +76,8 @@
                 <input type="text" class="form_input" name="telephone"><br>
                 <label for="payment">Payment Method</label><br>
                 <select name="payment" class="form_input">
+                    <option>CASH</option>
+                    <option>CARD</option>
                     <!-- <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>> -->
                 </select>
             </form> 
@@ -319,7 +321,7 @@
                     button.style.cursor = "pointer";
                 }
                 else{
-                    button.style.background = "#6A8EAE";
+                    button.style.background = "#bfc1c4";
                     button.style.cursor = "not-allowed";
                 }
             },
@@ -804,7 +806,7 @@
         grid-area: 3/2/4/3;
         width: 200px;
         height: 40px;
-        background: #6A8EAE;
+        background: #bfc1c4;
         color: white;
         font-size: 16px;
         align-self: center;
