@@ -9,6 +9,7 @@ import put.poznan.spring_vue.reservation.Reservation;
 import put.poznan.spring_vue.room.Room;
 
 import java.util.Date;
+import java.util.List;
 
 public interface RoomInReservationRepository extends JpaRepository<RoomInReservation, Long> {
 
@@ -28,4 +29,6 @@ public interface RoomInReservationRepository extends JpaRepository<RoomInReserva
     void setFullRoomPrice(@Param("start_date") Date start_date, @Param("end_date") Date end_date, @Param("number") int number, @Param("rir_id") int rir_id);
 
     RoomInReservation findById(int id);
+
+    List<RoomInReservation> findRoomInReservationByReservationId(int reservation_id);
 }

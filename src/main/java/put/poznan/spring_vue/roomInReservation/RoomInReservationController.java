@@ -49,19 +49,24 @@ public class RoomInReservationController {
 
 
     @GetMapping(path="/all")
-    public @ResponseBody ResponseEntity<RoomInReservationGetter> getAllRooms(@RequestParam(name = "reservationID", required = false) Long reservationID) {
+    public @ResponseBody ResponseEntity<List<RoomInReservationGetter>> getAllRooms(@RequestParam(name = "reservationID", required = false) Long reservationID) {
         try {
-            RoomInReservation roomInReservation = roomInReservationRepository.getById(reservationID);
-            RoomInReservationGetter roomInReservationGetter = new RoomInReservationGetter();
-            roomInReservationGetter.setRoomNumber(roomInReservation.getRoom().getNumber());
-            roomInReservationGetter.setRoomName(roomInReservation.getRoom().getRoomName());
-            roomInReservationGetter.setPricePerNight(roomInReservation.getRoom().getPricePerNight());
-            roomInReservationGetter.setTotalPrice(roomInReservation.getRoomTotalPrice());
-            roomInReservationGetter.setSingleBeds(roomInReservation.getRoom().getSingleBeds());
-            roomInReservationGetter.setSingleBeds(roomInReservation.getRoom().getDoubleBeds());
+            List<RoomInReservation> rooms = roomInReservationRepository.findRoomInReservationByReservationId(Math.toIntExact(reservationID));
+            List<RoomInReservationGetter> toReturn = new ArrayList<>();
+            for(int i=0; i<rooms.size(); i++){
+                RoomInReservationGetter roomInReservationGetter = new RoomInReservationGetter();
+                roomInReservationGetter.setRoomNumber(rooms.get(i).getRoom().getNumber());
+                roomInReservationGetter.setRoomName(rooms.get(i).getRoom().getRoomName());
+                roomInReservationGetter.setPricePerNight(rooms.get(i).getRoom().getPricePerNight());
+                roomInReservationGetter.setTotalPrice(rooms.get(i).getRoomTotalPrice());
+                roomInReservationGetter.setSingleBeds(rooms.get(i).getRoom().getSingleBeds());
+                roomInReservationGetter.setSingleBeds(rooms.get(i).getRoom().getDoubleBeds());
+                toReturn.add(roomInReservationGetter);
+            }
 
-            return new ResponseEntity<>(roomInReservationGetter, HttpStatus.OK);
+            return new ResponseEntity<>(toReturn, HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
