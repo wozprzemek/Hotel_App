@@ -31,13 +31,13 @@ public class OrderController {
      ***/
 
     @PostMapping(path="/add")
-    public ResponseEntity<Order> addNewOrder (@RequestBody OrderDetails orderDetails) {
+    public ResponseEntity<Integer> addNewOrder (@RequestBody OrderDetails orderDetails) {
         try{
-            Guest guest = orderRepository.findGuestByReservationID(orderDetails.getReservationID());
             Reservation reservation = orderRepository.findReservationByReservationID(orderDetails.getReservationID());
+            Guest guest = reservation.getGuest();
             Order order = new Order(0, orderDetails.getTimeOfOrder(), reservation, guest);
-            orderRepository.save(order);
-            return new ResponseEntity<>(order, HttpStatus.CREATED);
+            order = orderRepository.save(order);
+            return new ResponseEntity<>(order.getId(), HttpStatus.CREATED);
         } catch (Exception e){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

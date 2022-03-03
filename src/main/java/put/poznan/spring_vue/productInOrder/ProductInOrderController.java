@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import put.poznan.spring_vue.admin.Admin;
 import put.poznan.spring_vue.guest.Guest;
 import put.poznan.spring_vue.hotel.Hotel;
 import put.poznan.spring_vue.order.Order;
@@ -11,7 +12,9 @@ import put.poznan.spring_vue.product.Product;
 import put.poznan.spring_vue.reservation.Reservation;
 import put.poznan.spring_vue.room.Room;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @RestController // This means that this class is a Controller
 @RequestMapping(path="/api/prodinord") // This means URL's start with /demo (after Application path)
