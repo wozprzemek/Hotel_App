@@ -1,14 +1,10 @@
 package put.poznan.spring_vue.address;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import put.poznan.spring_vue.hotel.Hotel;
-import put.poznan.spring_vue.room.Room;
+import put.poznan.spring_vue.city.City;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import java.sql.Date;
 import java.io.Serializable;
-import java.util.List;
 
 @Entity
 @Table(name = "ADDRESS")
@@ -74,5 +70,13 @@ public class Address implements Serializable{
 
     public void setApartmentNumber(String apartmentNumber) {
         this.apartmentNumber = apartmentNumber;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
     }
 }

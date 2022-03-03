@@ -26,13 +26,17 @@ public class PaymentMethodController {
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody ResponseEntity<List<PaymentMethod>> getAllPaymentMethods() {
+    public @ResponseBody ResponseEntity<List<String>> getAllPaymentMethods() {
         try {
             List<PaymentMethod> paymentMethods = new ArrayList<PaymentMethod>(paymentMethodRepository.findAll());
-            if (paymentMethods.isEmpty()) {
+            List<String> toReturn = new ArrayList<>();
+            for(int i=0; i<paymentMethods.size(); i++){
+                toReturn.add(paymentMethods.get(i).getPaymentMethodName());
+            }
+            if (toReturn.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(paymentMethods, HttpStatus.OK);
+            return new ResponseEntity<>(toReturn, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

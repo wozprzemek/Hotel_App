@@ -1,5 +1,6 @@
 package put.poznan.spring_vue.reservation;
 
+import org.apache.http.client.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import put.poznan.spring_vue.reservationState.ReservationState;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -47,14 +49,33 @@ public class ReservationController {
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody ResponseEntity<List<Reservation>> getAllReservations() {
+    public @ResponseBody ResponseEntity<List<ReservationGetter>> getAllReservations() {
         try {
-            List<Reservation> reservations = new ArrayList<Reservation>();
+            List<Reservation> reservations = new ArrayList<>();
+            List<ReservationGetter> toReturn = new ArrayList<>();
             reservations.addAll(reservationRepository.findAll());
+
             if (reservations.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(reservations, HttpStatus.OK);
+
+            ReservationGetter reservationGetter;
+
+            for(int i=0; i<reservations.size(); i++){
+                reservationGetter = new ReservationGetter();
+                reservationGetter.setReservationID(reservations.get(i).getId());
+                reservationGetter.setGuestID(reservations.get(i).getGuest().getId());
+                reservationGetter.setNumberOfGuests(reservations.get(i).getNumberOfGuests());
+                reservationGetter.setStartDate(reservations.get(i).getEndDate());
+                reservationGetter.setEndDate(reservations.get(i).getEndDate());
+                reservationGetter.setPrice(reservations.get(i).getPrice());
+                reservationGetter.setPaymentMethod(reservations.get(i).getPaymentMethod().getPaymentMethodName());
+                reservationGetter.setReservationState(reservations.get(i).getReservationState().getReservationStateName());
+                toReturn.add(reservationGetter);
+                reservationGetter = null;
+            }
+
+            return new ResponseEntity<>(toReturn, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

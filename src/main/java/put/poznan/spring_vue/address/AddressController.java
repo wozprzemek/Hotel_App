@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import put.poznan.spring_vue.city.City;
 
 @RestController // This means that this class is a Controller
 @RequestMapping(path="/api/address") // This means URL's start with /demo (after Application path)
