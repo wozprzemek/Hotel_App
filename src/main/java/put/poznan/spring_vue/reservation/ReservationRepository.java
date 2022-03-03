@@ -8,6 +8,7 @@ import put.poznan.spring_vue.guest.Guest;
 import put.poznan.spring_vue.hotel.Hotel;
 import put.poznan.spring_vue.paymentMethod.PaymentMethod;
 import put.poznan.spring_vue.reservationState.ReservationState;
+import put.poznan.spring_vue.room.Room;
 
 import java.util.List;
 
@@ -24,5 +25,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT pm FROM PaymentMethod pm WHERE pm.paymentMethodName = :pm_name")
     PaymentMethod findPaymentMethodByName(@Param("pm_name") String pm_name);
+
+    @Query("SELECT rsv FROM Reservation rsv WHERE rsv.id = :id")
+    Reservation findByReservationID(int id);
 
 }

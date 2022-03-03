@@ -49,32 +49,46 @@ public class ReservationController {
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody ResponseEntity<List<ReservationGetter>> getAllReservations() {
+    public @ResponseBody ResponseEntity<List<ReservationGetter>> getAllReservations(@RequestParam(name = "reservationID", required = false) Long reservationID) {
         try {
             List<Reservation> reservations = new ArrayList<>();
             List<ReservationGetter> toReturn = new ArrayList<>();
-            reservations.addAll(reservationRepository.findAll());
-
-            if (reservations.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
             ReservationGetter reservationGetter;
 
-            for(int i=0; i<reservations.size(); i++){
+            if(reservationID == null){
+                reservations.addAll(reservationRepository.findAll());
+
+                for(int i=0; i<reservations.size(); i++){
+                    reservationGetter = new ReservationGetter();
+                    reservationGetter.setReservationID(reservations.get(i).getId());
+                    reservationGetter.setGuestID(reservations.get(i).getGuest().getId());
+                    reservationGetter.setNumberOfGuests(reservations.get(i).getNumberOfGuests());
+                    reservationGetter.setStartDate(reservations.get(i).getEndDate());
+                    reservationGetter.setEndDate(reservations.get(i).getEndDate());
+                    reservationGetter.setPrice(reservations.get(i).getPrice());
+                    reservationGetter.setPaymentMethod(reservations.get(i).getPaymentMethod().getPaymentMethodName());
+                    reservationGetter.setReservationState(reservations.get(i).getReservationState().getReservationStateName());
+                    toReturn.add(reservationGetter);
+                    reservationGetter = null;
+                }
+            }
+            else{
+                reservations.add(reservationRepository.findByReservationID(Math.toIntExact(reservationID)));
                 reservationGetter = new ReservationGetter();
-                reservationGetter.setReservationID(reservations.get(i).getId());
-                reservationGetter.setGuestID(reservations.get(i).getGuest().getId());
-                reservationGetter.setNumberOfGuests(reservations.get(i).getNumberOfGuests());
-                reservationGetter.setStartDate(reservations.get(i).getEndDate());
-                reservationGetter.setEndDate(reservations.get(i).getEndDate());
-                reservationGetter.setPrice(reservations.get(i).getPrice());
-                reservationGetter.setPaymentMethod(reservations.get(i).getPaymentMethod().getPaymentMethodName());
-                reservationGetter.setReservationState(reservations.get(i).getReservationState().getReservationStateName());
+                reservationGetter.setReservationID(reservations.get(0).getId());
+                reservationGetter.setGuestID(reservations.get(0).getGuest().getId());
+                reservationGetter.setNumberOfGuests(reservations.get(0).getNumberOfGuests());
+                reservationGetter.setStartDate(reservations.get(0).getEndDate());
+                reservationGetter.setEndDate(reservations.get(0).getEndDate());
+                reservationGetter.setPrice(reservations.get(0).getPrice());
+                reservationGetter.setPaymentMethod(reservations.get(0).getPaymentMethod().getPaymentMethodName());
+                reservationGetter.setReservationState(reservations.get(0).getReservationState().getReservationStateName());
                 toReturn.add(reservationGetter);
-                reservationGetter = null;
             }
 
+            if (toReturn.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
             return new ResponseEntity<>(toReturn, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
