@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.guest.Guest;
+import put.poznan.spring_vue.guest.GuestGetter;
 import put.poznan.spring_vue.hotel.Hotel;
 import put.poznan.spring_vue.reservation.Reservation;
 import put.poznan.spring_vue.room.Room;
@@ -43,6 +44,25 @@ public class RoomInReservationController {
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @GetMapping(path="/all")
+    public @ResponseBody ResponseEntity<RoomInReservationGetter> getAllRooms(@RequestParam(name = "reservationID", required = false) Long reservationID) {
+        try {
+            RoomInReservation roomInReservation = roomInReservationRepository.getById(reservationID);
+            RoomInReservationGetter roomInReservationGetter = new RoomInReservationGetter();
+            roomInReservationGetter.setRoomNumber(roomInReservation.getRoom().getNumber());
+            roomInReservationGetter.setRoomName(roomInReservation.getRoom().getRoomName());
+            roomInReservationGetter.setPricePerNight(roomInReservation.getRoom().getPricePerNight());
+            roomInReservationGetter.setTotalPrice(roomInReservation.getRoomTotalPrice());
+            roomInReservationGetter.setSingleBeds(roomInReservation.getRoom().getSingleBeds());
+            roomInReservationGetter.setSingleBeds(roomInReservation.getRoom().getDoubleBeds());
+
+            return new ResponseEntity<>(roomInReservationGetter, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

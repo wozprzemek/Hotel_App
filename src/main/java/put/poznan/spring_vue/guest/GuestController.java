@@ -32,27 +32,40 @@ public class GuestController {
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody ResponseEntity<List<GuestGetter>> getAllGuests() {
+    public @ResponseBody ResponseEntity<List<GuestGetter>> getAllGuests(@RequestParam(name = "guestID", required = false) Long guestID) {
         try {
             List<Guest> guests = new ArrayList<Guest>(guestRepository.findAll());
             List<GuestGetter> toReturn = new ArrayList<>();
             GuestGetter guestGetter;
 
-            if (guests.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            for(int i=0; i<guests.size(); i++){
+            if(guestID == null){
+                for(int i=0; i<guests.size(); i++){
+                    guestGetter = new GuestGetter();
+                    guestGetter.setGuestID(guests.get(i).getId());
+                    guestGetter.setFirstName(guests.get(i).getFirstName());
+                    guestGetter.setLastName(guests.get(i).getLastName());
+                    guestGetter.setDateOfBirth(guests.get(i).getDateOfBirth());
+                    guestGetter.setTelephone(guests.get(i).getTelephone());
+                    guestGetter.setCity(guests.get(i).getAddress().getCity().getCityName());
+                    guestGetter.setCountry(guests.get(i).getAddress().getCity().getCountry().getCountryName());
+                    toReturn.add(guestGetter);
+                    guestGetter = null;
+                }
+            }else{
                 guestGetter = new GuestGetter();
-                guestGetter.setGuestID(guests.get(i).getId());
-                guestGetter.setFirstName(guests.get(i).getFirstName());
-                guestGetter.setLastName(guests.get(i).getLastName());
-                guestGetter.setDateOfBirth(guests.get(i).getDateOfBirth());
-                guestGetter.setTelephone(guests.get(i).getTelephone());
-                guestGetter.setCity(guests.get(i).getAddress().getCity().getCityName());
-                guestGetter.setCountry(guests.get(i).getAddress().getCity().getCountry().getCountryName());
+                guestGetter.setGuestID(guests.get(0).getId());
+                guestGetter.setFirstName(guests.get(0).getFirstName());
+                guestGetter.setLastName(guests.get(0).getLastName());
+                guestGetter.setDateOfBirth(guests.get(0).getDateOfBirth());
+                guestGetter.setTelephone(guests.get(0).getTelephone());
+                guestGetter.setCity(guests.get(0).getAddress().getCity().getCityName());
+                guestGetter.setCountry(guests.get(0).getAddress().getCity().getCountry().getCountryName());
                 toReturn.add(guestGetter);
                 guestGetter = null;
+            }
+
+            if (guests.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
 
             return new ResponseEntity<>(toReturn, HttpStatus.OK);
