@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.guest.Guest;
+import put.poznan.spring_vue.guest.GuestGetter;
 import put.poznan.spring_vue.hotel.Hotel;
 import put.poznan.spring_vue.reservation.Reservation;
 import put.poznan.spring_vue.room.Room;
@@ -43,6 +44,30 @@ public class RoomInReservationController {
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @GetMapping(path="/all")
+    public @ResponseBody ResponseEntity<List<RoomInReservationGetter>> getAllRooms(@RequestParam(name = "reservationID", required = false) Long reservationID) {
+        try {
+            List<RoomInReservation> rooms = roomInReservationRepository.findRoomInReservationByReservationId(Math.toIntExact(reservationID));
+            List<RoomInReservationGetter> toReturn = new ArrayList<>();
+            for(int i=0; i<rooms.size(); i++){
+                RoomInReservationGetter roomInReservationGetter = new RoomInReservationGetter();
+                roomInReservationGetter.setRoomNumber(rooms.get(i).getRoom().getNumber());
+                roomInReservationGetter.setRoomName(rooms.get(i).getRoom().getRoomName());
+                roomInReservationGetter.setPricePerNight(rooms.get(i).getRoom().getPricePerNight());
+                roomInReservationGetter.setTotalPrice(rooms.get(i).getRoomTotalPrice());
+                roomInReservationGetter.setSingleBeds(rooms.get(i).getRoom().getSingleBeds());
+                roomInReservationGetter.setSingleBeds(rooms.get(i).getRoom().getDoubleBeds());
+                toReturn.add(roomInReservationGetter);
+            }
+
+            return new ResponseEntity<>(toReturn, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
