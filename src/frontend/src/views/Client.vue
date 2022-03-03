@@ -82,7 +82,7 @@
                 <label for="telephone">Telephone*</label><br>
                 <input type="text" class="form_input" name="telephone"><br>
                 <label for="payment">Payment Method*</label><br>
-                <select name="payment" class="form_input">
+                <select name="payment" class="form_input" v-model=paymentMethod>
                     <option v-for="method in paymentMethods" :key=method>{{method}}</option>
                 </select>
             </form> 
@@ -138,35 +138,12 @@
                 rooms_added: [],
                 today: new Date(),
                 addresses: [{}],  // array of countries + [cities] objects
-                paymentMethods: ["CARD", "CASH"],
+                paymentMethods: [],
                 reservationPrice: 0,
                 country: "",
                 city: "",
-                items: [
-                        {
-                            "countryID": 2,
-                            "countryName": "GERMANY",
-                            "cities": []
-                        },
-                        {
-                            "countryID": 1,
-                            "countryName": "POLAND",
-                            "cities": [
-                                {
-                                    "cityID": 1,
-                                    "cityName": "WARSZAWA"
-                                },
-                                {
-                                    "cityID": 2,
-                                    "cityName": "POZNAN"
-                                },
-                                {
-                                    "cityID": 3,
-                                    "cityName": "SZCZECIN"
-                                }
-                            ]
-                        }
-                    ],
+                items: [],
+                paymentMethod: "",
             }
             
         },
@@ -183,6 +160,24 @@
             var yyyy = this.today.getFullYear();
 
             this.today = yyyy + '-' + mm + '-' + dd;
+
+            // FETCH ALL COUNTRIES, CITIES AT LOAD
+            fetch("/api/country/all", {
+                method: "GET",
+                headers: {'Content-Type': 'application/json'},
+            }).then(response => response.json()).then(data => {
+                this.items = data;
+                console.log(this.items);
+            });
+
+            // FETCH ALL PAYMENT METHODS AT LOAD
+            fetch("/api/pay/all", {
+                method: "GET",
+                headers: {'Content-Type': 'application/json'},
+            }).then(response => response.json()).then(data => {
+                this.paymentMethods = data;
+                console.log(this.paymentMethods);
+            });
 
         },
         methods: {
@@ -415,10 +410,13 @@
                         lastName: object.lname,
                         dateOfBirth: object.birth,
                         telephone: object.telephone,
-                        addressId: addressId
+                        addressID: addressId
                     };
 
                     var guestId;
+
+                    console.log(guestObject);
+                    console.log(JSON.stringify(guestObject));
 
                     fetch("/api/guest/add", {
                         method: "POST",
@@ -437,7 +435,7 @@
                             numberOfGuests: numberOfGuests,
                             startDate: startDate,
                             endDate: endDate,
-                            guestId: guestId,
+                            guestID: guestId,
                             paymentMethodName: object.payment
                         };
                         
@@ -452,7 +450,7 @@
 
                             // create a room list JSON and POST
                             var roomListObject = {
-                                reservationId: reservationId,
+                                reservationID: reservationId,
                                 rooms: [1,2]
                             };
 

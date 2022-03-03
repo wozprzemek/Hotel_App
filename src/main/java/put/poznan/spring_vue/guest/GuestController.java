@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.address.Address;
+import put.poznan.spring_vue.reservation.ReservationGetter;
 import put.poznan.spring_vue.room.Room;
 
 import java.util.ArrayList;
@@ -31,13 +32,30 @@ public class GuestController {
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody ResponseEntity<List<Guest>> getAllGuests() {
+    public @ResponseBody ResponseEntity<List<GuestGetter>> getAllGuests() {
         try {
             List<Guest> guests = new ArrayList<Guest>(guestRepository.findAll());
+            List<GuestGetter> toReturn = new ArrayList<>();
+            GuestGetter guestGetter;
+
             if (guests.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(guests, HttpStatus.OK);
+
+            for(int i=0; i<guests.size(); i++){
+                guestGetter = new GuestGetter();
+                guestGetter.setGuestID(guests.get(i).getId());
+                guestGetter.setFirstName(guests.get(i).getFirstName());
+                guestGetter.setLastName(guests.get(i).getLastName());
+                guestGetter.setDateOfBirth(guests.get(i).getDateOfBirth());
+                guestGetter.setTelephone(guests.get(i).getTelephone());
+                guestGetter.setCity(guests.get(i).getAddress().getCity().getCityName());
+                guestGetter.setCountry(guests.get(i).getAddress().getCity().getCountry().getCountryName());
+                toReturn.add(guestGetter);
+                guestGetter = null;
+            }
+
+            return new ResponseEntity<>(toReturn, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

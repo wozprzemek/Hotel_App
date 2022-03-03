@@ -128,6 +128,7 @@
                 qty: 1,
                 time: "",
             }],
+            reservationId: "",
         }
     },
     setup() {
@@ -167,6 +168,7 @@
             console.log(this.items);
         });
         
+        this.reservationId = this.$route.params.id;
     },
     methods: {
         onSelectionChanged() {

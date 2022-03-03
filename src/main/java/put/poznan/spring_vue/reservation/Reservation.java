@@ -129,4 +129,20 @@ public class Reservation {
     public void setHotelAddress(Address hotelAddress) {
         this.hotelAddress = hotelAddress;
     }
+
+    public ReservationState getReservationState() {
+        return reservationState;
+    }
+
+    public void setReservationState(ReservationState reservationState) {
+        this.reservationState = reservationState;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
 }

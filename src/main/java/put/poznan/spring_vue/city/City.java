@@ -1,6 +1,7 @@
-package put.poznan.spring_vue.address;
+package put.poznan.spring_vue.city;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import put.poznan.spring_vue.country.Country;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -16,6 +17,7 @@ public class City implements Serializable{
     @Column(name = "CITY_NAME")
     private String cityName;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name="COUNTRY_ID")
     private Country country;

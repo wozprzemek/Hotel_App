@@ -1,10 +1,12 @@
 package put.poznan.spring_vue.reservation;
 
+import org.apache.http.client.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.address.Address;
+import put.poznan.spring_vue.admin.Admin;
 import put.poznan.spring_vue.guest.Guest;
 import put.poznan.spring_vue.hotel.Hotel;
 import put.poznan.spring_vue.order.Order;
@@ -14,6 +16,7 @@ import put.poznan.spring_vue.reservationState.ReservationState;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +45,53 @@ public class ReservationController {
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(path="/all")
+    public @ResponseBody ResponseEntity<List<ReservationGetter>> getAllReservations(@RequestParam(name = "reservationID", required = false) Long reservationID) {
+        try {
+            List<Reservation> reservations = new ArrayList<>();
+            List<ReservationGetter> toReturn = new ArrayList<>();
+            ReservationGetter reservationGetter;
+
+            if(reservationID == null){
+                reservations.addAll(reservationRepository.findAll());
+
+                for(int i=0; i<reservations.size(); i++){
+                    reservationGetter = new ReservationGetter();
+                    reservationGetter.setReservationID(reservations.get(i).getId());
+                    reservationGetter.setGuestID(reservations.get(i).getGuest().getId());
+                    reservationGetter.setNumberOfGuests(reservations.get(i).getNumberOfGuests());
+                    reservationGetter.setStartDate(reservations.get(i).getEndDate());
+                    reservationGetter.setEndDate(reservations.get(i).getEndDate());
+                    reservationGetter.setPrice(reservations.get(i).getPrice());
+                    reservationGetter.setPaymentMethod(reservations.get(i).getPaymentMethod().getPaymentMethodName());
+                    reservationGetter.setReservationState(reservations.get(i).getReservationState().getReservationStateName());
+                    toReturn.add(reservationGetter);
+                    reservationGetter = null;
+                }
+            }
+            else{
+                reservations.add(reservationRepository.findByReservationID(Math.toIntExact(reservationID)));
+                reservationGetter = new ReservationGetter();
+                reservationGetter.setReservationID(reservations.get(0).getId());
+                reservationGetter.setGuestID(reservations.get(0).getGuest().getId());
+                reservationGetter.setNumberOfGuests(reservations.get(0).getNumberOfGuests());
+                reservationGetter.setStartDate(reservations.get(0).getEndDate());
+                reservationGetter.setEndDate(reservations.get(0).getEndDate());
+                reservationGetter.setPrice(reservations.get(0).getPrice());
+                reservationGetter.setPaymentMethod(reservations.get(0).getPaymentMethod().getPaymentMethodName());
+                reservationGetter.setReservationState(reservations.get(0).getReservationState().getReservationStateName());
+                toReturn.add(reservationGetter);
+            }
+
+            if (toReturn.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(toReturn, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

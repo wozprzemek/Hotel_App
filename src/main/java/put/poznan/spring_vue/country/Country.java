@@ -1,6 +1,11 @@
-package put.poznan.spring_vue.address;
+package put.poznan.spring_vue.country;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import put.poznan.spring_vue.city.City;
+import put.poznan.spring_vue.room.Room;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.*;
 
 @Entity
@@ -13,6 +18,9 @@ public class Country implements Serializable{
 
     @Column(name = "COUNTRY_NAME")
     private String countryName;
+
+    @OneToMany(mappedBy = "country")
+    private List<City> cities;
 
     public int getCountryID() {
         return countryID;
@@ -28,5 +36,13 @@ public class Country implements Serializable{
 
     public void setCountryName(String countryName) {
         this.countryName = countryName;
+    }
+
+    public List<City> getCities() {
+        return cities;
+    }
+
+    public void setCities(List<City> cities) {
+        this.cities = cities;
     }
 }
