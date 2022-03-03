@@ -18,4 +18,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT rs FROM Reservation rs WHERE rs.id = :rs_id")
     Reservation findReservationByReservationID(@Param("rs_id") int rs_id);
 
+    List<Order> findOrderByReservationId(int reservationID);
+
 }

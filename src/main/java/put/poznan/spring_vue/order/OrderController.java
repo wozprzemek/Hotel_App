@@ -10,9 +10,11 @@ import put.poznan.spring_vue.reservation.Reservation;
 import put.poznan.spring_vue.room.Room;
 import put.poznan.spring_vue.roomInReservation.RoomInReservation;
 import put.poznan.spring_vue.roomInReservation.RoomInReservationDetails;
+import put.poznan.spring_vue.roomInReservation.RoomInReservationGetter;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController // This means that this class is a Controller
@@ -40,6 +42,26 @@ public class OrderController {
             return new ResponseEntity<>(order.getId(), HttpStatus.CREATED);
         } catch (Exception e){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(path="/all")
+    public @ResponseBody ResponseEntity<List<OrderGetter>> getAllOrders(@RequestParam(name = "reservationID", required = false) Long reservationID) {
+        try {
+            List<Order> orders = orderRepository.findOrderByReservationId(Math.toIntExact(reservationID));
+            List<OrderGetter> toReturn = new ArrayList<>();
+            for(int i=0; i<orders.size(); i++){
+                OrderGetter orderGetter = new OrderGetter();
+                orderGetter.setOrderID(orders.get(i).getId());
+                orderGetter.setTotalPrice(orders.get(i).getTotalOrderPrice());
+                orderGetter.setTimeOfOrder(orders.get(i).getTimeOfOrder());
+
+                toReturn.add(orderGetter);
+            }
+            return new ResponseEntity<>(toReturn, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
