@@ -134,14 +134,14 @@
     setup() {
         let rowDataRooms = reactive([]);
         let rowDataOrders = reactive([]);
-
+        // var reservationId =  this.$route.params.id;
         onMounted(() => {
             fetch('/api/roominrsv/all?' + new URLSearchParams({
-                reservationID: 7,
+                reservationID: 1,
             })).then(result => result.json()).then(remoteRowData => rowDataRooms.value = remoteRowData);
 
-            fetch('/api/roominrsv/all?' + new URLSearchParams({
-                reservationID: 7,
+            fetch('/api/order/all?' + new URLSearchParams({
+                reservationID: 1,
             })) .then(result => result.json()).then(remoteRowData => rowDataOrders.value = remoteRowData);
         })
 
@@ -156,9 +156,9 @@
         ],
         rowDataRooms,
         columnDefsOrders: [
-                { field: 'orderID', sortable: true, filter: true, width: 200 },
-                { field: 'totalPrice', sortable: true, filter: true, width: 200 },
-                { field: 'timeOfOrder', sortable: true, filter: true, width: 150 },
+                { field: 'orderID', sortable: true, filter: true, width: 150 },
+                { field: 'totalPrice', sortable: true, filter: true, width: 150 },
+                { field: 'timeOfOrder', sortable: true, filter: true, width: 200 },
         ],
         rowDataOrders,
         };
@@ -240,27 +240,26 @@
 
             var objectEmptyOrder = {
                 timeOfOrder: datetime,
-                reservationID: 1 // CHANGE IT!!
+                reservationID: this.reservationId // CHANGE IT!!
             }
 
             console.log(objectEmptyOrder);
             
             const all = document.querySelectorAll('form.order_list_row');
                 // Change the text of multiple elements with a loop
-                var orderJson = [];
+                var orderItems = [];
                 all.forEach(element => {
                     var formData = new FormData(element);
                     var orderRow = {};
                     formData.forEach((value, key) => orderRow[key] = value);
-                    orderJson.push(orderRow);
+                    orderItems.push(orderRow);
             });
-            console.log(orderJson);
-            console.log(orderJson.filter(el => Object.keys(el).length != 4));
-            console.log(orderJson.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length); // number of not-full order rows; must be 0 to confirm order
+    
 
-            if (orderJson.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length === 0){
+            if (orderItems.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length === 0){
                 
                 var orderId;
+                var orderJson = {};
 
                 fetch("/api/order/add", {
                     method: "POST",
@@ -269,7 +268,8 @@
                 }).then(response => response.json()).then(data => {
                     orderId = data;
                     console.log(orderId);
-
+                    orderJson.orderID = orderId;
+                    orderJson.products = orderItems;
                     fetch("/api/prodinord/add", {
                         method: "POST",
                         headers: {'Content-Type': 'application/json'},
