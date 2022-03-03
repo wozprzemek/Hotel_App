@@ -60,25 +60,30 @@
 
         <div id="personal_info_window" v-if="personalInfoWindow">
             <form id="reservation_form" name="reservation_form">
-                <label for="fname">First name</label><br>
+                <label for="fname">First name*</label><br>
                 <input type="text" class="form_input" name="fname"><br>
-                <label for="lname">Last name</label><br>
+                <label for="lname">Last name*</label><br>
                 <input type="text" class="form_input" name="lname"><br>
-                <label for="birth">Date of Birth</label><br>
+                <label for="birth">Date of Birth*</label><br>
                 <input type="date" class="form_input" name="birth"><br>
-                <label for="country">Country</label><br>
-                <input type="text" class="form_input" name="country"><br>
-                <label for="city">City</label><br>
-                <input type="text" class="form_input" name="city"><br>
-                <label for="street">Street</label><br>
+                <label for="country">Country*</label><br>
+                <select name="country" class="form_input" v-model=country>
+                    <option v-for="country in items.map(a => a.countryName)" :key=country>{{ country }}</option>
+                </select>
+                <label for="city">City*</label><br>
+                <select name="city" class="form_input" v-model=city>
+                    <!-- <option v-for="city in country.length != 0 (items.find(o => o.countryName === country).cities.map(a => a.cityName))" :key=city>{{city}}</option> -->
+                    <option v-for="city in country.length != 0 ? (items.find(o => o.countryName === country).cities.map(a => a.cityName)) : []" :key=city>{{city}}</option>
+                </select>
+                <label for="street">Street*</label><br>
                 <input type="text" class="form_input" name="street"><br>
-                <label for="telephone">Telephone</label><br>
+                <label for="street">Building / Apartment Number</label><br>
+                <input type="text" class="form_input" name="number"><br>
+                <label for="telephone">Telephone*</label><br>
                 <input type="text" class="form_input" name="telephone"><br>
-                <label for="payment">Payment Method</label><br>
+                <label for="payment">Payment Method*</label><br>
                 <select name="payment" class="form_input">
-                    <option>CASH</option>
-                    <option>CARD</option>
-                    <!-- <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>> -->
+                    <option v-for="method in paymentMethods" :key=method>{{method}}</option>
                 </select>
             </form> 
             <div id="reservation_summary">
@@ -95,16 +100,16 @@
                 </div>
                 <div class="separator" style="grid-area: 3/2/4/4"></div>
                 <div id="room_info">
-                    <div class="reservation_summary_row" :key="room" v-for="room in rooms_added">
-                        <div class="reservation_summary_label">Double Premium</div>
-                        <div class="reservation_summary_value">$100</div>
+                    <div class="reservation_summary_row" :key="room" v-for="(room,index) in rooms_added">
+                        <div class="reservation_summary_label">{{rooms_selected[index][0].roomName}}</div>
+                        <div class="reservation_summary_value">${{rooms_selected[index][0].pricePerNight * reservationLength}}</div>
                     </div>
                 </div>
                 <div class="separator" style="grid-area: 5/2/6/4"></div>
                 <div id="total_price">
                     <div class="reservation_summary_row">
                         <div class="reservation_summary_label">Total:</div>
-                        <div class="reservation_summary_value">${{rooms_added.length * 100}}</div>
+                        <div class="reservation_summary_value">${{this.reservationPrice}}</div>
                     </div>
                 </div>
             </div>
@@ -125,6 +130,7 @@
                 personalInfoWindow: false,
                 startDate: "",
                 endDate: "",
+                reservationLength: 0,
                 startDateAlert: false,
                 endDateAlert: false,
                 roomsAlert: false,
@@ -132,7 +138,35 @@
                 rooms_added: [],
                 today: new Date(),
                 addresses: [{}],  // array of countries + [cities] objects
-                paymentMethods: [],
+                paymentMethods: ["CARD", "CASH"],
+                reservationPrice: 0,
+                country: "",
+                city: "",
+                items: [
+                        {
+                            "countryID": 2,
+                            "countryName": "GERMANY",
+                            "cities": []
+                        },
+                        {
+                            "countryID": 1,
+                            "countryName": "POLAND",
+                            "cities": [
+                                {
+                                    "cityID": 1,
+                                    "cityName": "WARSZAWA"
+                                },
+                                {
+                                    "cityID": 2,
+                                    "cityName": "POZNAN"
+                                },
+                                {
+                                    "cityID": 3,
+                                    "cityName": "SZCZECIN"
+                                }
+                            ]
+                        }
+                    ],
             }
             
         },
@@ -264,6 +298,13 @@
                 if(this.roomWindow && this.allRoomsSelected()){
                     this.roomWindow = false;
                     this.personalInfoWindow = true;
+                    this.reservationLength = (Date.parse(this.endDate) - Date.parse(this.startDate)) / (1000 * 60 * 60 * 24);
+
+                    // calculate reservation price
+                    for (var i = 0; i < this.rooms_added.length; i++){
+                        var price = parseInt(this.rooms_selected[i][0].pricePerNight * this.reservationLength);
+                        this.reservationPrice += price;
+                    }
                 }
                 else if (this.personalInfoWindow){
                     this.confirmReservation();
@@ -287,6 +328,11 @@
                 }
             },
             selectRoom(room, event){
+                // for (var config in this.rooms_added){
+                //     for (var selected in this.rooms_selected[config]){
+                //         console.log(selected);
+                //     }
+                // }
                 if (!this.isRoomSelected(room)){
                     if (this.rooms_selected[this.selectedConfiguration].length == 0){
                         event.target.style.background = "#6A8EAE";
@@ -348,9 +394,10 @@
 
                 // create an address JSON and POST
                 var addressObject = {
-                    country: object.country,
-                    city: object.city,
-                    street: object.street
+                    cityName: object.city,
+                    streetName: object.street,
+                    buildingNumber: object.number,
+                    apartmentNumber: object.number
                 };
                 
                 var addressId;
@@ -361,65 +408,77 @@
                     body: JSON.stringify(addressObject)
                 }).then(response => response.json()).then(data => {
                     addressId = data;
+
+                    // create a guest JSON and POST
+                    var guestObject = {
+                        firstName: object.fname,
+                        lastName: object.lname,
+                        dateOfBirth: object.birth,
+                        telephone: object.telephone,
+                        addressId: addressId
+                    };
+
+                    var guestId;
+
+                    fetch("/api/guest/add", {
+                        method: "POST",
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(guestObject)
+                    }).then(response => response.json()).then(data => {
+                        guestId = data;
+
+                        // create a reservation JSON and POST
+
+                        var numberOfGuests = this.rooms_added.reduce((a,b)=>a+b,0);
+                        var startDate = this.startDate;
+                        var endDate = this.endDate;
+
+                        var reservationObject = {
+                            numberOfGuests: numberOfGuests,
+                            startDate: startDate,
+                            endDate: endDate,
+                            guestId: guestId,
+                            paymentMethodName: object.payment
+                        };
+                        
+                        var reservationId;
+
+                        fetch("/api/rsv/add", {
+                            method: "POST",
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(reservationObject)
+                        }).then(response => response.json()).then(data => {
+                            reservationId = data;
+
+                            // create a room list JSON and POST
+                            var roomListObject = {
+                                reservationId: reservationId,
+                                rooms: [1,2]
+                            };
+
+                            fetch("/api/roominrsv/add", {
+                                method: "POST",
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify(roomListObject)
+                            }).then(response => response.json()).then(data => {
+                                console.log(data);
+                            });
+                        });
+
+                    });
+
                 });
 
-                // create a guest JSON and POST
-                var guestObject = {
-                    firstName: object.fname,
-                    lastName: object.lname,
-                    dateOfBirth: object.birth,
-                    telephone: object.telephone,
-                    addressId: addressId
-                };
-
-                var guestId;
-
-                fetch("/api/guest/add", {
-                    method: "POST",
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(guestObject)
-                }).then(response => response.json()).then(data => {
-                    guestId = data;
-                });
-
-                // create a reservation JSON and POST
-
-                var numberOfGuests = this.rooms_added.reduce((a,b)=>a+b,0);
-                var startDate = this.startDate;
-                var endDate = this.endDate;
-
-                var reservationObject = {
-                    numberOfGuests: numberOfGuests,
-                    startDate: startDate,
-                    endDate: endDate,
-                    guestId: guestId,
-                    paymentMethodName: object.payment
-                };
-                
-                var reservationId;
-
-                fetch("/api/rsv/add", {
-                    method: "POST",
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(reservationObject)
-                }).then(response => response.json()).then(data => {
-                    reservationId = data;
-                });
-
-                // create a room list JSON and POST
-
-                var roomListObject = {
-                    reservationId: reservationId,
-                    rooms: [1,2]
-                };
-
-                fetch("/api/roominrsv/add", {
-                    method: "POST",
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(roomListObject)
-                }).then(response => response.json()).then(data => {
-                    console.log(data);
-                });
+            },
+            sum(items, prop){
+                return items.reduce( function(a, b){
+                    if(b[prop] != null){
+                        return a + parseInt(b[prop]);
+                    }
+                    else{
+                        return a
+                    }
+                }, 0);
             },
         }
     }
@@ -843,9 +902,9 @@
     }
     
     .form_input{
-        margin-bottom: 20px;
+        margin-bottom: 12px;
         width: 400px;
-        height: 32px;
+        height: 28px;
     }
 
     label{

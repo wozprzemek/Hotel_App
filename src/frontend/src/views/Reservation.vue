@@ -3,6 +3,7 @@
         <div id="left_bar">
         </div>
         <div id="content">
+            <button id="delete_button">Delete Reservation</button>
             <div id="navbar">
                 <router-link to="/admin/reservations">Reservations</router-link> /
                 <span> Reservation #{{$route.params.id}}</span>
@@ -116,48 +117,7 @@
                     subtotal: 0,
                 },
             ],
-            items: [
-                {
-                    "category": "BREAKFAST",
-                    "products": [
-                        {
-                            "id": 1,
-                            "productName": "SCRAMBLED EGGS",
-                            "productPrice": 10.0
-                        },
-                        {
-                            "id": 4,
-                            "productName": "TOAST",
-                            "productPrice": 15.0
-                        }
-                    ]
-                },
-                {
-                    "category": "LUNCH",
-                    "products": [
-                        {
-                            "id": 2,
-                            "productName": "SALMON",
-                            "productPrice": 20.0
-                        }
-                    ]
-                },
-                {
-                    "category": "DINNER",
-                    "products": [
-                        {
-                            "id": 3,
-                            "productName": "HARNAS",
-                            "productPrice": 2.0
-                        },
-                        {
-                            "id": 5,
-                            "productName": "WODECZKA",
-                            "productPrice": 25.0
-                        }
-                    ]
-                }
-            ],
+            items: [],
             itemsFetched: [],
             selectedCategories: [],
             selectedProducts: [],
@@ -203,8 +163,8 @@
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         }).then(response => response.json()).then(data => {
-            this.itemsFetched = data;
-            console.log(this.itemsFetched);
+            this.items = data;
+            console.log(this.items);
         });
         
     },
@@ -257,6 +217,23 @@
             }
         },
         confirmOrder(){
+            // first POST an empty order
+            var currentdate = new Date(); 
+            var datetime = 
+                currentdate.getFullYear() + "-"
+                + (currentdate.getMonth()+1)  + "-" 
+                + currentdate.getDate() + "T"
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes()
+
+
+            var objectEmptyOrder = {
+                timeOfOrder: datetime,
+                reservationID: 1 // CHANGE IT!!
+            }
+
+            console.log(objectEmptyOrder);
+            
             const all = document.querySelectorAll('form.order_list_row');
                 // Change the text of multiple elements with a loop
                 var orderJson = [];
@@ -271,18 +248,29 @@
             console.log(orderJson.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length); // number of not-full order rows; must be 0 to confirm order
 
             if (orderJson.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length === 0){
+                
+                var orderId;
+
                 fetch("/api/order/add", {
                     method: "POST",
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(orderJson)
+                    body: JSON.stringify(objectEmptyOrder)
                 }).then(response => response.json()).then(data => {
-                    console.log(data);
+                    orderId = data;
+                    console.log(orderId);
+
+                    fetch("/api/prodinord/add", {
+                        method: "POST",
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(orderJson)
+                    }).then(response => response.json()).then(data => {
+                        console.log(data);
+                    });
                 });
             }
             else{
                 alert("You have unfinished order items.");
             }
-            
         },
   },
 }
@@ -598,6 +586,20 @@
         margin: 0;
         margin-bottom: 20px;
         color: rgba(50,50,50,0.4);
+    }
+
+    #delete_button{
+        background: #D01117;
+        width: 200px;
+        height: 40px;
+        color: white;
+        font-size: 16px;
+        align-self: center;
+        justify-self: end;
+        border-radius: 2px;
+        border: none;
+        cursor: pointer;
+        grid-area: 2/4/3/5;
     }
 
 </style>

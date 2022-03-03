@@ -35,7 +35,7 @@ export default {
 
 
     onMounted(() => {
-        fetch('/api/reservations')
+        fetch('/api/rsv/all')
           .then(result => result.json())
           .then(remoteRowData => rowData.value = remoteRowData);
     })
