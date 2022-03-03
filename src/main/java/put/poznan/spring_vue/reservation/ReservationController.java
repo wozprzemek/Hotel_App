@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.address.Address;
+import put.poznan.spring_vue.admin.Admin;
 import put.poznan.spring_vue.guest.Guest;
 import put.poznan.spring_vue.hotel.Hotel;
 import put.poznan.spring_vue.order.Order;
@@ -42,6 +43,20 @@ public class ReservationController {
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(path="/all")
+    public @ResponseBody ResponseEntity<List<Reservation>> getAllReservations() {
+        try {
+            List<Reservation> reservations = new ArrayList<Reservation>();
+            reservations.addAll(reservationRepository.findAll());
+            if (reservations.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(reservations, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
