@@ -45,16 +45,16 @@
                 <div id="title_box">Rooms</div>
                 <ag-grid-vue
                   class="ag-theme-alpine" id="table_rooms"
-                  :columnDefs="columnDefs"
-                  :rowData="rowData.value">
+                  :columnDefs="columnDefsRooms"
+                  :rowData="rowDataRooms.value">
                 </ag-grid-vue>
             </div>
             <div class="details_box" id="orders_details_box">
                 <div id="title_box">Orders</div>
                 <ag-grid-vue
                   class="ag-theme-alpine" id="table_orders"
-                  :columnDefs="columnDefs"
-                  :rowData="rowData.value">
+                  :columnDefs="columnDefsOrders"
+                  :rowData="rowDataOrders.value">
                 </ag-grid-vue>
                 <button id="button_add" @click="showOrderWindow()">Add</button>
             </div>
@@ -132,26 +132,35 @@
         }
     },
     setup() {
-        let rowData = reactive([]);
+        let rowDataRooms = reactive([]);
+        let rowDataOrders = reactive([]);
 
         onMounted(() => {
-            fetch('https://www.ag-grid.com/example-assets/small-row-data.json')
-                .then(result => result.json())
-                .then(remoteRowData => rowData.value = remoteRowData);
+            fetch('/api/roominrsv/all?' + new URLSearchParams({
+                reservationID: 7,
+            })).then(result => result.json()).then(remoteRowData => rowDataRooms.value = remoteRowData);
 
-            fetch("https://api.npoint.io/4954ac84ccd9bb0388a6")
-                .then(res => res.json())
-                .then(data => console.log(data));
-
+            fetch('/api/roominrsv/all?' + new URLSearchParams({
+                reservationID: 7,
+            })) .then(result => result.json()).then(remoteRowData => rowDataOrders.value = remoteRowData);
         })
 
         return {
-            columnDefs: [
-                { field: 'make', sortable: true, filter: true, width: 200 },
-                { field: 'model', sortable: true, filter: true, width: 200 },
-                { field: 'price', sortable: true, filter: true, width: 150 }
+            columnDefsRooms: [
+                { field: 'roomNumber', sortable: true, filter: true, type: 'rightAligned', width: 150 },
+                { field: 'roomName', sortable: true, filter: true, type: 'rightAligned', width: 200 },
+                { field: 'pricePerNight', sortable: true, filter: true, type: 'rightAligned',width: 150 },
+                { field: 'totalPrice', sortable: true, filter: true, type: 'rightAligned', width: 125 },
+                { field: 'singleBeds', sortable: true, filter: true, type: 'rightAligned', width: 125 },
+                { field: 'doubleBeds', sortable: true, filter: true, type: 'rightAligned', width: 140 },
         ],
-        rowData
+        rowDataRooms,
+        columnDefsOrders: [
+                { field: 'orderID', sortable: true, filter: true, width: 200 },
+                { field: 'totalPrice', sortable: true, filter: true, width: 200 },
+                { field: 'timeOfOrder', sortable: true, filter: true, width: 150 },
+        ],
+        rowDataOrders,
         };
     },
     created() {
