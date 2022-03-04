@@ -14,59 +14,59 @@
                 <div class="details_content">
                     <div class="details_row">
                         <div class="details_field_name">Reservation ID</div>
-                        <div class="details_field_value" id="reservation_id">1</div>
+                        <div class="details_field_value" id="reservation_id"></div>
                     </div>
                     <div class="details_row">
                         <div class="details_field_name">No. of Guests</div>
-                        <div class="details_field_value" id="no_of_guests">4</div>
+                        <div class="details_field_value" id="no_of_guests"></div>
                     </div>
                     <div class="details_row">
                         <div class="details_field_name">Start Date</div>
-                        <div class="details_field_value" id="start_date">22-01-2022</div>
+                        <div class="details_field_value" id="start_date"></div>
                     </div>
                     <div class="details_row">
                         <div class="details_field_name">End Date</div>
-                        <div class="details_field_value" id="end_date">11-03-2022</div>
+                        <div class="details_field_value" id="end_date"></div>
                     </div>
                     <div class="details_row">
                         <div class="details_field_name">Payment Method</div>
-                        <div class="details_field_value" id="payment_method">CARD</div>
+                        <div class="details_field_value" id="payment_method"></div>
                     </div>
                     <div class="details_row">
                         <div class="details_field_name">Reservation State</div>
-                        <div class="details_field_value" id="reservation_state">REGISTERED</div>
+                        <div class="details_field_value" id="reservation_state"></div>
                     </div>
                 </div>
                 
-                <!-- <div class="details_text" id="details_field_name">Reservation ID</div>
-                <div class="details_text" id="details_field_name">No. of Guests</div>
-                <div class="details_text" id="details_field_name">Start Date</div>
-                <div class="details_text" id="details_field_name">End Date</div>
-                <div class="details_text" id="details_field_name">Payment Method</div>
-                <div class="details_text" id="details_field_name">Reservation State</div>
-
-                <div class="details_text" id="details_field_value">1</div>
-                <div class="details_text" id="details_field_value">4</div>
-                <div class="details_text" id="details_field_value">22/01/2022</div>
-                <div class="details_text" id="details_field_value">27/01/2022</div>
-                <div class="details_text" id="details_field_value">Cash</div>
-                <div class="details_text" id="details_field_value">Registered</div> -->
             </div>
             <div class="details_box" id="guest_details_box">
                 <div id="title_box">Guest Details</div>
-                <div class="details_text" id="details_field_name">Guest ID</div>
-                <div class="details_text" id="details_field_name">First Name</div>
-                <div class="details_text" id="details_field_name">Last Name</div>
-                <div class="details_text" id="details_field_name">Date of Birth</div>
-                <div class="details_text" id="details_field_name">Telephone</div>
-                <div class="details_text" id="details_field_name">Address</div>
-
-                <div class="details_text" id="details_field_value">1</div>
-                <div class="details_text" id="details_field_value">Przemysław</div>
-                <div class="details_text" id="details_field_value">Woźniak</div>
-                <div class="details_text" id="details_field_value">17/08/2000</div>
-                <div class="details_text" id="details_field_value">48123654879</div>
-                <div class="details_text" id="details_field_value">Polanka 30b, 61-131 Poznan</div>
+                <div class="details_content">
+                    <div class="details_row">
+                        <div class="details_field_name">Guest ID</div>
+                        <div class="details_field_value" id="guest_id"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">First Name</div>
+                        <div class="details_field_value" id="first_name"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Last Name</div>
+                        <div class="details_field_value" id="last_name"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Date of Birth</div>
+                        <div class="details_field_value" id="date_of_birth"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Telephone</div>
+                        <div class="details_field_value" id="telephone"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Address</div>
+                        <div class="details_field_value" id="address"></div>
+                    </div>
+                </div>
             </div>
             <div class="details_box" id="rooms_details_box">
                 <div id="title_box">Rooms</div>
@@ -172,6 +172,7 @@
                 { field: 'timeOfOrder', sortable: true, filter: true, width: 200 },
             ],
             reservationDetails: {},
+            guestDetails: {},
         }
     },
     created() {
@@ -193,12 +194,24 @@
         });
 
         // TODO: FETCH GUEST DETAILS AT LOAD
-        // fetch('/api/rsv/all?' + new URLSearchParams({
-        //         reservationID: this.reservationId,
-        // })).then(response => response.json()).then(data => {
-        //     this.items = data;
-        //     console.log(this.items);
-        // });
+        fetch('/api/guest/reservationID?' + new URLSearchParams({
+                reservationID: this.reservationId,
+        })).then(response => response.json()).then(data => {
+            this.guestDetails = data;
+            document.querySelector("#guest_id").textContent = this.guestDetails.guestID;
+            document.querySelector("#first_name").textContent = this.guestDetails.firstName;
+            document.querySelector("#last_name").textContent = this.guestDetails.lastName;
+            document.querySelector("#date_of_birth").textContent = this.guestDetails.dateOfBirth.split('T')[0];
+            document.querySelector("#telephone").textContent = this.guestDetails.telephone;
+
+            var address = this.guestDetails.streetName + " " + this.guestDetails.buildingNumber;
+            if (this.guestDetails.apartmentNumber != null){
+                address += " / " + this.guestDetails.apartmentNumber;
+            }
+            address += ", " + this.guestDetails.city + ", " + this.guestDetails.country
+            document.querySelector("#address").textContent = address;
+            console.log(this.guestDetails);
+        });
 
         // FETCH ROOMS AT LOAD
         fetch('/api/roominrsv/all?' + new URLSearchParams({
@@ -408,9 +421,8 @@
 
     #guest_details_box{
         grid-area: 3/3/4/4;
-        grid-template-rows: 50px 25px repeat(6, 30px) 1fr;
-        grid-template-columns: 1.5fr 1fr 1.5fr;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 50px 1fr;
+        grid-template-columns: 1fr;
     }
 
     .details_text{
@@ -421,27 +433,27 @@
     .details_row{
         display: grid;
         grid-template-rows: 1fr;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1.5fr;
         height: 36px;
-        align-items: end;
+        align-items: start;
     }
 
     .details_row:first-child{
-        margin-top: 20px;
+        margin-top: 40px;
     }
 
     .details_field_name{
         grid-column: 1/2;
         font-weight: 600;
-        text-align: left;
+        text-align: right;
         font-size: 14px;
         justify-self: end;
-        margin-right: 30px;
+        margin-right: 20px;
     }
 
     .details_field_value{
         grid-column: 2/3;
-        text-align: right;
+        text-align: left;
         margin-right: 25px;
         font-size: 14px;
         justify-self: start;

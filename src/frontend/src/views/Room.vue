@@ -5,99 +5,86 @@
         <div id="content">
             <button id="delete_button" @click="deleteReservation()">Delete Reservation</button>
             <div id="navbar">
-                <router-link to="/admin/reservations">Reservations</router-link> /
-                <span> Reservation #{{$route.params.id}}</span>
+                <router-link to="/admin/rooms">Rooms</router-link> /
+                <span> Room {{$route.params.id}}</span>
             </div>
-            <div id="title">Reservation #{{$route.params.id}}</div>
+            <div id="title">Room {{$route.params.id}}</div>
+            <div class="details_box" id="room_details_box">
+                <div id="title_box">Room Details</div>
+                <div class="details_content">
+                    <div class="details_row">
+                        <div class="details_field_name">Number</div>
+                        <div class="details_field_value" id="room_number"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Name</div>
+                        <div class="details_field_value" id="room_name"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Floor</div>
+                        <div class="details_field_value" id="floor"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Price per Night</div>
+                        <div class="details_field_value" id="price_per_night"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Single Beds</div>
+                        <div class="details_field_value" id="single_beds"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Double Beds</div>
+                        <div class="details_field_value" id="double_beds"></div>
+                    </div>
+                </div>
+                
+            </div>
             <div class="details_box" id="reservation_details_box">
-                <div id="title_box">Reservation Details</div>
-                <div class="details_text" id="details_field_name">Reservation ID</div>
-                <div class="details_text" id="details_field_name">No. of Guests</div>
-                <div class="details_text" id="details_field_name">Start Date</div>
-                <div class="details_text" id="details_field_name">End Date</div>
-                <div class="details_text" id="details_field_name">Payment Method</div>
-                <div class="details_text" id="details_field_name">Reservation State</div>
-
-                <div class="details_text" id="details_field_value">1</div>
-                <div class="details_text" id="details_field_value">4</div>
-                <div class="details_text" id="details_field_value">22/01/2022</div>
-                <div class="details_text" id="details_field_value">27/01/2022</div>
-                <div class="details_text" id="details_field_value">Cash</div>
-                <div class="details_text" id="details_field_value">Registered</div>
+                <div id="title_box">Active Reservation Details</div>
+                <div class="details_content">
+                    <div v-if="hasReservation">
+                        <div class="details_row">
+                            <div class="details_field_name">Reservation ID</div>
+                            <div class="details_field_value" id="reservation_id"></div>
+                        </div>
+                        <div class="details_row">
+                            <div class="details_field_name">No. of Guests</div>
+                            <div class="details_field_value" id="no_of_guests"></div>
+                        </div>
+                        <div class="details_row">
+                            <div class="details_field_name">Start Date</div>
+                            <div class="details_field_value" id="start_date"></div>
+                        </div>
+                        <div class="details_row">
+                            <div class="details_field_name">End Date</div>
+                            <div class="details_field_value" id="end_date"></div>
+                        </div>
+                        <div class="details_row">
+                            <div class="details_field_name">Payment Method</div>
+                            <div class="details_field_value" id="payment_method"></div>
+                        </div>
+                        <div class="details_row">
+                            <div class="details_field_name">Reservation State</div>
+                            <div class="details_field_value" id="reservation_state"></div>
+                        </div>
+                    </div>
+                    <div v-else style="margin-top: 125px">No active reservation</div>
+                </div>
             </div>
-            <div class="details_box" id="guest_details_box">
-                <div id="title_box">Guest Details</div>
-                <div class="details_text" id="details_field_name">Guest ID</div>
-                <div class="details_text" id="details_field_name">First Name</div>
-                <div class="details_text" id="details_field_name">Last Name</div>
-                <div class="details_text" id="details_field_name">Date of Birth</div>
-                <div class="details_text" id="details_field_name">Telephone</div>
-                <div class="details_text" id="details_field_name">Address</div>
-
-                <div class="details_text" id="details_field_value">1</div>
-                <div class="details_text" id="details_field_value">Przemysław</div>
-                <div class="details_text" id="details_field_value">Woźniak</div>
-                <div class="details_text" id="details_field_value">17/08/2000</div>
-                <div class="details_text" id="details_field_value">48123654879</div>
-                <div class="details_text" id="details_field_value">Polanka 30b, 61-131 Poznan</div>
-            </div>
-            <div class="details_box" id="rooms_details_box">
-                <div id="title_box">Rooms</div>
+            <div class="details_box" id="reservation_history_box">
+                <div id="title_box">Reservation History</div>
                 <ag-grid-vue
                   class="ag-theme-alpine" id="table_rooms"
-                  :columnDefs="columnDefsRooms"
-                  :rowData="rowDataRooms.value">
+                  :columnDefs="columnDefsReservations"
+                  :rowData="rowDataReservations.value">
                 </ag-grid-vue>
-            </div>
-            <div class="details_box" id="orders_details_box">
-                <div id="title_box">Orders</div>
-                <ag-grid-vue
-                  class="ag-theme-alpine" id="table_orders"
-                  :columnDefs="columnDefsOrders"
-                  :rowData="rowDataOrders.value">
-                </ag-grid-vue>
-                <button id="button_add" @click="showOrderWindow()">Add</button>
             </div>
         </div>
     </div>
-    <div id="order_window">
-        <div id="order_window_title_bar">
-                <div id="order_window_navbar">
-                    <div id="order_window_title"><span>Add order</span></div>
-                </div>
-            <img id="order_window_exit_icon" src="../assets/delete.png" @click="popUpWindow = false; closeOrderWindow()"/>
-        </div>
-        <div id="order_list">
-            <div class="order_list_row" style="margin-bottom: 0;">
-                <div id="category">Category</div>
-                <div id="product">Product</div>
-                <div id="qty">Qty</div>
-                <div id="time">Time</div>
-                <div id="subtotal">Subtotal</div>
-            </div>
-            <hr>
-            <form class="order_list_row" :key="item.id" v-for="(item, index) in orderItems" name=index>
-                <select name="category" id="category" v-model=orderItems[index].category>
-                    <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>
-                </select>
-                <select name="product" id="product" v-model=orderItems[index].product>
-                    <option v-for="product in orderItems[index].category.length != 0 ? (this.items.find(o => o.category === orderItems[index].category).products.map(a => a.productName)) : []" :key=product>{{product}}</option>
-                </select>
-                <input id="qty" type="number" name="qty" min=1 v-model=orderItems[index].qty>
-                <input id="time" type="datetime-local" name="time" v-model=orderItems[index].time>
-                <div id="subtotal">$15</div>
-            </form>
-        </div>
-        <div id="order_window_footer">
-            <button class="order_window_add_item_button" @click="addOrderItem()">Add item</button>
-            <button class="order_window_confirm_order_button" @click="confirmOrder()">Confirm order</button>
-        </div>
-    </div>
-
 </template>
 
 <script>
-    import { AgGridVue } from "ag-grid-vue3";
+    import {AgGridVue} from "ag-grid-vue3";
     import {reactive} from "vue";
     export default {
         name: "Reservation",
@@ -128,64 +115,64 @@
                 qty: 1,
                 time: "",
             }],
-            reservationId: "",
-            rowDataRooms: reactive([]),
-            rowDataOrders: reactive([]),
-            columnDefsRooms: [
-                { field: 'roomNumber', sortable: true, filter: true, type: 'rightAligned', width: 150 },
-                { field: 'roomName', sortable: true, filter: true, type: 'rightAligned', width: 200 },
-                { field: 'pricePerNight', sortable: true, filter: true, type: 'rightAligned',width: 150 },
-                { field: 'totalPrice', sortable: true, filter: true, type: 'rightAligned', width: 125 },
-                { field: 'singleBeds', sortable: true, filter: true, type: 'rightAligned', width: 125 },
-                { field: 'doubleBeds', sortable: true, filter: true, type: 'rightAligned', width: 140 },
-            ],
-            columnDefsOrders: [
-                { field: 'orderID', sortable: true, filter: true, width: 150 },
-                { field: 'totalPrice', sortable: true, filter: true, width: 150 },
-                { field: 'timeOfOrder', sortable: true, filter: true, width: 200 },
+            roomNumber: "",
+            rowDataReservations: reactive([]),
+            columnDefsReservations: [
+                { headerName: "Reservation ID", field: "reservationID",  resizable: true, type: 'rightAligned', width: 130},
+                { headerName: "Guest ID", field: "guestID" , resizable: true, type: 'rightAligned', width: 100},
+                { headerName: "No. of Guests", field: "numberOfGuests" , resizable: true, type: 'rightAligned', width: 150},
+                { headerName: "Start Date", field: "startDate" , resizable: true, type: 'rightAligned',width: 200},
+                { headerName: "End Date", field: "endDate" , resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "Price", field: "price" , resizable: true, type: 'rightAligned', width: 150},
+                { headerName: "Payment Method", field: "paymentMethod" , resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "State", field: "reservationState" , resizable: true, type: 'rightAligned', width: 200},
             ],
             reservationDetails: {},
+            roomDetails: {},
+            hasReservation: true,
         }
     },
     created() {
         this.rowSelection = 'single';
-        this.reservationId = this.$route.params.id;
+        this.roomNumber = this.$route.params.id;
 
-        // FETCH RESERVATION DETAILS AT LOAD
-        fetch('/api/rsv/all?' + new URLSearchParams({
-                reservationID: this.reservationId,
+        // FETCH ROOM DETAILS AT LOAD
+        fetch('/api/room/details?' + new URLSearchParams({
+            roomNumber: this.roomNumber,
+        })).then(result => result.json()).then(data => {
+            this.roomDetails = data;
+            document.querySelector("#room_number").textContent = this.roomDetails.roomNumber;
+            document.querySelector("#room_name").textContent = this.roomDetails.roomName;
+            document.querySelector("#floor").textContent = this.roomDetails.floor;
+            document.querySelector("#price_per_night").textContent = this.roomDetails.pricePerNight;
+            document.querySelector("#single_beds").textContent = this.roomDetails.singleBeds;
+            document.querySelector("#double_beds").textContent = this.roomDetails.doubleBeds;
+        });
+
+        // FETCH ACTIVE RESERVATION DETAILS AT LOAD
+        fetch('/api/rsv/current?' + new URLSearchParams({
+            roomNumber: this.roomNumber,
         })).then(response => response.json()).then(data => {
-            this.reservationDetails = data[0];
-            console.log(this.reservationDetails);
+            this.reservationDetails = data;
+            if(this.reservationDetails.reservationID != 0){
+                this.hasReservation = true;
+                document.querySelector("#reservation_id").textContent = this.reservationDetails.reservationID;
+                document.querySelector("#no_of_guests").textContent = this.reservationDetails.numberOfGuests;
+                document.querySelector("#start_date").textContent = this.reservationDetails.startDate.split('T')[0];
+                document.querySelector("#end_date").textContent = this.reservationDetails.endDate.split('T')[0];
+                document.querySelector("#payment_method").textContent = this.reservationDetails.paymentMethod;
+                document.querySelector("#reservation_state").textContent = this.reservationDetails.reservationState;
+            }
+            else{
+                this.hasReservation = false;
+            }
+            
         });
 
-        // TODO: FETCH GUEST DETAILS AT LOAD
-        // fetch('/api/rsv/all?' + new URLSearchParams({
-        //         reservationID: this.reservationId,
-        // })).then(response => response.json()).then(data => {
-        //     this.items = data;
-        //     console.log(this.items);
-        // });
-
-        // FETCH ROOMS AT LOAD
-        fetch('/api/roominrsv/all?' + new URLSearchParams({
-                reservationID: this.reservationId,
-        })).then(result => result.json()).then(remoteRowData => this.rowDataRooms.value = remoteRowData);
-
-        // FETCH ORDERS AT LOAD
-        fetch('/api/order/all?' + new URLSearchParams({
-            reservationID: this.reservationId,
-        })) .then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
-
-        // FETCH ALL CATEGORIES AND CATEGORIES AT LOAD
-        fetch("/api/cat/products", {
-            method: "GET",
-            headers: {'Content-Type': 'application/json'},
-        }).then(response => response.json()).then(data => {
-            this.items = data;
-            console.log(this.items);
-        });
-        
+        // FETCH RESERVATION HISTORY AT LOAD
+        fetch('/api/rsv/history?' + new URLSearchParams({
+            roomNumber: this.roomNumber,
+        })).then(result => result.json()).then(remoteRowData => this.rowDataReservations.value = remoteRowData);
     },
     methods: {
         onSelectionChanged() {
@@ -248,7 +235,7 @@
 
             var objectEmptyOrder = {
                 timeOfOrder: datetime,
-                reservationID: this.reservationId // CHANGE IT!!
+                reservationID: this.reservationId,
             }
 
             console.log(objectEmptyOrder);
@@ -284,6 +271,11 @@
                         body: JSON.stringify(orderJson)
                     }).then(response => response.json()).then(data => {
                         console.log(data);
+
+                        // FETCH ORDERS ON ORDER ADD
+                        fetch('/api/order/all?' + new URLSearchParams({
+                        reservationID: this.reservationId,
+                        })) .then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
                     });
                 });
             }
@@ -358,18 +350,26 @@
         box-shadow: 0px 1px 2px rgba(50,50,50,0.2);
     }
 
-    #reservation_details_box{
-        grid-area: 3/2/4/3;
-        grid-template-rows: 50px 25px repeat(6, 30px) 1fr;
-        grid-template-columns: 1.5fr 1fr 1.5fr;
-        grid-column-gap: 10px;
+    .details_content{
+        grid-area: 2/1/3/2;
     }
 
-    #guest_details_box{
-        grid-area: 3/3/4/4;
-        grid-template-rows: 50px 25px repeat(6, 30px) 1fr;
-        grid-template-columns: 1.5fr 1fr 1.5fr;
-        grid-template-columns: 1fr 1fr 1fr;
+    #room_details_box{
+        grid-area: 3/2/4/3;
+        grid-template-rows: 50px 1fr;
+        grid-template-columns: 1fr;
+    }
+
+    #reservation_details_box{
+        grid-area: 4/2/5/3;
+        grid-template-rows: 50px 1fr;
+        grid-template-columns: 1fr;
+    }
+
+    #reservation_history_box{
+        grid-area: 3/3/5/5;
+        grid-template-rows: 50px 1fr;
+        grid-template-columns: 1fr;
     }
 
     .details_text{
@@ -377,16 +377,34 @@
         
     }
 
-    #details_field_name{
+    .details_row{
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr 1.5fr;
+        height: 36px;
+        align-items: start;
+    }
+
+    .details_row:first-child{
+        margin-top: 40px;
+    }
+
+    .details_field_name{
         grid-column: 1/2;
         font-weight: 600;
         text-align: right;
+        font-size: 14px;
+        justify-self: end;
+        margin-right: 20px;
     }
 
-    #details_field_value{
+    .details_field_value{
         grid-column: 2/3;
         text-align: left;
-        padding-left: 25px
+        margin-right: 25px;
+        font-size: 14px;
+        justify-self: start;
+        margin-left: 20px;
     }
 
     .details_box .details_text:nth-child(6n+2){
@@ -610,7 +628,9 @@
     hr{
         margin: 0;
         margin-bottom: 20px;
-        color: rgba(50,50,50,0.4);
+        height: 0px;
+        border: none;
+        border-top: 1px solid rgba(40,50,63,0.3);;
     }
 
     #delete_button{
