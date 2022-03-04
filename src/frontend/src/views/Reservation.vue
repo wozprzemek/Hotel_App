@@ -98,7 +98,7 @@
 
 <script>
     import { AgGridVue } from "ag-grid-vue3";
-    import {reactive, onMounted} from "vue";
+    import {reactive} from "vue";
     export default {
         name: "Reservation",
         components: {
@@ -129,23 +129,8 @@
                 time: "",
             }],
             reservationId: "",
-        }
-    },
-    setup() {
-        let rowDataRooms = reactive([]);
-        let rowDataOrders = reactive([]);
-        // var reservationId =  this.$route.params.id;
-        onMounted(() => {
-            fetch('/api/roominrsv/all?' + new URLSearchParams({
-                reservationID: 1,
-            })).then(result => result.json()).then(remoteRowData => rowDataRooms.value = remoteRowData);
-
-            fetch('/api/order/all?' + new URLSearchParams({
-                reservationID: 1,
-            })) .then(result => result.json()).then(remoteRowData => rowDataOrders.value = remoteRowData);
-        })
-
-        return {
+            rowDataRooms: reactive([]),
+            rowDataOrders: reactive([]),
             columnDefsRooms: [
                 { field: 'roomNumber', sortable: true, filter: true, type: 'rightAligned', width: 150 },
                 { field: 'roomName', sortable: true, filter: true, type: 'rightAligned', width: 200 },
@@ -153,22 +138,29 @@
                 { field: 'totalPrice', sortable: true, filter: true, type: 'rightAligned', width: 125 },
                 { field: 'singleBeds', sortable: true, filter: true, type: 'rightAligned', width: 125 },
                 { field: 'doubleBeds', sortable: true, filter: true, type: 'rightAligned', width: 140 },
-        ],
-        rowDataRooms,
-        columnDefsOrders: [
+            ],
+            columnDefsOrders: [
                 { field: 'orderID', sortable: true, filter: true, width: 150 },
                 { field: 'totalPrice', sortable: true, filter: true, width: 150 },
                 { field: 'timeOfOrder', sortable: true, filter: true, width: 200 },
-        ],
-        rowDataOrders,
-        };
+            ],
+        }
     },
     created() {
         this.rowSelection = 'single';
-        console.log(this.orderItems[0].category);
-        console.log(this.items.find(o => o.category === this.orderItems[0].category));
+        this.reservationId = this.$route.params.id;
 
-        // FETCH ALL CATEGORIES AT LOAD
+        // FETCH ROOMS AT LOAD
+        fetch('/api/roominrsv/all?' + new URLSearchParams({
+                reservationID: this.reservationId,
+            })).then(result => result.json()).then(remoteRowData => this.rowDataRooms.value = remoteRowData);
+
+        // FETCH ORDERS AT LOAD
+        fetch('/api/order/all?' + new URLSearchParams({
+            reservationID: this.reservationId,
+        })) .then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
+
+        // FETCH ALL CATEGORIES AND CATEGORIES AT LOAD
         fetch("/api/cat/products", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
@@ -177,7 +169,6 @@
             console.log(this.items);
         });
         
-        this.reservationId = this.$route.params.id;
     },
     methods: {
         onSelectionChanged() {

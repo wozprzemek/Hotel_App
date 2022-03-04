@@ -40,7 +40,7 @@
                     <div id="room_selection_window_title" @click="if(personalInfoWindow){personalInfoWindow = false; roomWindow = true}"><span>Rooms</span></div>
                     <div id="room_selection_window_title" v-if="personalInfoWindow"><span>&nbsp;/&nbsp;Personal info</span></div>
                 </div>
-            <img id="exit_icon" src="../assets/delete.png" @click="popUpWindow = false; roomWindow = false; personalInfoWindow = false"/>
+            <img id="exit_icon" src="../assets/delete.png" @click="closeRoomSelectionWindow"/>
         </div>
         <div id="room_window" v-if="roomWindow">
             <div id="room_configuration_selection_bar">
@@ -460,6 +460,8 @@
                                 body: JSON.stringify(roomListObject)
                             }).then(response => response.json()).then(data => {
                                 console.log(data);
+                                this.popUpWindow = false;
+                                alert('Reservation complete. Thank you!');
                             });
                         });
 
@@ -477,6 +479,13 @@
                         return a
                     }
                 }, 0);
+            },
+            closeRoomSelectionWindow(){
+                this.popUpWindow = false; 
+                this.roomWindow = false; 
+                this.personalInfoWindow = false;
+                this.selectedConfiguration = 0;
+                this.rooms_selected = [];
             },
         }
     }
