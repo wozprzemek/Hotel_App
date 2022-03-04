@@ -124,7 +124,35 @@ public class ReservationController {
         }
     }
 
-
-
+    @GetMapping(path="/current")
+    public @ResponseBody ResponseEntity<ReservationGetter> getCurrentReservation(@RequestParam(name = "roomNumber") Long roomNumber) {
+        try {
+            List<RoomInReservation> roomInReservations = reservationRepository.findAllRoomInReservation(Math.toIntExact(roomNumber));
+            ReservationGetter reservationGetter = null;
+            for(int i=0; i<roomInReservations.size(); i++){
+                Date startDate = roomInReservations.get(i).getReservation().getStartDate();
+                Date endDate = roomInReservations.get(i).getReservation().getEndDate();
+                Date todayDate = new Date();
+                if (todayDate.after(startDate) && endDate.after(todayDate)){
+                    reservationGetter = new ReservationGetter();
+                    reservationGetter.setReservationID(roomInReservations.get(i).getReservation().getId());
+                    reservationGetter.setGuestID(roomInReservations.get(i).getGuest().getId());
+                    reservationGetter.setNumberOfGuests(roomInReservations.get(i).getReservation().getNumberOfGuests());
+                    reservationGetter.setStartDate(roomInReservations.get(i).getReservation().getStartDate());
+                    reservationGetter.setEndDate(roomInReservations.get(i).getReservation().getEndDate());
+                    reservationGetter.setPrice(roomInReservations.get(i).getReservation().getPrice());
+                    reservationGetter.setPaymentMethod(roomInReservations.get(i).getReservation().getPaymentMethod().getPaymentMethodName());
+                    reservationGetter.setReservationState(roomInReservations.get(i).getReservation().getReservationState().getReservationStateName());
+                    break;
+                }
+            }
+            if (reservationGetter == null) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(reservationGetter, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

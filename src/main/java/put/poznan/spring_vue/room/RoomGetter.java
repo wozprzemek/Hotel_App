@@ -11,8 +11,6 @@ public class RoomGetter {
     private float pricePerNight;
     private int singleBeds;
     private int doubleBeds;
-//    private List<ReservationGetter> historyOfReservations;
-//    private ReservationGetter currentReservation;
 
     public int getRoomNumber() {
         return roomNumber;
