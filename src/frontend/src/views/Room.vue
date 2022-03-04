@@ -11,34 +11,7 @@
             <div id="title">Reservation #{{$route.params.id}}</div>
             <div class="details_box" id="reservation_details_box">
                 <div id="title_box">Reservation Details</div>
-                <div class="details_content">
-                    <div class="details_row">
-                        <div class="details_field_name">Reservation ID</div>
-                        <div class="details_field_value" id="reservation_id">1</div>
-                    </div>
-                    <div class="details_row">
-                        <div class="details_field_name">No. of Guests</div>
-                        <div class="details_field_value" id="no_of_guests">4</div>
-                    </div>
-                    <div class="details_row">
-                        <div class="details_field_name">Start Date</div>
-                        <div class="details_field_value" id="start_date">22-01-2022</div>
-                    </div>
-                    <div class="details_row">
-                        <div class="details_field_name">End Date</div>
-                        <div class="details_field_value" id="end_date">11-03-2022</div>
-                    </div>
-                    <div class="details_row">
-                        <div class="details_field_name">Payment Method</div>
-                        <div class="details_field_value" id="payment_method">CARD</div>
-                    </div>
-                    <div class="details_row">
-                        <div class="details_field_name">Reservation State</div>
-                        <div class="details_field_value" id="reservation_state">REGISTERED</div>
-                    </div>
-                </div>
-                
-                <!-- <div class="details_text" id="details_field_name">Reservation ID</div>
+                <div class="details_text" id="details_field_name">Reservation ID</div>
                 <div class="details_text" id="details_field_name">No. of Guests</div>
                 <div class="details_text" id="details_field_name">Start Date</div>
                 <div class="details_text" id="details_field_name">End Date</div>
@@ -50,7 +23,7 @@
                 <div class="details_text" id="details_field_value">22/01/2022</div>
                 <div class="details_text" id="details_field_value">27/01/2022</div>
                 <div class="details_text" id="details_field_value">Cash</div>
-                <div class="details_text" id="details_field_value">Registered</div> -->
+                <div class="details_text" id="details_field_value">Registered</div>
             </div>
             <div class="details_box" id="guest_details_box">
                 <div id="title_box">Guest Details</div>
@@ -184,12 +157,6 @@
         })).then(response => response.json()).then(data => {
             this.reservationDetails = data[0];
             console.log(this.reservationDetails);
-            document.querySelector("#reservation_id").textContent = this.reservationDetails.reservationID;
-            document.querySelector("#no_of_guests").textContent = this.reservationDetails.numberOfGuests;
-            document.querySelector("#start_date").textContent = this.reservationDetails.startDate.split('T')[0];
-            document.querySelector("#end_date").textContent = this.reservationDetails.endDate.split('T')[0];
-            document.querySelector("#payment_method").textContent = this.reservationDetails.paymentMethod;
-            document.querySelector("#reservation_state").textContent = this.reservationDetails.reservationState;
         });
 
         // TODO: FETCH GUEST DETAILS AT LOAD
@@ -281,7 +248,7 @@
 
             var objectEmptyOrder = {
                 timeOfOrder: datetime,
-                reservationID: this.reservationId,
+                reservationID: this.reservationId // CHANGE IT!!
             }
 
             console.log(objectEmptyOrder);
@@ -317,11 +284,6 @@
                         body: JSON.stringify(orderJson)
                     }).then(response => response.json()).then(data => {
                         console.log(data);
-
-                        // FETCH ORDERS ON ORDER ADD
-                        fetch('/api/order/all?' + new URLSearchParams({
-                        reservationID: this.reservationId,
-                        })) .then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
                     });
                 });
             }
@@ -396,14 +358,11 @@
         box-shadow: 0px 1px 2px rgba(50,50,50,0.2);
     }
 
-    .details_content{
-        grid-area: 2/1/3/2;
-    }
-
     #reservation_details_box{
         grid-area: 3/2/4/3;
-        grid-template-rows: 50px 1fr;
-        grid-template-columns: 1fr;
+        grid-template-rows: 50px 25px repeat(6, 30px) 1fr;
+        grid-template-columns: 1.5fr 1fr 1.5fr;
+        grid-column-gap: 10px;
     }
 
     #guest_details_box{
@@ -418,34 +377,16 @@
         
     }
 
-    .details_row{
-        display: grid;
-        grid-template-rows: 1fr;
-        grid-template-columns: 1fr 1fr;
-        height: 36px;
-        align-items: end;
-    }
-
-    .details_row:first-child{
-        margin-top: 20px;
-    }
-
-    .details_field_name{
+    #details_field_name{
         grid-column: 1/2;
         font-weight: 600;
-        text-align: left;
-        font-size: 14px;
-        justify-self: end;
-        margin-right: 30px;
+        text-align: right;
     }
 
-    .details_field_value{
+    #details_field_value{
         grid-column: 2/3;
-        text-align: right;
-        margin-right: 25px;
-        font-size: 14px;
-        justify-self: start;
-        margin-left: 20px;
+        text-align: left;
+        padding-left: 25px
     }
 
     .details_box .details_text:nth-child(6n+2){
@@ -669,9 +610,7 @@
     hr{
         margin: 0;
         margin-bottom: 20px;
-        height: 0px;
-        border: none;
-        border-top: 1px solid rgba(40,50,63,0.3);;
+        color: rgba(50,50,50,0.4);
     }
 
     #delete_button{

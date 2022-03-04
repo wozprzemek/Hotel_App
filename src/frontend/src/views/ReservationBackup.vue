@@ -3,7 +3,7 @@
         <div id="left_bar">
         </div>
         <div id="content">
-            <button id="delete_button">Delete Reservation</button>
+            <button id="delete_button" @click="deleteReservation()">Delete Reservation</button>
             <div id="navbar">
                 <router-link to="/admin/reservations">Reservations</router-link> /
                 <span> Reservation #{{$route.params.id}}</span>
@@ -98,7 +98,7 @@
 
 <script>
     import { AgGridVue } from "ag-grid-vue3";
-    import {reactive, onMounted} from "vue";
+    import {reactive} from "vue";
     export default {
         name: "Reservation",
         components: {
@@ -129,23 +129,8 @@
                 time: "",
             }],
             reservationId: "",
-        }
-    },
-    setup() {
-        let rowDataRooms = reactive([]);
-        let rowDataOrders = reactive([]);
-        // var reservationId =  this.$route.params.id;
-        onMounted(() => {
-            fetch('/api/roominrsv/all?' + new URLSearchParams({
-                reservationID: 1,
-            })).then(result => result.json()).then(remoteRowData => rowDataRooms.value = remoteRowData);
-
-            fetch('/api/order/all?' + new URLSearchParams({
-                reservationID: 1,
-            })) .then(result => result.json()).then(remoteRowData => rowDataOrders.value = remoteRowData);
-        })
-
-        return {
+            rowDataRooms: reactive([]),
+            rowDataOrders: reactive([]),
             columnDefsRooms: [
                 { field: 'roomNumber', sortable: true, filter: true, type: 'rightAligned', width: 150 },
                 { field: 'roomName', sortable: true, filter: true, type: 'rightAligned', width: 200 },
@@ -153,22 +138,46 @@
                 { field: 'totalPrice', sortable: true, filter: true, type: 'rightAligned', width: 125 },
                 { field: 'singleBeds', sortable: true, filter: true, type: 'rightAligned', width: 125 },
                 { field: 'doubleBeds', sortable: true, filter: true, type: 'rightAligned', width: 140 },
-        ],
-        rowDataRooms,
-        columnDefsOrders: [
+            ],
+            columnDefsOrders: [
                 { field: 'orderID', sortable: true, filter: true, width: 150 },
                 { field: 'totalPrice', sortable: true, filter: true, width: 150 },
                 { field: 'timeOfOrder', sortable: true, filter: true, width: 200 },
-        ],
-        rowDataOrders,
-        };
+            ],
+            reservationDetails: {},
+        }
     },
     created() {
         this.rowSelection = 'single';
-        console.log(this.orderItems[0].category);
-        console.log(this.items.find(o => o.category === this.orderItems[0].category));
+        this.reservationId = this.$route.params.id;
 
-        // FETCH ALL CATEGORIES AT LOAD
+        // FETCH RESERVATION DETAILS AT LOAD
+        fetch('/api/rsv/all?' + new URLSearchParams({
+                reservationID: this.reservationId,
+        })).then(response => response.json()).then(data => {
+            this.reservationDetails = data[0];
+            console.log(this.reservationDetails);
+        });
+
+        // TODO: FETCH GUEST DETAILS AT LOAD
+        // fetch('/api/rsv/all?' + new URLSearchParams({
+        //         reservationID: this.reservationId,
+        // })).then(response => response.json()).then(data => {
+        //     this.items = data;
+        //     console.log(this.items);
+        // });
+
+        // FETCH ROOMS AT LOAD
+        fetch('/api/roominrsv/all?' + new URLSearchParams({
+                reservationID: this.reservationId,
+        })).then(result => result.json()).then(remoteRowData => this.rowDataRooms.value = remoteRowData);
+
+        // FETCH ORDERS AT LOAD
+        fetch('/api/order/all?' + new URLSearchParams({
+            reservationID: this.reservationId,
+        })) .then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
+
+        // FETCH ALL CATEGORIES AND CATEGORIES AT LOAD
         fetch("/api/cat/products", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
@@ -177,7 +186,6 @@
             console.log(this.items);
         });
         
-        this.reservationId = this.$route.params.id;
     },
     methods: {
         onSelectionChanged() {
@@ -283,6 +291,12 @@
                 alert("You have unfinished order items.");
             }
         },
+        deleteReservation(){
+            if (confirm('Are you sure you want to DELETE THIS RESERVATION? \nThis action is irreversible!')) {
+                console.log('deleted');
+                this.$router.push({ path: '/admin/reservations/'})
+            }
+        }
   },
 }
 </script>
@@ -596,7 +610,9 @@
     hr{
         margin: 0;
         margin-bottom: 20px;
-        color: rgba(50,50,50,0.4);
+        height: 0px;
+        border: none;
+        border-top: 1px solid rgba(40,50,63,0.3);;
     }
 
     #delete_button{

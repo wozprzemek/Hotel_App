@@ -4,6 +4,10 @@ import Client from "../views/Client.vue"
 import AdminLogin from "../views/AdminLogin.vue"
 import Reservation from "../views/Reservation.vue"
 import ReservationsPanel from "../views/ReservationsPanel.vue"
+import Room from "../views/Room.vue"
+import RoomsPanel from "../views/RoomsPanel.vue"
+import Guest from "../views/Guest.vue"
+import GuestsPanel from "../views/GuestsPanel.vue"
 const routes = [
   {
     path: "/",
@@ -29,6 +33,26 @@ const routes = [
     path: '/admin/reservations/:id',
     name: "Reservation",
     component: Reservation,
+  },
+  {
+    path: '/admin/rooms',
+    name: "RoomsPanel",
+    component: RoomsPanel,
+  },
+  {
+    path: '/admin/rooms/:id',
+    name: "Room",
+    component: Room,
+  },
+  {
+    path: '/admin/guests',
+    name: "GuestsPanel",
+    component: GuestsPanel,
+  },
+  {
+    path: '/admin/guests/:id',
+    name: "Guest",
+    component: Guest,
   },
 ];
 
