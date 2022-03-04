@@ -78,4 +78,25 @@ public class RoomController {
 
         return new ResponseEntity<>(totalAvailableRooms, HttpStatus.OK);
     }
+
+    @GetMapping(path="/room")
+    public @ResponseBody ResponseEntity<RoomGetter> getRoomDetails(@RequestParam("roomNumber") int roomNumber) {
+
+        RoomGetter roomGetter;
+        try {
+            roomGetter = new RoomGetter();
+            Room room = roomRepository.findRoomByNumber(roomNumber);
+            roomGetter.setRoomName(room.getRoomName());
+            roomGetter.setRoomNumber(room.getNumber());
+            roomGetter.setFloor(room.getFloor());
+            roomGetter.setPricePerNight(room.getPricePerNight());
+            roomGetter.setSingleBeds(room.getSingleBeds());
+            roomGetter.setDoubleBeds(room.getDoubleBeds());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(roomGetter, HttpStatus.OK);
+    }
 }

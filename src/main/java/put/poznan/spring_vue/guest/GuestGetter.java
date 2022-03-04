@@ -11,6 +11,9 @@ public class GuestGetter {
     private String telephone;
     private String country;
     private String city;
+    private String streetName;
+    private String buildingNumber;
+    private String apartmentNumber;
 
     public int getGuestID() {
         return guestID;
@@ -66,5 +69,29 @@ public class GuestGetter {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getStreetName() {
+        return streetName;
+    }
+
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
+    }
+
+    public String getBuildingNumber() {
+        return buildingNumber;
+    }
+
+    public void setBuildingNumber(String buildingNumber) {
+        this.buildingNumber = buildingNumber;
+    }
+
+    public String getApartmentNumber() {
+        return apartmentNumber;
+    }
+
+    public void setApartmentNumber(String apartmentNumber) {
+        this.apartmentNumber = apartmentNumber;
     }
 }

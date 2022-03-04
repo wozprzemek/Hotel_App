@@ -25,4 +25,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     @Query(value = "SELECT CALCULATE_CAPACITY(:rm_no) FROM DUAL", nativeQuery = true)
     Integer checkCapacity(@Param("rm_no") int rm_no);
 
+    Room findRoomByNumber(int room_number);
+
 }

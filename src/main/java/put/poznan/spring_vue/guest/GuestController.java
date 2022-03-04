@@ -49,6 +49,9 @@ public class GuestController {
                     guestGetter.setTelephone(guests.get(i).getTelephone());
                     guestGetter.setCity(guests.get(i).getAddress().getCity().getCityName());
                     guestGetter.setCountry(guests.get(i).getAddress().getCity().getCountry().getCountryName());
+                    guestGetter.setStreetName(guests.get(i).getAddress().getStreetName());
+                    guestGetter.setStreetName(guests.get(i).getAddress().getBuildingNumber());
+                    guestGetter.setStreetName(guests.get(i).getAddress().getApartmentNumber());
                     toReturn.add(guestGetter);
                     guestGetter = null;
                 }
@@ -61,6 +64,9 @@ public class GuestController {
                 guestGetter.setTelephone(guests.get(0).getTelephone());
                 guestGetter.setCity(guests.get(0).getAddress().getCity().getCityName());
                 guestGetter.setCountry(guests.get(0).getAddress().getCity().getCountry().getCountryName());
+                guestGetter.setStreetName(guests.get(0).getAddress().getStreetName());
+                guestGetter.setStreetName(guests.get(0).getAddress().getBuildingNumber());
+                guestGetter.setStreetName(guests.get(0).getAddress().getApartmentNumber());
                 toReturn.add(guestGetter);
                 guestGetter = null;
             }
@@ -90,6 +96,9 @@ public class GuestController {
             guestGetter.setTelephone(guest.getTelephone());
             guestGetter.setCity(guest.getAddress().getCity().getCityName());
             guestGetter.setCountry(guest.getAddress().getCity().getCountry().getCountryName());
+            guestGetter.setStreetName(guest.getAddress().getStreetName());
+            guestGetter.setStreetName(guest.getAddress().getBuildingNumber());
+            guestGetter.setStreetName(guest.getAddress().getApartmentNumber());
 
             return new ResponseEntity<>(guestGetter, HttpStatus.OK);
         } catch (Exception e) {
