@@ -13,6 +13,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     Room findByNumber(int number);
 
+    List<Room> findAll();
+
     @Query("SELECT ht FROM Hotel ht WHERE ht.id = :ht_id")
     Hotel findHotelByID(@Param("ht_id") int ht_id);
 

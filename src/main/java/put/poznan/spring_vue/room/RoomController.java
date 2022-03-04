@@ -31,22 +31,28 @@ public class RoomController {
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody ResponseEntity<List<Room>> getAllRooms(@RequestParam(name = "number", required = false) Long number) {
+    public @ResponseBody ResponseEntity<List<RoomGetter>> getAllRooms() {
+        RoomGetter roomGetter;
+        List<RoomGetter> roomGetterList = new ArrayList<>();
+        List<Room> rooms = roomRepository.findAll();
         try {
-            List<Room> rooms = new ArrayList<Room>();
-            if (number == null) {
-                rooms.addAll(roomRepository.findAll());
-            } else {
-                rooms.add(roomRepository.findByNumber(Math.toIntExact(number)));
+            for(int i=0;i<rooms.size(); i++) {
+                roomGetter = new RoomGetter();
+                roomGetter.setRoomName(rooms.get(i).getRoomName());
+                roomGetter.setRoomNumber(rooms.get(i).getNumber());
+                roomGetter.setFloor(rooms.get(i).getFloor());
+                roomGetter.setPricePerNight(rooms.get(i).getPricePerNight());
+                roomGetter.setSingleBeds(rooms.get(i).getSingleBeds());
+                roomGetter.setDoubleBeds(rooms.get(i).getDoubleBeds());
+                roomGetterList.add(roomGetter);
             }
-            if (rooms.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(rooms, HttpStatus.OK);
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+        return new ResponseEntity<>(roomGetterList, HttpStatus.OK);
     }
 
     @PostMapping(path="/av")
