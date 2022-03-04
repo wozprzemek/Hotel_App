@@ -13,6 +13,7 @@ import put.poznan.spring_vue.order.Order;
 import put.poznan.spring_vue.order.OrderDetails;
 import put.poznan.spring_vue.paymentMethod.PaymentMethod;
 import put.poznan.spring_vue.reservationState.ReservationState;
+import put.poznan.spring_vue.roomInReservation.RoomInReservation;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -94,6 +95,36 @@ public class ReservationController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(path="/history")
+    public @ResponseBody ResponseEntity<List<ReservationGetter>> getReservationsHistory(@RequestParam(name = "roomNumber", required = false) Long roomNumber) {
+        try {
+            List<RoomInReservation> roomInReservations = reservationRepository.findAllRoomInReservation(Math.toIntExact(roomNumber));
+            List<ReservationGetter> reservationGetterList = new ArrayList<>();
+
+            for(int i=0; i<roomInReservations.size(); i++){
+                ReservationGetter reservationGetter = new ReservationGetter();
+                reservationGetter.setReservationID(roomInReservations.get(i).getReservation().getId());
+                reservationGetter.setGuestID(roomInReservations.get(i).getGuest().getId());
+                reservationGetter.setNumberOfGuests(roomInReservations.get(i).getReservation().getNumberOfGuests());
+                reservationGetter.setStartDate(roomInReservations.get(i).getReservation().getStartDate());
+                reservationGetter.setEndDate(roomInReservations.get(i).getReservation().getEndDate());
+                reservationGetter.setPrice(roomInReservations.get(i).getReservation().getPrice());
+                reservationGetter.setPaymentMethod(roomInReservations.get(i).getReservation().getPaymentMethod().getPaymentMethodName());
+                reservationGetter.setReservationState(roomInReservations.get(i).getReservation().getReservationState().getReservationStateName());
+                reservationGetterList.add(reservationGetter);
+            }
+
+            if (roomInReservations.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(reservationGetterList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
 
 }

@@ -79,7 +79,7 @@ public class RoomController {
         return new ResponseEntity<>(totalAvailableRooms, HttpStatus.OK);
     }
 
-    @GetMapping(path="/room")
+    @GetMapping(path="/details")
     public @ResponseBody ResponseEntity<RoomGetter> getRoomDetails(@RequestParam("roomNumber") int roomNumber) {
 
         RoomGetter roomGetter;
