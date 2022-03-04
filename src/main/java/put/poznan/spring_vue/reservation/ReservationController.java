@@ -147,7 +147,7 @@ public class ReservationController {
                 }
             }
             if (reservationGetter == null) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(null, HttpStatus.OK);
             }
             return new ResponseEntity<>(reservationGetter, HttpStatus.OK);
         } catch (Exception e) {
