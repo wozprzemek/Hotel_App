@@ -50,8 +50,8 @@ public class GuestController {
                     guestGetter.setCity(guests.get(i).getAddress().getCity().getCityName());
                     guestGetter.setCountry(guests.get(i).getAddress().getCity().getCountry().getCountryName());
                     guestGetter.setStreetName(guests.get(i).getAddress().getStreetName());
-                    guestGetter.setStreetName(guests.get(i).getAddress().getBuildingNumber());
-                    guestGetter.setStreetName(guests.get(i).getAddress().getApartmentNumber());
+                    guestGetter.setBuildingNumber(guests.get(i).getAddress().getBuildingNumber());
+                    guestGetter.setApartmentNumber(guests.get(i).getAddress().getApartmentNumber());
                     toReturn.add(guestGetter);
                     guestGetter = null;
                 }
@@ -65,8 +65,8 @@ public class GuestController {
                 guestGetter.setCity(guests.get(0).getAddress().getCity().getCityName());
                 guestGetter.setCountry(guests.get(0).getAddress().getCity().getCountry().getCountryName());
                 guestGetter.setStreetName(guests.get(0).getAddress().getStreetName());
-                guestGetter.setStreetName(guests.get(0).getAddress().getBuildingNumber());
-                guestGetter.setStreetName(guests.get(0).getAddress().getApartmentNumber());
+                guestGetter.setBuildingNumber(guests.get(0).getAddress().getBuildingNumber());
+                guestGetter.setApartmentNumber(guests.get(0).getAddress().getApartmentNumber());
                 toReturn.add(guestGetter);
                 guestGetter = null;
             }
@@ -97,8 +97,8 @@ public class GuestController {
             guestGetter.setCity(guest.getAddress().getCity().getCityName());
             guestGetter.setCountry(guest.getAddress().getCity().getCountry().getCountryName());
             guestGetter.setStreetName(guest.getAddress().getStreetName());
-            guestGetter.setStreetName(guest.getAddress().getBuildingNumber());
-            guestGetter.setStreetName(guest.getAddress().getApartmentNumber());
+            guestGetter.setBuildingNumber(guest.getAddress().getBuildingNumber());
+            guestGetter.setApartmentNumber(guest.getAddress().getApartmentNumber());
 
             return new ResponseEntity<>(guestGetter, HttpStatus.OK);
         } catch (Exception e) {
