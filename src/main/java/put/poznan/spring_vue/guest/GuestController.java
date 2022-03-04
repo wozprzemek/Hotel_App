@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.address.Address;
+import put.poznan.spring_vue.reservation.Reservation;
 import put.poznan.spring_vue.reservation.ReservationGetter;
 import put.poznan.spring_vue.room.Room;
 
@@ -69,6 +70,28 @@ public class GuestController {
             }
 
             return new ResponseEntity<>(toReturn, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(path="/reservationID")
+    public @ResponseBody ResponseEntity<GuestGetter> getAllGuestsByReservationID(@RequestParam(name = "reservationID", required = true) Long reservationID) {
+        try {
+            Reservation reservation = guestRepository.findReservationByReservationID(Math.toIntExact(reservationID));
+            Guest guest = reservation.getGuest();
+            GuestGetter guestGetter;
+
+            guestGetter = new GuestGetter();
+            guestGetter.setGuestID(guest.getId());
+            guestGetter.setFirstName(guest.getFirstName());
+            guestGetter.setLastName(guest.getLastName());
+            guestGetter.setDateOfBirth(guest.getDateOfBirth());
+            guestGetter.setTelephone(guest.getTelephone());
+            guestGetter.setCity(guest.getAddress().getCity().getCityName());
+            guestGetter.setCountry(guest.getAddress().getCity().getCountry().getCountryName());
+
+            return new ResponseEntity<>(guestGetter, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
