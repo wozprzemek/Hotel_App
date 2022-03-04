@@ -3,6 +3,7 @@
         <div id="left_bar">
         </div>
         <div id="content">
+            <button id="delete_button" @click="deleteReservation()">Delete Reservation</button>
             <div id="navbar">
                 <router-link to="/admin/reservations">Reservations</router-link> /
                 <span> Reservation #{{$route.params.id}}</span>
@@ -44,16 +45,16 @@
                 <div id="title_box">Rooms</div>
                 <ag-grid-vue
                   class="ag-theme-alpine" id="table_rooms"
-                  :columnDefs="columnDefs"
-                  :rowData="rowData.value">
+                  :columnDefs="columnDefsRooms"
+                  :rowData="rowDataRooms.value">
                 </ag-grid-vue>
             </div>
             <div class="details_box" id="orders_details_box">
                 <div id="title_box">Orders</div>
                 <ag-grid-vue
                   class="ag-theme-alpine" id="table_orders"
-                  :columnDefs="columnDefs"
-                  :rowData="rowData.value">
+                  :columnDefs="columnDefsOrders"
+                  :rowData="rowDataOrders.value">
                 </ag-grid-vue>
                 <button id="button_add" @click="showOrderWindow()">Add</button>
             </div>
@@ -75,12 +76,12 @@
                 <div id="subtotal">Subtotal</div>
             </div>
             <hr>
-            <form class="order_list_row" :key="item.id" v-for="(item, index) in orderItems" name=item>
-                <select name="category" id="category" form=item v-model=orderItems[index].category>
+            <form class="order_list_row" :key="item.id" v-for="(item, index) in orderItems" name=index>
+                <select name="category" id="category" v-model=orderItems[index].category>
                     <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>
                 </select>
-                <select name="product" id="product" form=item v-model=orderItems[index].product>
-                    <option v-for="product in orderItems[index].category.length != 0 ? (items.find(o => o.category === orderItems[index].category).product) : []" :key=product>{{product}}</option>
+                <select name="product" id="product" v-model=orderItems[index].product>
+                    <option v-for="product in orderItems[index].category.length != 0 ? (this.items.find(o => o.category === orderItems[index].category).products.map(a => a.productName)) : []" :key=product>{{product}}</option>
                 </select>
                 <input id="qty" type="number" name="qty" min=1 v-model=orderItems[index].qty>
                 <input id="time" type="datetime-local" name="time" v-model=orderItems[index].time>
@@ -89,7 +90,7 @@
         </div>
         <div id="order_window_footer">
             <button class="order_window_add_item_button" @click="addOrderItem()">Add item</button>
-            <button class="order_window_confirm_order_button">Confirm order</button>
+            <button class="order_window_confirm_order_button" @click="confirmOrder()">Confirm order</button>
         </div>
     </div>
 
@@ -97,7 +98,7 @@
 
 <script>
     import { AgGridVue } from "ag-grid-vue3";
-    import {reactive, onMounted} from "vue";
+    import {reactive} from "vue";
     export default {
         name: "Reservation",
         components: {
@@ -116,20 +117,7 @@
                     subtotal: 0,
                 },
             ],
-            items: [
-                {
-                    category: "breakfast",
-                    product: ["egg", "pancake"],
-                },
-                {
-                    category: "dinner",
-                    product: ["chicken", "spaghetti"],
-                },
-                {
-                    category: "SPA",
-                    product: ["massage", "sauna"],
-                },
-            ],
+            items: [],
             itemsFetched: [],
             selectedCategories: [],
             selectedProducts: [],
@@ -140,43 +128,62 @@
                 qty: 1,
                 time: "",
             }],
+            reservationId: "",
+            rowDataRooms: reactive([]),
+            rowDataOrders: reactive([]),
+            columnDefsRooms: [
+                { field: 'roomNumber', sortable: true, filter: true, type: 'rightAligned', width: 150 },
+                { field: 'roomName', sortable: true, filter: true, type: 'rightAligned', width: 200 },
+                { field: 'pricePerNight', sortable: true, filter: true, type: 'rightAligned',width: 150 },
+                { field: 'totalPrice', sortable: true, filter: true, type: 'rightAligned', width: 125 },
+                { field: 'singleBeds', sortable: true, filter: true, type: 'rightAligned', width: 125 },
+                { field: 'doubleBeds', sortable: true, filter: true, type: 'rightAligned', width: 140 },
+            ],
+            columnDefsOrders: [
+                { field: 'orderID', sortable: true, filter: true, width: 150 },
+                { field: 'totalPrice', sortable: true, filter: true, width: 150 },
+                { field: 'timeOfOrder', sortable: true, filter: true, width: 200 },
+            ],
+            reservationDetails: {},
         }
-    },
-    setup() {
-        let rowData = reactive([]);
-
-        onMounted(() => {
-            fetch('https://www.ag-grid.com/example-assets/small-row-data.json')
-                .then(result => result.json())
-                .then(remoteRowData => rowData.value = remoteRowData);
-
-            fetch("https://api.npoint.io/4954ac84ccd9bb0388a6")
-                .then(res => res.json())
-                .then(data => console.log(data));
-
-        })
-
-        return {
-            columnDefs: [
-                { field: 'make', sortable: true, filter: true, width: 200 },
-                { field: 'model', sortable: true, filter: true, width: 200 },
-                { field: 'price', sortable: true, filter: true, width: 150 }
-        ],
-        rowData
-        };
     },
     created() {
         this.rowSelection = 'single';
-        console.log(this.orderItems[0].category);
-        console.log(this.items.find(o => o.category === this.orderItems[0].category));
+        this.reservationId = this.$route.params.id;
 
-        // FETCH ALL CATEGORIES AT LOAD
+        // FETCH RESERVATION DETAILS AT LOAD
+        fetch('/api/rsv/all?' + new URLSearchParams({
+                reservationID: this.reservationId,
+        })).then(response => response.json()).then(data => {
+            this.reservationDetails = data[0];
+            console.log(this.reservationDetails);
+        });
+
+        // TODO: FETCH GUEST DETAILS AT LOAD
+        // fetch('/api/rsv/all?' + new URLSearchParams({
+        //         reservationID: this.reservationId,
+        // })).then(response => response.json()).then(data => {
+        //     this.items = data;
+        //     console.log(this.items);
+        // });
+
+        // FETCH ROOMS AT LOAD
+        fetch('/api/roominrsv/all?' + new URLSearchParams({
+                reservationID: this.reservationId,
+        })).then(result => result.json()).then(remoteRowData => this.rowDataRooms.value = remoteRowData);
+
+        // FETCH ORDERS AT LOAD
+        fetch('/api/order/all?' + new URLSearchParams({
+            reservationID: this.reservationId,
+        })) .then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
+
+        // FETCH ALL CATEGORIES AND CATEGORIES AT LOAD
         fetch("/api/cat/products", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
         }).then(response => response.json()).then(data => {
-            this.itemsFetched = data;
-            console.log(this.itemsFetched);
+            this.items = data;
+            console.log(this.items);
         });
         
     },
@@ -214,7 +221,6 @@
             this.popUpWindow = true;
             var orderWindow = document.querySelector("#order_window");
             orderWindow.style.visibility = "visible";
-            console.log(this.selectedCategories);
         },
         closeOrderWindow(){
             if (confirm('Are you sure you want to cancel this order?')) {
@@ -228,7 +234,69 @@
                 this.selectedItems = []
                 console.log('Order canceled');
             }
-    },
+        },
+        confirmOrder(){
+            // first POST an empty order
+            var currentdate = new Date(); 
+            var datetime = 
+                currentdate.getFullYear() + "-"
+                + (currentdate.getMonth()+1)  + "-" 
+                + currentdate.getDate() + "T"
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes()
+
+
+            var objectEmptyOrder = {
+                timeOfOrder: datetime,
+                reservationID: this.reservationId // CHANGE IT!!
+            }
+
+            console.log(objectEmptyOrder);
+            
+            const all = document.querySelectorAll('form.order_list_row');
+                // Change the text of multiple elements with a loop
+                var orderItems = [];
+                all.forEach(element => {
+                    var formData = new FormData(element);
+                    var orderRow = {};
+                    formData.forEach((value, key) => orderRow[key] = value);
+                    orderItems.push(orderRow);
+            });
+    
+
+            if (orderItems.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length === 0){
+                
+                var orderId;
+                var orderJson = {};
+
+                fetch("/api/order/add", {
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(objectEmptyOrder)
+                }).then(response => response.json()).then(data => {
+                    orderId = data;
+                    console.log(orderId);
+                    orderJson.orderID = orderId;
+                    orderJson.products = orderItems;
+                    fetch("/api/prodinord/add", {
+                        method: "POST",
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(orderJson)
+                    }).then(response => response.json()).then(data => {
+                        console.log(data);
+                    });
+                });
+            }
+            else{
+                alert("You have unfinished order items.");
+            }
+        },
+        deleteReservation(){
+            if (confirm('Are you sure you want to DELETE THIS RESERVATION? \nThis action is irreversible!')) {
+                console.log('deleted');
+                this.$router.push({ path: '/admin/reservations/'})
+            }
+        }
   },
 }
 </script>
@@ -542,7 +610,23 @@
     hr{
         margin: 0;
         margin-bottom: 20px;
-        color: rgba(50,50,50,0.4);
+        height: 0px;
+        border: none;
+        border-top: 1px solid rgba(40,50,63,0.3);;
+    }
+
+    #delete_button{
+        background: #D01117;
+        width: 200px;
+        height: 40px;
+        color: white;
+        font-size: 16px;
+        align-self: center;
+        justify-self: end;
+        border-radius: 2px;
+        border: none;
+        cursor: pointer;
+        grid-area: 2/4/3/5;
     }
 
 </style>
