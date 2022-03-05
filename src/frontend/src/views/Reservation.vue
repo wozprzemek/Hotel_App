@@ -11,6 +11,10 @@
         border: none;
         border-top: 2px solid rgba(60,60,73,1);">
                 <div class="left_bar_text"><router-link to="/admin/rooms">Rooms</router-link></div>
+                <hr style="width: 200px; height: 0px;
+        border: none;
+        border-top: 2px solid rgba(60,60,73,1);">
+                <div class="left_bar_text"><router-link to="/admin/orders">Orders</router-link></div>
             </div>
         </div>
         <div id="content">
@@ -127,6 +131,7 @@
                 <input id="qty" type="number" name="productQuantity" min=1 v-model=orderItems[index].productQuantity @change=getOrderItemPrice(index)>
                 <input id="time" type="datetime-local" name="serviceTime" v-model=orderItems[index].serviceTime>
                 <input type="number" id="subtotal" name="subtotalPrice" v-model=orderItems[index].subtotalPrice readonly>
+                <div id="subtotal" style="font-size: 20px">${{orderItems[index].subtotalPrice}}</div>
                 <img id="remove_order_icon" src="../assets/remove.png" @click="removeOrder(index)"/>
             </form>
         </div>
@@ -208,7 +213,7 @@
         });
 
         // TODO: FETCH GUEST DETAILS AT LOAD
-        fetch('/api/guest/reservationID?' + new URLSearchParams({
+        fetch('/api/guest/details?' + new URLSearchParams({
                 reservationID: this.reservationId,
         })).then(response => response.json()).then(data => {
             this.guestDetails = data;
@@ -366,6 +371,10 @@
             console.log(params.node.data.roomNumber);
             this.$router.push({ path: '/admin/rooms/' + params.node.data.roomNumber });
         },
+        onRowClickedOrders(params) {
+            console.log(params.node.data.orderID);
+            this.$router.push({ path: '/admin/orders/' + params.node.data.orderID });
+        },
         removeOrder(index){
             if (this.orderItems.length > 1){
                 this.orderItems.splice(index, 1);
@@ -386,17 +395,16 @@
 
 <style scoped>
 
-    /* Chrome, Safari, Edge, Opera */
-    /* input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-    } */
+    input[type="number"]#subtotal::-webkit-outer-spin-button,
+    input[type="number"]#subtotal::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type="number"]#subtotal {
+        -moz-appearance: textfield;
+        display: none;
+    }
 
-    /* Firefox */
-    /* input[type=number] {
-    -moz-appearance: textfield;
-    } */
     body{
         margin: 0;
         padding: 0;

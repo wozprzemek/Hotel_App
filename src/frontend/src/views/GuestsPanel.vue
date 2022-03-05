@@ -11,18 +11,21 @@
         border: none;
         border-top: 2px solid rgba(60,60,73,1);">
                 <div class="left_bar_text"><router-link to="/admin/rooms">Rooms</router-link></div>
+                <hr style="width: 200px; height: 0px;
+        border: none;
+        border-top: 2px solid rgba(60,60,73,1);">
+                <div class="left_bar_text"><router-link to="/admin/orders">Orders</router-link></div>
             </div>
         </div>
           <div id="content">
               <div id="navbar">
-                  <span> Reservations</span> /
+                  <span> Guests</span> /
               </div>
-              <div id="title">Reservations</div>
+              <div id="title">Guests</div>
               <ag-grid-vue
                   class="ag-theme-alpine" id="table"
                   :columnDefs="columnDefs"
                   :rowData="rowData.value"
-                  @rowClicked="onRowClicked"
               >
               </ag-grid-vue>
           </div>
@@ -46,21 +49,23 @@ export default {
 
 
     onMounted(() => {
-        fetch('/api/rsv/all')
+        fetch('/api/guest/all')
           .then(result => result.json())
           .then(remoteRowData => rowData.value = remoteRowData);
     })
 
     return {
         columnDefs: [
-        { headerName: "Reservation ID", field: "reservationID",  resizable: true, type: 'rightAligned', width: 150},
-        { headerName: "Guest ID", field: "guestID" , resizable: true, type: 'rightAligned', width: 150},
-        { headerName: "No. of Guests", field: "numberOfGuests" , resizable: true, type: 'rightAligned', width: 150},
-        { headerName: "Start Date", field: "startDate" , resizable: true, type: 'rightAligned',width: 200},
-        { headerName: "End Date", field: "endDate" , resizable: true, type: 'rightAligned', width: 200},
-        { headerName: "Price", field: "price" , resizable: true, type: 'rightAligned', width: 150},
-        { headerName: "Payment Method", field: "paymentMethod" , resizable: true, type: 'rightAligned', width: 200},
-        { headerName: "State", field: "reservationState" , resizable: true, type: 'rightAligned', width: 200},
+        { headerName: "Guest ID", field: "guestID" , resizable: true, type: 'rightAligned', width: 90},
+        { headerName: "First Name", field: "firstName" , resizable: true, type: 'rightAligned', width: 140},
+        { headerName: "Last Name", field: "lastName" , resizable: true, type: 'rightAligned',width: 150},
+        { headerName: "Date of Birth", field: "dateOfBirth" , resizable: true, type: 'rightAligned', width: 150},
+        { headerName: "Telephone", field: "telephone" , resizable: true, type: 'rightAligned', width: 125},
+        { headerName: "Country", field: "country" , resizable: true, type: 'rightAligned', width: 150},
+        { headerName: "City", field: "city" , resizable: true, type: 'rightAligned', width: 150},
+        { headerName: "Street Name", field: "streetName" , resizable: true, type: 'rightAligned', width: 150},
+        { headerName: "Building Number", field: "buildingNumber" , resizable: true, type: 'rightAligned', width: 150},
+        { headerName: "Apartment Number", field: "apartmentNumber" , resizable: true, type: 'rightAligned', width: 170},
       ],
       rowData
     };

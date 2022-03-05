@@ -7,6 +7,8 @@ import ReservationsPanel from "../views/ReservationsPanel.vue"
 import Room from "../views/Room.vue"
 import RoomsPanel from "../views/RoomsPanel.vue"
 import GuestsPanel from "../views/GuestsPanel.vue"
+import Order from "../views/Order.vue"
+import OrderPanel from "../views/OrderPanel.vue"
 const routes = [
   {
     path: "/",
@@ -47,6 +49,16 @@ const routes = [
     path: '/admin/guests',
     name: "GuestsPanel",
     component: GuestsPanel,
+  },
+  {
+    path: '/admin/orders',
+    name: "OrderPanel",
+    component: OrderPanel,
+  },
+  {
+    path: '/admin/orders/:id',
+    name: "Order",
+    component: Order,
   },
 ];
 
