@@ -1,5 +1,8 @@
 package put.poznan.spring_vue.productInOrder;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class ProductInProductInOrderDetails {
@@ -37,7 +40,7 @@ public class ProductInProductInOrderDetails {
         return serviceTime;
     }
 
-    public void setServiceTime(Date serviceTime) {
+    public void setServiceTime(Date serviceTime) throws ParseException {
         this.serviceTime = serviceTime;
     }
 

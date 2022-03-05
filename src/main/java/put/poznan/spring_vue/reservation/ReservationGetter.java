@@ -15,6 +15,9 @@ public class ReservationGetter {
     private String paymentMethod;
     private String reservationState;
 
+    public ReservationGetter() {
+    }
+
     public int getReservationID() {
         return reservationID;
     }
@@ -40,22 +43,19 @@ public class ReservationGetter {
     }
 
     public Date getStartDate() throws ParseException {
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        return formatter.parse(formatter.format(startDate));
+        return this.startDate;
     }
 
     public void setStartDate(Date startDate) throws ParseException {
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        this.startDate = formatter.parse(formatter.format(startDate));
+        this.startDate = startDate;
     }
 
     public Date getEndDate() {
-        return endDate;
+        return this.endDate;
     }
 
     public void setEndDate(Date endDate) throws ParseException {
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        this.endDate = formatter.parse(formatter.format(endDate));
+        this.endDate = endDate;
     }
 
     public float getPrice() {
