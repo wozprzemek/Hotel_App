@@ -49,7 +49,12 @@ public class OrderController {
     @GetMapping(path="/all")
     public @ResponseBody ResponseEntity<List<OrderGetter>> getAllOrders(@RequestParam(name = "reservationID", required = false) Long reservationID) {
         try {
-            List<Order> orders = orderRepository.findOrderByReservationId(Math.toIntExact(reservationID));
+            List<Order> orders;
+            if (reservationID != null) {
+                orders = orderRepository.findOrderByReservationId(Math.toIntExact(reservationID));
+            }else{
+                orders = orderRepository.findAll();
+            }
             List<OrderGetter> toReturn = new ArrayList<>();
             for(int i=0; i<orders.size(); i++){
                 OrderGetter orderGetter = new OrderGetter();
