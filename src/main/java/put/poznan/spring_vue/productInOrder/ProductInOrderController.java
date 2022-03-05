@@ -23,8 +23,9 @@ public class ProductInOrderController {
     private ProductInOrderRepository productInOrderRepository;
 
     @PostMapping(path="/add") // Map ONLY POST Requests
-    public ResponseEntity<ProductInOrder> addNewProductInOrder (@RequestBody ProductInOrderDetails productInOrderDetails) {
+    public ResponseEntity<List<ProductInOrder>> addNewProductInOrder (@RequestBody ProductInOrderDetails productInOrderDetails) {
         try{
+            List<ProductInOrder> productInOrderList = new ArrayList<>();
             for(int i=0; i<productInOrderDetails.getProducts().size(); i++){
                 int quantity = productInOrderDetails.getProducts().get(i).getProductQuantity();
                 float subtotal = productInOrderDetails.getProducts().get(i).getSubtotalPrice();
@@ -35,9 +36,11 @@ public class ProductInOrderController {
                 Product product = productInOrderRepository.findProductByName(productInOrderDetails.getProducts().get(i).getProductName());
                 ProductInOrder productInOrder = new ProductInOrder(quantity, subtotal, serviceTime, order, reservation, guest, product);
                 productInOrderRepository.save(productInOrder);
+                productInOrderList.add(productInOrder);
             }
-            return new ResponseEntity<>(null, HttpStatus.CREATED);
+            return new ResponseEntity<>(productInOrderList, HttpStatus.CREATED);
         } catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

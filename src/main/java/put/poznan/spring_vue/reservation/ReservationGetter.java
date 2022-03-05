@@ -1,5 +1,8 @@
 package put.poznan.spring_vue.reservation;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ReservationGetter {
@@ -36,20 +39,23 @@ public class ReservationGetter {
         this.numberOfGuests = numberOfGuests;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public Date getStartDate() throws ParseException {
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        return formatter.parse(formatter.format(startDate));
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setStartDate(Date startDate) throws ParseException {
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        this.startDate = formatter.parse(formatter.format(startDate));
     }
 
     public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setEndDate(Date endDate) throws ParseException {
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        this.endDate = formatter.parse(formatter.format(endDate));
     }
 
     public float getPrice() {

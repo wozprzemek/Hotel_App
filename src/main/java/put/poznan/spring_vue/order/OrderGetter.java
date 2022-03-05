@@ -7,6 +7,7 @@ import java.util.Date;
 public class OrderGetter {
     private int orderID;
     private float totalPrice;
+
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm")
     private Date timeOfOrder;
 
