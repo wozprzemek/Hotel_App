@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import put.poznan.spring_vue.address.Address;
 import put.poznan.spring_vue.guest.Guest;
 import put.poznan.spring_vue.hotel.Hotel;
+import put.poznan.spring_vue.order.Order;
 import put.poznan.spring_vue.paymentMethod.PaymentMethod;
 import put.poznan.spring_vue.reservationState.ReservationState;
 import put.poznan.spring_vue.room.Room;
@@ -32,5 +33,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT roominrsv FROM RoomInReservation roominrsv WHERE roominrsv.room.number = :room_number")
     List<RoomInReservation> findAllRoomInReservation(@Param("room_number") int room_number);
+
+    @Query("SELECT ord FROM Order ord WHERE ord.id = :ord_id")
+    Order findOrderByOrderID(@Param("ord_id") int ord_id);
 
 }

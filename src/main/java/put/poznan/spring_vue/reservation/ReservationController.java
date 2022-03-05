@@ -52,14 +52,14 @@ public class ReservationController {
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody ResponseEntity<List<ReservationGetter>> getAllReservations(@RequestParam(name = "reservationID", required = false) Long reservationID) {
+    public @ResponseBody ResponseEntity<List<ReservationGetter>> getAllReservations(@RequestParam(name = "reservationID", required = false) Long reservationID, @RequestParam(name = "orderID", required = false) Long orderID) {
         try {
             List<Reservation> reservations = new ArrayList<>();
             List<ReservationGetter> toReturn = new ArrayList<>();
             ReservationGetter reservationGetter;
             DateFormat formatter = new SimpleDateFormat("yy/MM/yyyy");
 
-            if(reservationID == null){
+            if(reservationID == null && orderID == null){
                 reservations.addAll(reservationRepository.findAll());
 
                 for(int i=0; i<reservations.size(); i++){
@@ -73,11 +73,16 @@ public class ReservationController {
                     reservationGetter.setPaymentMethod(reservations.get(i).getPaymentMethod().getPaymentMethodName());
                     reservationGetter.setReservationState(reservations.get(i).getReservationState().getReservationStateName());
                     toReturn.add(reservationGetter);
-                    reservationGetter = null;
                 }
             }
             else{
-                reservations.add(reservationRepository.findByReservationID(Math.toIntExact(reservationID)));
+                if(orderID != null){
+                    Order order = reservationRepository.findOrderByOrderID(Math.toIntExact(orderID));
+                    reservations.add(order.getReservation());
+                }
+                else{
+                    reservations.add(reservationRepository.findByReservationID(Math.toIntExact(reservationID)));
+                }
                 reservationGetter = new ReservationGetter();
                 reservationGetter.setReservationID(reservations.get(0).getId());
                 reservationGetter.setGuestID(reservations.get(0).getGuest().getId());
