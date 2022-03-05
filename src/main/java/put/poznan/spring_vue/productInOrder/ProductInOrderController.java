@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.admin.Admin;
 import put.poznan.spring_vue.guest.Guest;
+import put.poznan.spring_vue.guest.GuestGetter;
 import put.poznan.spring_vue.hotel.Hotel;
 import put.poznan.spring_vue.order.Order;
 import put.poznan.spring_vue.product.Product;
@@ -42,6 +43,27 @@ public class ProductInOrderController {
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(path="/details")
+    public @ResponseBody ResponseEntity<List<ProductInProductInOrderDetails>> getProductInOrderDetails(@RequestParam(name = "orderID", required = false) Long orderID) {
+        try {
+            ProductInProductInOrderDetails productInProductInOrderDetails;
+            List<ProductInOrder> productInOrderList = productInOrderRepository.findProductInOrderByOrderID(Math.toIntExact(orderID));
+            List<ProductInProductInOrderDetails> toReturn = new ArrayList<>();
+            for(int i=0; i<productInOrderList.size(); i++){
+                productInProductInOrderDetails = new ProductInProductInOrderDetails();
+                productInProductInOrderDetails.setCategory(productInOrderList.get(i).getProduct().getCategory().getCategoryName());
+                productInProductInOrderDetails.setProductName(productInOrderList.get(i).getProduct().getProductName());
+                productInProductInOrderDetails.setProductQuantity(productInOrderList.get(i).getProductQuantity());
+                productInProductInOrderDetails.setServiceTime(productInOrderList.get(i).getServiceTime());
+                productInProductInOrderDetails.setSubtotalPrice(productInOrderList.get(i).getProductSubtotalPrice());
+                toReturn.add(productInProductInOrderDetails);
+            }
+            return new ResponseEntity<>(toReturn, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

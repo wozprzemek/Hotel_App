@@ -11,6 +11,7 @@ import put.poznan.spring_vue.reservation.Reservation;
 import put.poznan.spring_vue.room.Room;
 
 import java.util.Date;
+import java.util.List;
 
 public interface ProductInOrderRepository extends JpaRepository<ProductInOrder, Long> {
 
@@ -19,5 +20,8 @@ public interface ProductInOrderRepository extends JpaRepository<ProductInOrder, 
 
     @Query("SELECT pr FROM Product pr WHERE pr.productName = :pr_name")
     Product findProductByName(@Param("pr_name") String pr_name);
+
+    @Query("SELECT prodinord FROM ProductInOrder prodinord WHERE prodinord.order.id = :ord_id")
+    List<ProductInOrder> findProductInOrderByOrderID(@Param("ord_id") int ord_id);
 
 }
