@@ -16,6 +16,8 @@ import put.poznan.spring_vue.reservationState.ReservationState;
 import put.poznan.spring_vue.roomInReservation.RoomInReservation;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -55,6 +57,7 @@ public class ReservationController {
             List<Reservation> reservations = new ArrayList<>();
             List<ReservationGetter> toReturn = new ArrayList<>();
             ReservationGetter reservationGetter;
+            DateFormat formatter = new SimpleDateFormat("yy/MM/yyyy");
 
             if(reservationID == null){
                 reservations.addAll(reservationRepository.findAll());
@@ -64,8 +67,8 @@ public class ReservationController {
                     reservationGetter.setReservationID(reservations.get(i).getId());
                     reservationGetter.setGuestID(reservations.get(i).getGuest().getId());
                     reservationGetter.setNumberOfGuests(reservations.get(i).getNumberOfGuests());
-                    reservationGetter.setStartDate(reservations.get(i).getEndDate());
-                    reservationGetter.setEndDate(reservations.get(i).getEndDate());
+                    reservationGetter.setStartDate(formatter.parse(formatter.format(reservations.get(i).getStartDate())));
+                    reservationGetter.setEndDate(formatter.parse(formatter.format(reservations.get(i).getEndDate())));
                     reservationGetter.setPrice(reservations.get(i).getPrice());
                     reservationGetter.setPaymentMethod(reservations.get(i).getPaymentMethod().getPaymentMethodName());
                     reservationGetter.setReservationState(reservations.get(i).getReservationState().getReservationStateName());
