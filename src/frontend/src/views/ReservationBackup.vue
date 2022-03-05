@@ -1,6 +1,11 @@
 <template>
     <div id="full">
         <div id="left_bar">
+            <div id="left_bar_content">
+                <div class="left_bar_text"><router-link to="/admin/reservations">Reservations</router-link></div>
+                <div class="left_bar_text"><router-link to="/admin/guests">Guests</router-link></div>
+                <div class="left_bar_text"><router-link to="/admin/rooms">Rooms</router-link></div>
+            </div>
         </div>
         <div id="content">
             <button id="delete_button" @click="deleteReservation()">Delete Reservation</button>

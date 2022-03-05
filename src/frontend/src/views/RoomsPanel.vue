@@ -1,7 +1,18 @@
 <template>
     <div id="full">
       <div id="left_bar">
-      </div>
+            <div id="left_bar_content">
+                <div class="left_bar_text"><router-link to="/admin/reservations">Reservations</router-link></div>
+                <hr style="width: 200px; height: 0px;
+        border: none;
+        border-top: 2px solid rgba(60,60,73,1);">
+                <div class="left_bar_text"><router-link to="/admin/guests">Guests</router-link></div>
+                <hr style="width: 200px; height: 0px;
+        border: none;
+        border-top: 2px solid rgba(60,60,73,1);">
+                <div class="left_bar_text"><router-link to="/admin/rooms">Rooms</router-link></div>
+            </div>
+        </div>
           <div id="content">
               <div id="navbar">
                   <span> Rooms</span> /
@@ -86,6 +97,36 @@ export default {
     #left_bar{
         background-color: #080A0D;
         grid-area: 1/1/1/1;
+        display: grid;
+        grid-template-rows: 200px 1fr;
+    }
+
+    #left_bar_content{
+        grid-area: 2/1/3/2;
+    }
+
+    .left_bar_text{
+        font-size: 18px;
+        text-align: left;
+        margin-left: 30px;
+        margin-bottom: 10px;
+    }
+
+    a{
+      text-decoration: none !important;
+      color: #DBDEE6;
+    }
+
+    a:hover{
+      color: #abb1c2;
+    }
+
+    hr{
+        margin: 0;
+        margin-bottom: 20px;
+        height: 0px;
+        border: none;
+        border-top: 1px solid rgba(40,50,63,0.3);
     }
 
     #navbar{
