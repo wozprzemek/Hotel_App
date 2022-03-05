@@ -20,78 +20,75 @@
         <div id="content">
             <button id="delete_button" @click="deleteReservation()">Delete Room</button>
             <div id="navbar">
-                <router-link to="/admin/rooms">Rooms</router-link> /
-                <span> Room {{$route.params.id}}</span>
+                <router-link to="/admin/orders">Orders</router-link> /
+                <span> Order #{{$route.params.id}}</span>
             </div>
-            <div id="title">Room {{$route.params.id}}</div>
-            <div class="details_box" id="room_details_box">
-                <div id="title_box">Room Details</div>
+            <div id="title">Order #{{$route.params.id}}</div>
+            <div class="details_box" id="reservation_details_box">
+                <div id="title_box">Reservation Details</div>
                 <div class="details_content">
                     <div class="details_row">
-                        <div class="details_field_name">Number</div>
-                        <div class="details_field_value" id="room_number"></div>
+                        <div class="details_field_name">Reservation ID</div>
+                        <div class="details_field_value" id="reservation_id"></div>
                     </div>
                     <div class="details_row">
-                        <div class="details_field_name">Name</div>
-                        <div class="details_field_value" id="room_name"></div>
+                        <div class="details_field_name">No. of Guests</div>
+                        <div class="details_field_value" id="no_of_guests"></div>
                     </div>
                     <div class="details_row">
-                        <div class="details_field_name">Floor</div>
-                        <div class="details_field_value" id="floor"></div>
+                        <div class="details_field_name">Start Date</div>
+                        <div class="details_field_value" id="start_date"></div>
                     </div>
                     <div class="details_row">
-                        <div class="details_field_name">Price per Night</div>
-                        <div class="details_field_value" id="price_per_night"></div>
+                        <div class="details_field_name">End Date</div>
+                        <div class="details_field_value" id="end_date"></div>
                     </div>
                     <div class="details_row">
-                        <div class="details_field_name">Single Beds</div>
-                        <div class="details_field_value" id="single_beds"></div>
+                        <div class="details_field_name">Payment Method</div>
+                        <div class="details_field_value" id="payment_method"></div>
                     </div>
                     <div class="details_row">
-                        <div class="details_field_name">Double Beds</div>
-                        <div class="details_field_value" id="double_beds"></div>
+                        <div class="details_field_name">Reservation State</div>
+                        <div class="details_field_value" id="reservation_state"></div>
                     </div>
                 </div>
                 
             </div>
-            <div class="details_box" id="reservation_details_box">
-                <div id="title_box">Active Reservation Details</div>
+            <div class="details_box" id="guest_details_box">
+                <div id="title_box">Guest Details</div>
                 <div class="details_content">
-                    <div v-if="hasReservation">
-                        <div class="details_row">
-                            <div class="details_field_name">Reservation ID</div>
-                            <div class="details_field_value" id="reservation_id"></div>
-                        </div>
-                        <div class="details_row">
-                            <div class="details_field_name">No. of Guests</div>
-                            <div class="details_field_value" id="no_of_guests"></div>
-                        </div>
-                        <div class="details_row">
-                            <div class="details_field_name">Start Date</div>
-                            <div class="details_field_value" id="start_date"></div>
-                        </div>
-                        <div class="details_row">
-                            <div class="details_field_name">End Date</div>
-                            <div class="details_field_value" id="end_date"></div>
-                        </div>
-                        <div class="details_row">
-                            <div class="details_field_name">Payment Method</div>
-                            <div class="details_field_value" id="payment_method"></div>
-                        </div>
-                        <div class="details_row">
-                            <div class="details_field_name">Reservation State</div>
-                            <div class="details_field_value" id="reservation_state"></div>
-                        </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Guest ID</div>
+                        <div class="details_field_value" id="guest_id"></div>
                     </div>
-                    <div v-else style="margin-top: 125px">No active reservation</div>
+                    <div class="details_row">
+                        <div class="details_field_name">First Name</div>
+                        <div class="details_field_value" id="first_name"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Last Name</div>
+                        <div class="details_field_value" id="last_name"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Date of Birth</div>
+                        <div class="details_field_value" id="date_of_birth"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Telephone</div>
+                        <div class="details_field_value" id="telephone"></div>
+                    </div>
+                    <div class="details_row">
+                        <div class="details_field_name">Address</div>
+                        <div class="details_field_value" id="address"></div>
+                    </div>
                 </div>
             </div>
-            <div class="details_box" id="reservation_history_box">
-                <div id="title_box">Reservation History</div>
+            <div class="details_box" id="order_items_box">
+                <div id="title_box">Order Items</div>
                 <ag-grid-vue
                   class="ag-theme-alpine" id="table_rooms"
-                  :columnDefs="columnDefsReservations"
-                  :rowData="rowDataReservations.value"
+                  :columnDefs="columnDefsItems"
+                  :rowData="rowDataItems.value"
                   @rowClicked="onRowClicked">
                 </ag-grid-vue>
             </div>
@@ -131,64 +128,61 @@
                 qty: 1,
                 time: "",
             }],
-            roomNumber: "",
-            rowDataReservations: reactive([]),
-            columnDefsReservations: [
-                { headerName: "Reservation ID", field: "reservationID",  resizable: true, type: 'rightAligned', width: 130},
-                { headerName: "Guest ID", field: "guestID" , resizable: true, type: 'rightAligned', width: 100},
-                { headerName: "No. of Guests", field: "numberOfGuests" , resizable: true, type: 'rightAligned', width: 150},
-                { headerName: "Start Date", field: "startDate" , resizable: true, type: 'rightAligned',width: 200},
-                { headerName: "End Date", field: "endDate" , resizable: true, type: 'rightAligned', width: 200},
-                { headerName: "Price", field: "price" , resizable: true, type: 'rightAligned', width: 150},
-                { headerName: "Payment Method", field: "paymentMethod" , resizable: true, type: 'rightAligned', width: 200},
-                { headerName: "State", field: "reservationState" , resizable: true, type: 'rightAligned', width: 200},
+            orderId: "",
+            rowDataItems: reactive([]),
+            columnDefsItems: [
+                { headerName: "Category", field: "category",  resizable: true, type: 'rightAligned', width: 130},
+                { headerName: "Product", field: "productName" , resizable: true, type: 'rightAligned', width: 100},
+                { headerName: "Quantity", field: "productQuantity" , resizable: true, type: 'rightAligned', width: 150},
+                { headerName: "Service Time", field: "serviceTime" , resizable: true, type: 'rightAligned',width: 200},
+                { headerName: "Subtotal Price", field: "subtotalPrice" , resizable: true, type: 'rightAligned', width: 200},
             ],
             reservationDetails: {},
             roomDetails: {},
-            hasReservation: true,
         }
     },
     created() {
         this.rowSelection = 'single';
-        this.roomNumber = this.$route.params.id;
+        this.orderId = this.$route.params.id;
 
-        // FETCH ROOM DETAILS AT LOAD
-        fetch('/api/room/details?' + new URLSearchParams({
-            roomNumber: this.roomNumber,
-        })).then(result => result.json()).then(data => {
-            this.roomDetails = data;
-            document.querySelector("#room_number").textContent = this.roomDetails.roomNumber;
-            document.querySelector("#room_name").textContent = this.roomDetails.roomName;
-            document.querySelector("#floor").textContent = this.roomDetails.floor;
-            document.querySelector("#price_per_night").textContent = this.roomDetails.pricePerNight;
-            document.querySelector("#single_beds").textContent = this.roomDetails.singleBeds;
-            document.querySelector("#double_beds").textContent = this.roomDetails.doubleBeds;
-        });
-
-        // FETCH ACTIVE RESERVATION DETAILS AT LOAD
-        fetch('/api/rsv/current?' + new URLSearchParams({
-            roomNumber: this.roomNumber,
+        // FETCH RESERVATION DETAILS AT LOAD
+        fetch('/api/rsv/all?' + new URLSearchParams({
+                orderID: this.orderId,
         })).then(response => response.json()).then(data => {
-            this.reservationDetails = data;
-            if(this.reservationDetails.reservationID != 0){
-                this.hasReservation = true;
-                document.querySelector("#reservation_id").textContent = this.reservationDetails.reservationID;
-                document.querySelector("#no_of_guests").textContent = this.reservationDetails.numberOfGuests;
-                document.querySelector("#start_date").textContent = this.reservationDetails.startDate.split('T')[0];
-                document.querySelector("#end_date").textContent = this.reservationDetails.endDate.split('T')[0];
-                document.querySelector("#payment_method").textContent = this.reservationDetails.paymentMethod;
-                document.querySelector("#reservation_state").textContent = this.reservationDetails.reservationState;
-            }
-            else{
-                this.hasReservation = false;
-            }
-            
+            this.reservationDetails = data[0];
+            console.log(this.reservationDetails);
+            document.querySelector("#reservation_id").textContent = this.reservationDetails.reservationID;
+            document.querySelector("#no_of_guests").textContent = this.reservationDetails.numberOfGuests;
+            document.querySelector("#start_date").textContent = this.reservationDetails.startDate.split('T')[0];
+            document.querySelector("#end_date").textContent = this.reservationDetails.endDate.split('T')[0];
+            document.querySelector("#payment_method").textContent = this.reservationDetails.paymentMethod;
+            document.querySelector("#reservation_state").textContent = this.reservationDetails.reservationState;
         });
 
-        // FETCH RESERVATION HISTORY AT LOAD
-        fetch('/api/rsv/history?' + new URLSearchParams({
-            roomNumber: this.roomNumber,
-        })).then(result => result.json()).then(remoteRowData => this.rowDataReservations.value = remoteRowData);
+        // FETCH GUEST DETAILS AT LOAD
+        fetch('/api/guest/details?' + new URLSearchParams({
+                orderID: this.orderId,
+        })).then(response => response.json()).then(data => {
+            this.guestDetails = data;
+            document.querySelector("#guest_id").textContent = this.guestDetails.guestID;
+            document.querySelector("#first_name").textContent = this.guestDetails.firstName;
+            document.querySelector("#last_name").textContent = this.guestDetails.lastName;
+            document.querySelector("#date_of_birth").textContent = this.guestDetails.dateOfBirth.split('T')[0];
+            document.querySelector("#telephone").textContent = this.guestDetails.telephone;
+
+            var address = this.guestDetails.streetName + " " + this.guestDetails.buildingNumber;
+            if (this.guestDetails.apartmentNumber != null){
+                address += " / " + this.guestDetails.apartmentNumber;
+            }
+            address += ", " + this.guestDetails.city + ", " + this.guestDetails.country
+            document.querySelector("#address").textContent = address;
+            console.log(this.guestDetails);
+        });
+
+        // FETCH ORDER ITEMS AT LOAD
+        fetch('/api/prodinord/details?' + new URLSearchParams({
+                orderID: this.orderId,
+        })).then(result => result.json()).then(remoteRowData => this.rowDataItems.value = remoteRowData);
     },
     methods: {
         onSelectionChanged() {
@@ -238,77 +232,12 @@
                 console.log('Order canceled');
             }
         },
-        confirmOrder(){
-            // first POST an empty order
-            var currentdate = new Date(); 
-            var datetime = 
-                currentdate.getFullYear() + "-"
-                + (currentdate.getMonth()+1)  + "-" 
-                + currentdate.getDate() + "T"
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes()
-
-
-            var objectEmptyOrder = {
-                timeOfOrder: datetime,
-                reservationID: this.reservationId,
-            }
-
-            console.log(objectEmptyOrder);
-            
-            const all = document.querySelectorAll('form.order_list_row');
-                // Change the text of multiple elements with a loop
-                var orderItems = [];
-                all.forEach(element => {
-                    var formData = new FormData(element);
-                    var orderRow = {};
-                    formData.forEach((value, key) => orderRow[key] = value);
-                    orderItems.push(orderRow);
-            });
-    
-
-            if (orderItems.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length === 0){
-                
-                var orderId;
-                var orderJson = {};
-
-                fetch("/api/order/add", {
-                    method: "POST",
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(objectEmptyOrder)
-                }).then(response => response.json()).then(data => {
-                    orderId = data;
-                    console.log(orderId);
-                    orderJson.orderID = orderId;
-                    orderJson.products = orderItems;
-                    fetch("/api/prodinord/add", {
-                        method: "POST",
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(orderJson)
-                    }).then(response => response.json()).then(data => {
-                        console.log(data);
-
-                        // FETCH ORDERS ON ORDER ADD
-                        fetch('/api/order/all?' + new URLSearchParams({
-                        reservationID: this.reservationId,
-                        })) .then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
-                    });
-                });
-            }
-            else{
-                alert("You have unfinished order items.");
-            }
-        },
-        deleteReservation(){
-            if (confirm('Are you sure you want to DELETE THIS RESERVATION? \nThis action is irreversible!')) {
+        deleteOrder(){
+            if (confirm('Are you sure you want to DELETE THIS ORDER? \nThis action is irreversible!')) {
                 console.log('deleted');
-                this.$router.push({ path: '/admin/reservations/'})
+                this.$router.push({ path: '/admin/orders/'})
             }
         },
-        onRowClicked(params) {
-            console.log(params.node.data.reservationID);
-            this.$router.push({ path: '/admin/reservations/' + params.node.data.reservationID });
-        }
   },
 }
 </script>
@@ -404,7 +333,7 @@
         grid-area: 2/1/3/2;
     }
 
-    #room_details_box{
+    #guest_details_box{
         grid-area: 3/2/4/3;
         grid-template-rows: 50px 1fr;
         grid-template-columns: 1fr;
@@ -416,7 +345,7 @@
         grid-template-columns: 1fr;
     }
 
-    #reservation_history_box{
+    #order_items_box{
         grid-area: 3/3/5/5;
         grid-template-rows: 50px 1fr;
         grid-template-columns: 1fr;
