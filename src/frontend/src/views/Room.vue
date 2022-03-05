@@ -3,7 +3,7 @@
         <div id="left_bar">
         </div>
         <div id="content">
-            <button id="delete_button" @click="deleteReservation()">Delete Reservation</button>
+            <button id="delete_button" @click="deleteReservation()">Delete Room</button>
             <div id="navbar">
                 <router-link to="/admin/rooms">Rooms</router-link> /
                 <span> Room {{$route.params.id}}</span>
@@ -76,7 +76,8 @@
                 <ag-grid-vue
                   class="ag-theme-alpine" id="table_rooms"
                   :columnDefs="columnDefsReservations"
-                  :rowData="rowDataReservations.value">
+                  :rowData="rowDataReservations.value"
+                  @rowClicked="onRowClicked">
                 </ag-grid-vue>
             </div>
         </div>
@@ -288,6 +289,10 @@
                 console.log('deleted');
                 this.$router.push({ path: '/admin/reservations/'})
             }
+        },
+        onRowClicked(params) {
+            console.log(params.node.data.reservationID);
+            this.$router.push({ path: '/admin/reservations/' + params.node.data.reservationID });
         }
   },
 }

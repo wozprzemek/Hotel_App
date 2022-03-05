@@ -41,6 +41,7 @@ public class OrderController {
             order = orderRepository.save(order);
             return new ResponseEntity<>(order.getId(), HttpStatus.CREATED);
         } catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

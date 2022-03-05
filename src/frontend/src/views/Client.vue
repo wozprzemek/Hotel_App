@@ -48,7 +48,10 @@
             </div>
             <div id="room_selection_window_room_list">
                 <div class="room_container" :key="room" v-for="room in availableRooms(selectedConfiguration)">
-                    <img class="room_image" src="../assets/background.jpg"/>
+                    <img class="room_image" src="../assets/vip.jpg" v-if="room.roomName == 'Loża VIP'">
+                    <img class="room_image" src="../assets/economy.jpg" v-else-if="room.roomName == 'Loża Economy'">
+                    <img class="room_image" src="../assets/masowka.jpg" v-else-if="room.roomName == 'Pokój Masówka'">
+                    <img class="room_image" src="../assets/solo.jpg" v-else-if="room.roomName == 'Pokój Solo'">
                     <div class="room_name">{{room.roomName}}</div>
                     <div class="room_price">${{room.pricePerNight}}</div>
                     <div class="room_description">Single Beds: {{room.singleBeds}} <br> Double Beds: {{room.doubleBeds}}</div>
