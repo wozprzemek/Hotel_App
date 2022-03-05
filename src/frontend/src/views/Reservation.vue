@@ -73,7 +73,9 @@
                 <ag-grid-vue
                   class="ag-theme-alpine" id="table_rooms"
                   :columnDefs="columnDefsRooms"
-                  :rowData="rowDataRooms.value">
+                  :rowData="rowDataRooms.value"
+                  @rowClicked="onRowClickedRooms"
+                  >
                 </ag-grid-vue>
             </div>
             <div class="details_box" id="orders_details_box">
@@ -81,7 +83,8 @@
                 <ag-grid-vue
                   class="ag-theme-alpine" id="table_orders"
                   :columnDefs="columnDefsOrders"
-                  :rowData="rowDataOrders.value">
+                  :rowData="rowDataOrders.value"
+                  @rowClicked="onRowClickedOrders">
                 </ag-grid-vue>
                 <button id="button_add" @click="showOrderWindow()">Add</button>
             </div>
@@ -103,16 +106,17 @@
                 <div id="subtotal">Subtotal</div>
             </div>
             <hr>
-            <form class="order_list_row" :key="item.id" v-for="(item, index) in orderItems" name=index>
-                <select name="category" id="category" v-model=orderItems[index].category>
+            <form class="order_list_row" :key="item" v-for="(item, index) in orderItems" name=index>
+                <select name="category" id="category" v-model=orderItems[index].category @change=getOrderItemPrice(index)>
                     <option v-for="category in items.map(a => a.category)" :key=category>{{ category }}</option>
                 </select>
-                <select name="product" id="product" v-model=orderItems[index].product>
+                <select name="productName" id="product" v-model=orderItems[index].productName @change=getOrderItemPrice(index)>
                     <option v-for="product in orderItems[index].category.length != 0 ? (this.items.find(o => o.category === orderItems[index].category).products.map(a => a.productName)) : []" :key=product>{{product}}</option>
                 </select>
-                <input id="qty" type="number" name="qty" min=1 v-model=orderItems[index].qty>
-                <input id="time" type="datetime-local" name="time" v-model=orderItems[index].time>
-                <div id="subtotal">$15</div>
+                <input id="qty" type="number" name="productQuantity" min=1 v-model=orderItems[index].productQuantity @change=getOrderItemPrice(index)>
+                <input id="time" type="datetime-local" name="serviceTime" v-model=orderItems[index].serviceTime>
+                <input type="number" id="subtotal" name="subtotalPrice" v-model=orderItems[index].subtotalPrice readonly>
+                <img id="remove_order_icon" src="../assets/remove.png" @click="removeOrder(index)"/>
             </form>
         </div>
         <div id="order_window_footer">
@@ -136,12 +140,11 @@
             popUpWindow: false,
             orderItems: [
                 {
-                    id: 1,
                     category: "",
-                    product: "",
-                    qty: 1,
-                    time: "",
-                    subtotal: 0,
+                    productName: "",
+                    productQuantity: 1,
+                    serviceTime: "",
+                    subtotalPrice: 0,
                 },
             ],
             items: [],
@@ -151,9 +154,9 @@
             selectedQty: [],
             selectedItems: [{
                 category: "",
-                product: "",
-                qty: 1,
-                time: "",
+                productName: "",
+                productQuantity: 1,
+                serviceTime: "",
             }],
             reservationId: "",
             rowDataRooms: reactive([]),
@@ -223,7 +226,7 @@
             reservationID: this.reservationId,
         })) .then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
 
-        // FETCH ALL CATEGORIES AND CATEGORIES AT LOAD
+        // FETCH ALL CATEGORIES AND PRODUCTS AT LOAD
         fetch("/api/cat/products", {
             method: "GET",
             headers: {'Content-Type': 'application/json'},
@@ -240,12 +243,11 @@
         },
         addOrderItem(){
             this.orderItems.push({
-                id: this.orderItems[this.orderItems.length-1].id,
                 category: "",
-                product: "",
-                qty: 1,
-                time: "",
-                subtotal: 0,
+                productName: "",
+                productQuantity: 1,
+                serviceTime: "",
+                subtotalPrice: 0,
             });
             console.log('categories: ', this.selectedCategories);
             console.log('products: ', this.selectedProducts);
@@ -254,16 +256,16 @@
         emptyOrderItems(){
             this.orderItems = [
                 {
-                    id: 1,
                     category: "",
-                    product: "",
-                    qty: 0,
-                    time: "",
-                    subtotal: 0,
+                    productName: "",
+                    productQuantity: 0,
+                    serviceTime: "",
+                    subtotalPrice: 0,
                 },
             ]
         },
         showOrderWindow(){
+            console.log(this.items.find(o => o.category === 'LUNCH').products.find(o => o.productName === 'SALMON').productPrice);
             this.popUpWindow = true;
             var orderWindow = document.querySelector("#order_window");
             orderWindow.style.visibility = "visible";
@@ -286,11 +288,10 @@
             var currentdate = new Date(); 
             var datetime = 
                 currentdate.getFullYear() + "-"
-                + (currentdate.getMonth()+1)  + "-" 
-                + currentdate.getDate() + "T"
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes()
-
+                + String((currentdate.getMonth()+1)).padStart(2, '0')  + "-" 
+                + String(currentdate.getDate()).padStart(2, '0') + "T"
+                + String(currentdate.getHours()).padStart(2, '0') + ":"  
+                + String(currentdate.getMinutes()).padStart(2, '0')
 
             var objectEmptyOrder = {
                 timeOfOrder: datetime,
@@ -308,12 +309,13 @@
                     formData.forEach((value, key) => orderRow[key] = value);
                     orderItems.push(orderRow);
             });
-    
-
-            if (orderItems.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length === 0){
+            console.log(orderItems.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length);
+            console.log(orderItems);
+            if (orderItems.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 5).length === 0){
                 
                 var orderId;
                 var orderJson = {};
+                console.log(JSON.stringify(objectEmptyOrder));
 
                 fetch("/api/order/add", {
                     method: "POST",
@@ -322,19 +324,20 @@
                 }).then(response => response.json()).then(data => {
                     orderId = data;
                     console.log(orderId);
+                    console.log('orderItems: ',orderItems);
                     orderJson.orderID = orderId;
                     orderJson.products = orderItems;
+                    console.log(JSON.stringify(orderJson));
                     fetch("/api/prodinord/add", {
                         method: "POST",
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(orderJson)
                     }).then(response => response.json()).then(data => {
                         console.log(data);
-
                         // FETCH ORDERS ON ORDER ADD
                         fetch('/api/order/all?' + new URLSearchParams({
                         reservationID: this.reservationId,
-                        })) .then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
+                        })).then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
                     });
                 });
             }
@@ -347,12 +350,42 @@
                 console.log('deleted');
                 this.$router.push({ path: '/admin/reservations/'})
             }
-        }
+        },
+        onRowClickedRooms(params) {
+            console.log(params.node.data.roomNumber);
+            this.$router.push({ path: '/admin/rooms/' + params.node.data.roomNumber });
+        },
+        removeOrder(index){
+            if (this.orderItems.length > 1){
+                this.orderItems.splice(index, 1);
+            }
+        },
+        getOrderItemPrice(index){
+            if(this.orderItems[index].category.length > 0 && this.orderItems[index].productName.length > 0){
+                this.orderItems[index].subtotalPrice = parseInt(this.items.find(o => o.category === this.orderItems[index].category).products.find(o => o.productName === this.orderItems[index].productName).productPrice * this.orderItems[index].productQuantity);
+            }
+            else{
+                this.orderItems[index].subtotalPrice = 0;
+            }
+        },
+
   },
 }
 </script>
 
 <style scoped>
+
+    /* Chrome, Safari, Edge, Opera */
+    /* input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    } */
+
+    /* Firefox */
+    /* input[type=number] {
+    -moz-appearance: textfield;
+    } */
     body{
         margin: 0;
         padding: 0;
@@ -644,12 +677,18 @@
         height: 36px;
         display: grid;
         grid-template-rows: 1fr;
-        grid-template-columns: 210px 210px 50px 210px 210px;
+        grid-template-columns: 210px 210px 50px 210px 110px 100px;
         grid-gap: 20px;
-        justify-items: start;
+        justify-items: center;
         margin-bottom: 15px;
         text-align: left;
         line-height: 36px;
+    }
+
+    #remove_order_icon{
+        grid-area: 1/6/2/7; 
+        width: 32px;
+        height: auto;   
     }
 
     #category{
@@ -672,10 +711,17 @@
         width: 100%;
     }
 
-    #subtotal{
+    input#subtotal{
         grid-area: 1/5/2/6;
         width: 100%;
         padding-left: 35px;
+        border: none;
+        margin-left: 10px;
+        font-size: 16px;
+    }
+
+    input#subtotal:focus{
+        outline: none;
     }
 
     hr{

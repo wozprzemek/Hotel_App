@@ -65,7 +65,7 @@ export default {
     onRowClicked(params) {
       console.log(params.node.data.reservationID);
       this.$router.push({ path: '/admin/reservations/' + params.node.data.reservationID });
-    }
+    },
   },
 };
 </script>
