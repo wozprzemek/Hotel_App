@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import put.poznan.spring_vue.address.Address;
 import put.poznan.spring_vue.hotel.Hotel;
+import put.poznan.spring_vue.order.Order;
 import put.poznan.spring_vue.reservation.Reservation;
 
 import java.util.List;
@@ -16,4 +17,7 @@ public interface GuestRepository extends JpaRepository<Guest, Long> {
 
     @Query("SELECT rsv FROM Reservation rsv WHERE rsv.id = :res_id")
     Reservation findReservationByReservationID(@Param("res_id") int res_id);
+
+    @Query("SELECT ord FROM Order ord WHERE ord.id = :ord_id")
+    Order findOrderByOrderID(@Param("ord_id") int ord_id);
 }

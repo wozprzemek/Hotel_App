@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.address.Address;
+import put.poznan.spring_vue.order.Order;
 import put.poznan.spring_vue.reservation.Reservation;
 import put.poznan.spring_vue.reservation.ReservationGetter;
 import put.poznan.spring_vue.room.Room;
@@ -81,13 +82,18 @@ public class GuestController {
         }
     }
 
-    @GetMapping(path="/reservationID")
-    public @ResponseBody ResponseEntity<GuestGetter> getAllGuestsByReservationID(@RequestParam(name = "reservationID", required = true) Long reservationID) {
+    @GetMapping(path="/details")
+    public @ResponseBody ResponseEntity<GuestGetter> getAllGuestsByReservationID(@RequestParam(name = "reservationID", required = false) Long reservationID, @RequestParam(name = "orderID", required = false) Long orderID) {
         try {
-            Reservation reservation = guestRepository.findReservationByReservationID(Math.toIntExact(reservationID));
-            Guest guest = reservation.getGuest();
             GuestGetter guestGetter;
-
+            Guest guest;
+            if(reservationID != null){
+                Reservation reservation = guestRepository.findReservationByReservationID(Math.toIntExact(reservationID));
+                guest = reservation.getGuest();
+            }else{
+                Order order = guestRepository.findOrderByOrderID(Math.toIntExact(orderID));
+                guest = order.getGuest();
+            }
             guestGetter = new GuestGetter();
             guestGetter.setGuestID(guest.getId());
             guestGetter.setFirstName(guest.getFirstName());
