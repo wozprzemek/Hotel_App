@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.category.Category;
 import put.poznan.spring_vue.country.Country;
+import put.poznan.spring_vue.product.Product;
+import put.poznan.spring_vue.product.ProductGetter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +39,19 @@ public class CityController {
     }
 
     @GetMapping(path="/all")
-    public @ResponseBody ResponseEntity<List<City>> getAllCities() {
+    public @ResponseBody ResponseEntity<List<CityDetails>> getAllCities() {
         try {
-            List<City> cities = new ArrayList<City>();
-            cities.addAll(cityRepository.findAll());
-            if (cities.isEmpty()) {
+            List<City> cities = new ArrayList<City>(cityRepository.findAll());
+            List<CityDetails> cityDetailsList = new ArrayList<>();
+            CityDetails cityDetails;
+            for(int i=0; i<cities.size(); i++){
+                cityDetails = new CityDetails(cities.get(i).getCityID(), cities.get(i).getCityName(), cities.get(i).getCountry().getCountryName());
+                cityDetailsList.add(cityDetails);
+            }
+            if (cityDetailsList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
-            return new ResponseEntity<>(cities, HttpStatus.OK);
+            return new ResponseEntity<>(cityDetailsList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
