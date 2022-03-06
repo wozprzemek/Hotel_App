@@ -21,11 +21,11 @@ public class ProductController {
     public ResponseEntity<Integer> addNewProduct(@RequestParam("productName") String productName, @RequestParam("productPrice") float productPrice, @RequestParam("categoryName") String categoryName){
         try{
             Product existingProduct = productRepository.findByProductName(productName);
-            if(existingProduct == null){
+            Category category = productRepository.findCategoryByName(categoryName);
+            if(existingProduct == null && category != null){
                 Product _product = new Product();
                 _product.setProductName(productName);
                 _product.setProductPrice(productPrice);
-                Category category = productRepository.findCategoryByName(categoryName);
                 _product.setCategory(category);
                 productRepository.save(_product);
                 return new ResponseEntity<>(1, HttpStatus.CREATED);

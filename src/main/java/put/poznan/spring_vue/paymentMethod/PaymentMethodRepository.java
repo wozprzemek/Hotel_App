@@ -11,4 +11,6 @@ import java.util.List;
 
 public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, Long> {
 
+    PaymentMethod findByPaymentMethodName(String paymentMethodName);
+
 }

@@ -2,7 +2,7 @@ package put.poznan.spring_vue.admin;
 
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
-import java.sql.Date;
+import java.util.Date;
 import java.io.Serializable;
 
 @Entity
@@ -22,7 +22,7 @@ public class Admin implements Serializable{
     @Column(name = "LAST_NAME", nullable = false)
     private String lastName;
 
-    @Column(name = "LAST_LOGIN", nullable = false)
+    @Column(name = "LAST_LOGIN", nullable = true)
     private Date lastLogin;
 
     public String getLogin() {
