@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import put.poznan.spring_vue.hotel.Hotel;
+import put.poznan.spring_vue.roomInReservation.RoomInReservation;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -104,5 +106,21 @@ public class RoomController {
         }
 
         return new ResponseEntity<>(roomGetter, HttpStatus.OK);
+    }
+
+    @PostMapping("/delete")
+    @Transactional
+    public @ResponseBody ResponseEntity<Integer> deleteRoomByNumber(@RequestParam("roomNumber") int roomNumber) {
+        try {
+            List<RoomInReservation> roomInReservationList = roomRepository.findRoomInReservationByID(roomNumber);
+            if(roomInReservationList.isEmpty()){
+                roomRepository.deleteByNumber(roomNumber);
+                return new ResponseEntity<>(1, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(0, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

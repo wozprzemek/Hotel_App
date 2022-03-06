@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import put.poznan.spring_vue.hotel.Hotel;
+import put.poznan.spring_vue.roomInReservation.RoomInReservation;
 
 import java.util.Date;
 import java.util.List;
@@ -29,4 +30,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     Room findRoomByNumber(int room_number);
 
+    @Query("SELECT rminrsv FROM RoomInReservation rminrsv WHERE rminrsv.room.number = :rm_no AND (rminrsv.reservation.reservationState.reservationStateName <> 'BOOKED' OR rminrsv.reservation.reservationState.reservationStateName <> 'IN PROGRESS')")
+    List<RoomInReservation> findRoomInReservationByID(@Param("rm_no") int rm_no);
+
+    void deleteByNumber(int room_number);
 }
