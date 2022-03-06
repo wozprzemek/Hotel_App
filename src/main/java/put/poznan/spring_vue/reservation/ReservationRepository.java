@@ -37,4 +37,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT ord FROM Order ord WHERE ord.id = :ord_id")
     Order findOrderByOrderID(@Param("ord_id") int ord_id);
 
+    @Query("SELECT state FROM ReservationState state WHERE state.reservationStateName = :stateName")
+    ReservationState findReservationStateByName(@Param("stateName") String stateName);
+
 }
