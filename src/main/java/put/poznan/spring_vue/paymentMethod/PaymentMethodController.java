@@ -49,4 +49,18 @@ public class PaymentMethodController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(path="/details")
+    public @ResponseBody ResponseEntity<List<PaymentMethod>> getAllPaymentMethodsWithDetails() {
+        try {
+            List<PaymentMethod> paymentMethods = new ArrayList<PaymentMethod>(paymentMethodRepository.findAll());
+            if (paymentMethods.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(paymentMethods, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

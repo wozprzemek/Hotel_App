@@ -46,4 +46,24 @@ public class CountryController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping(path="/details")
+    public @ResponseBody ResponseEntity<List<CountryDetails>> getAllCountriesWithoutCities() {
+        try {
+            List<Country> countries = new ArrayList<Country>();
+            countries.addAll(countryRepository.findAll());
+            List<CountryDetails> countryDetailsList = new ArrayList<>();
+            CountryDetails countryDetails;
+            for(int i=0; i<countries.size(); i++){
+                countryDetails = new CountryDetails(countries.get(i).getCountryID(), countries.get(i).getCountryName());
+                countryDetailsList.add(countryDetails);
+            }
+            if (countries.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(countryDetailsList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
