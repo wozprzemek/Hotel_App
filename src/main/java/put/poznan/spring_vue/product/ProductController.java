@@ -18,12 +18,19 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @PostMapping(path="/add") // Map ONLY POST Requests
-    public ResponseEntity<Product> addNewProduct (@RequestBody Product product, @RequestParam(name = "categoryID") int categoryID) {
+    public ResponseEntity<Integer> addNewProduct(@RequestParam("productName") String productName, @RequestParam("productPrice") float productPrice, @RequestParam("categoryName") String categoryName){
         try{
-            Category category = productRepository.findCategoryByID(categoryID);
-            product.setCategory(category);
-            Product _product = productRepository.save(product);
-            return new ResponseEntity<>(_product, HttpStatus.CREATED);
+            Product existingProduct = productRepository.findByProductName(productName);
+            if(existingProduct == null){
+                Product _product = new Product();
+                _product.setProductName(productName);
+                _product.setProductPrice(productPrice);
+                Category category = productRepository.findCategoryByName(categoryName);
+                _product.setCategory(category);
+                productRepository.save(_product);
+                return new ResponseEntity<>(1, HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(0, HttpStatus.CONFLICT);
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

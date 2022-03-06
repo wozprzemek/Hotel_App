@@ -19,7 +19,6 @@ public class CategoryController {
     public ResponseEntity<Integer> addNewCategory(@RequestParam("category") String category) {
         try{
             Category existingCategory = categoryRepository.findByCategoryName(category);
-            System.out.println(existingCategory);
             if(existingCategory == null){
                 Category _category = new Category();
                 _category.setCategoryName(category);
