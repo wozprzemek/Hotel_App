@@ -50,22 +50,17 @@ export default {
 
 
     onMounted(() => {
-        fetch('/api/rsv/all')
+        fetch('/api/order/all')
           .then(result => result.json())
           .then(remoteRowData => rowData.value = remoteRowData);
     })
 
     return {
         columnDefs: [
-        { headerName: "Reservation ID", field: "reservationID",  resizable: true, type: 'rightAligned', width: 150},
-        { headerName: "Guest ID", field: "guestID" , resizable: true, type: 'rightAligned', width: 150},
-        { headerName: "No. of Guests", field: "numberOfGuests" , resizable: true, type: 'rightAligned', width: 150},
-        { headerName: "Start Date", field: "startDate" , resizable: true, type: 'rightAligned',width: 200},
-        { headerName: "End Date", field: "endDate" , resizable: true, type: 'rightAligned', width: 200},
-        { headerName: "Price", field: "price" , resizable: true, type: 'rightAligned', width: 150},
-        { headerName: "Payment Method", field: "paymentMethod" , resizable: true, type: 'rightAligned', width: 200},
-        { headerName: "State", field: "reservationState" , resizable: true, type: 'rightAligned', width: 200},
-      ],
+          { headerName: "Order ID", field: "orderID",  resizable: true, type: 'rightAligned', width: 150},
+          { headerName: "Total Price", field: "totalPrice" , resizable: true, type: 'rightAligned', width: 150},
+          { headerName: "Time of Order", field: "timeOfOrder" , resizable: true, type: 'rightAligned', width: 150},
+        ],
       rowData
     };
   },
@@ -78,8 +73,8 @@ export default {
       console.log(selectedRows.length === 1 ? selectedRows[0].reservation_id : '');
     },
     onRowClicked(params) {
-      console.log(params.node.data.reservationID);
-      this.$router.push({ path: '/admin/reservations/' + params.node.data.reservationID });
+      console.log(params.node.data.orderID);
+      this.$router.push({ path: '/admin/orders/' + params.node.data.orderID });
     },
   },
 };

@@ -29,6 +29,9 @@ const routes = [
     path: '/admin/reservations',
     name: "ReservationsPanel",
     component: ReservationsPanel,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/admin/reservations/:id',

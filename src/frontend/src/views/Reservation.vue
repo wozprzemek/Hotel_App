@@ -18,7 +18,11 @@
             </div>
         </div>
         <div id="content">
-            <button id="delete_button" @click="deleteReservation()">Delete Reservation</button>
+            <button v-if="reservationState == 'BOOKED'" id="start_button" @click="startReservation()">Start Reservation</button>
+            <button v-if="reservationState == 'BOOKED'" id="cancel_button" @click="cancelReservation()">Cancel Reservation</button>
+
+            <button v-if="reservationState == 'IN PROGRESS'" id="start_button" @click="startReservation()">Complete Reservation</button>
+            <button v-if="reservationState == 'IN PROGRESS'" id="cancel_button" @click="cancelReservation()">Cancel Reservation</button>
             <div id="navbar">
                 <router-link to="/admin/reservations">Reservations</router-link> /
                 <span> Reservation #{{$route.params.id}}</span>
@@ -175,6 +179,7 @@
                 serviceTime: "",
             }],
             reservationId: "",
+            reservationState: "",
             rowDataRooms: reactive([]),
             rowDataOrders: reactive([]),
             columnDefsRooms: [
@@ -361,7 +366,7 @@
                 alert("You have unfinished order items.");
             }
         },
-        deleteReservation(){
+        cancelReservation(){
             if (confirm('Are you sure you want to DELETE THIS RESERVATION? \nThis action is irreversible!')) {
                 console.log('deleted');
                 this.$router.push({ path: '/admin/reservations/'})
@@ -773,7 +778,7 @@
         border-top: 1px solid rgba(40,50,63,0.3);
     }
 
-    #delete_button{
+    #cancel_button{
         background: #D01117;
         width: 200px;
         height: 40px;

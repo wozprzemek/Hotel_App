@@ -18,7 +18,7 @@
             </div>
         </div>
         <div id="content">
-            <button id="delete_button" @click="deleteReservation()">Delete Room</button>
+            <button id="delete_button" @click="deleteOrder()">Delete Order</button>
             <div id="navbar">
                 <router-link to="/admin/orders">Orders</router-link> /
                 <span> Order #{{$route.params.id}}</span>
@@ -131,9 +131,9 @@
             orderId: "",
             rowDataItems: reactive([]),
             columnDefsItems: [
-                { headerName: "Category", field: "category",  resizable: true, type: 'rightAligned', width: 130},
-                { headerName: "Product", field: "productName" , resizable: true, type: 'rightAligned', width: 100},
-                { headerName: "Quantity", field: "productQuantity" , resizable: true, type: 'rightAligned', width: 150},
+                { headerName: "Category", field: "category",  resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "Product", field: "productName" , resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "Quantity", field: "productQuantity" , resizable: true, type: 'rightAligned', width: 200},
                 { headerName: "Service Time", field: "serviceTime" , resizable: true, type: 'rightAligned',width: 200},
                 { headerName: "Subtotal Price", field: "subtotalPrice" , resizable: true, type: 'rightAligned', width: 200},
             ],
