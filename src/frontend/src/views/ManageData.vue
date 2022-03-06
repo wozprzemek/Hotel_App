@@ -23,23 +23,129 @@
         </div>
         <div id="content">
            <div id="title">Manage Other Data</div>
-           <div class="details_box" id="categories_box">Categories</div>
-           <div class="details_box" id="products_box">Products</div>
-           <div class="details_box" id="payment_box">Payment Methods</div>
-           <div class="details_box" id="admins_box">Admins</div>
-           <div class="details_box" id="countries_box">Countries</div>
-           <div class="details_box" id="cities_box">Cities</div>
+           <div class="details_box" id="categories_box" @click="showPopUpWindow(); showCategoriesContent();">Categories</div>
+           <div class="details_box" id="products_box" @click="showPopUpWindow(); showProductsContent();">Products</div>
+           <div class="details_box" id="payments_box" @click="showPopUpWindow(); showPaymentContent();">Payment Methods</div>
+           <div class="details_box" id="admins_box" @click="showPopUpWindow(); showAdminsContent();">Admins</div>
+           <div class="details_box" id="countries_box" @click="showPopUpWindow(); showCountriesContent();">Countries</div>
+           <div class="details_box" id="cities_box" @click="showPopUpWindow(); showCitiesContent();">Cities</div>
+        </div>
+    </div>
+    <div id="pop_up_window">
+        <div id="order_window_title_bar">
+            <div id="order_window_navbar">
+                <div id="order_window_title"><span>New Category</span></div>
+            </div>
+            <img id="order_window_exit_icon" src="../assets/delete.png" @click="popUpWindow = false; closePopUpWindow()"/>
+        </div>
+        <!-- CATEGORIES -->
+        <div class="pop_up_window_content" id="categories_content">
+            <form class="order_list_row">
+                <label for="category" id="category">Category Name</label>
+                <br>
+                <input name="category" id="category" type="text">
+                <button class="pop_up_window_add_edit_button">Add</button>
+            </form>
+            <ag-grid-vue
+                class="ag-theme-alpine" id="pop_up_window_table"
+                :columnDefs="columnDefsReservations"
+                :rowData="rowDataReservations.value"
+                @rowClicked="onRowClickedOrders">
+            </ag-grid-vue>
+        </div>
+
+        <!-- PRODUCTS -->
+        <div class="pop_up_window_content" id="products_content">
+            <form class="order_list_row">
+                <label for="category" id="category">Category Name</label>
+                <br>
+                <input name="category" id="category" type="text">
+                <button class="pop_up_window_add_edit_button">Add</button>
+            </form>
+            <ag-grid-vue
+                class="ag-theme-alpine" id="pop_up_window_table"
+                :columnDefs="columnDefsReservations"
+                :rowData="rowDataReservations.value"
+                @rowClicked="onRowClickedOrders">
+            </ag-grid-vue>
+        </div>
+
+        <!-- PAYMENT METHODS -->
+        <div class="pop_up_window_content" id="payments_content">
+            <form class="order_list_row">
+                <label for="category" id="category">Category Name</label>
+                <br>
+                <input name="category" id="category" type="text">
+                <button class="pop_up_window_add_edit_button">Add</button>
+            </form>
+            <ag-grid-vue
+                class="ag-theme-alpine" id="pop_up_window_table"
+                :columnDefs="columnDefsReservations"
+                :rowData="rowDataReservations.value"
+                @rowClicked="onRowClickedOrders">
+            </ag-grid-vue>
+        </div>
+
+        <!-- ADMINS -->
+        <div class="pop_up_window_content" id="admins_content">
+            <form class="order_list_row">
+                <label for="category" id="category">Category Name</label>
+                <br>
+                <input name="category" id="category" type="text">
+                <button class="pop_up_window_add_edit_button">Add</button>
+            </form>
+            <ag-grid-vue
+                class="ag-theme-alpine" id="pop_up_window_table"
+                :columnDefs="columnDefsReservations"
+                :rowData="rowDataReservations.value"
+                @rowClicked="onRowClickedOrders">
+            </ag-grid-vue>
+        </div>
+        
+        <!-- COUNTRIES -->
+        <div class="pop_up_window_content" id="countries_content">
+            <form class="order_list_row">
+                <label for="category" id="category">Category Name</label>
+                <br>
+                <input name="category" id="category" type="text">
+                <button class="pop_up_window_add_edit_button">Add</button>
+            </form>
+            <ag-grid-vue
+                class="ag-theme-alpine" id="pop_up_window_table"
+                :columnDefs="columnDefsReservations"
+                :rowData="rowDataReservations.value"
+                @rowClicked="onRowClickedOrders">
+            </ag-grid-vue>
+        </div>
+        
+        <!-- CITIES -->
+        <div class="pop_up_window_content" id="cities_content">
+            <form class="order_list_row">
+                <label for="category" id="category">Category Name</label>
+                <br>
+                <input name="category" id="category" type="text">
+                <button class="pop_up_window_add_edit_button">Add</button>
+            </form>
+            <ag-grid-vue
+                class="ag-theme-alpine" id="pop_up_window_table"
+                :columnDefs="columnDefsReservations"
+                :rowData="rowDataReservations.value"
+                @rowClicked="onRowClickedOrders">
+            </ag-grid-vue>
+        </div>
+        <div id="pop_up_window_footer">
+            <button class="pop_up_window_confirm_edit_button" @click="confirmOrder()">Confirm</button>
         </div>
     </div>
 </template>
 
 <script>
-    // import {AgGridVue} from "ag-grid-vue3";
+    import {AgGridVue} from "ag-grid-vue3";
     import {reactive} from "vue";
     export default {
         name: "Reservation",
         components: {
-    // AgGridVue,
+    AgGridVue,
     },
     data(){
         return{
@@ -86,43 +192,9 @@
         this.rowSelection = 'single';
         this.roomNumber = this.$route.params.id;
 
-        // FETCH ROOM DETAILS AT LOAD
-        fetch('/api/room/details?' + new URLSearchParams({
-            roomNumber: this.roomNumber,
-        })).then(result => result.json()).then(data => {
-            this.roomDetails = data;
-            document.querySelector("#room_number").textContent = this.roomDetails.roomNumber;
-            document.querySelector("#room_name").textContent = this.roomDetails.roomName;
-            document.querySelector("#floor").textContent = this.roomDetails.floor;
-            document.querySelector("#price_per_night").textContent = this.roomDetails.pricePerNight;
-            document.querySelector("#single_beds").textContent = this.roomDetails.singleBeds;
-            document.querySelector("#double_beds").textContent = this.roomDetails.doubleBeds;
-        });
-
-        // FETCH ACTIVE RESERVATION DETAILS AT LOAD
-        fetch('/api/rsv/current?' + new URLSearchParams({
-            roomNumber: this.roomNumber,
-        })).then(response => response.json()).then(data => {
-            this.reservationDetails = data;
-            if(this.reservationDetails.reservationID != 0){
-                this.hasReservation = true;
-                document.querySelector("#reservation_id").textContent = this.reservationDetails.reservationID;
-                document.querySelector("#no_of_guests").textContent = this.reservationDetails.numberOfGuests;
-                document.querySelector("#start_date").textContent = this.reservationDetails.startDate.split('T')[0];
-                document.querySelector("#end_date").textContent = this.reservationDetails.endDate.split('T')[0];
-                document.querySelector("#payment_method").textContent = this.reservationDetails.paymentMethod;
-                document.querySelector("#reservation_state").textContent = this.reservationDetails.reservationState;
-            }
-            else{
-                this.hasReservation = false;
-            }
-            
-        });
-
         // FETCH RESERVATION HISTORY AT LOAD
-        fetch('/api/rsv/history?' + new URLSearchParams({
-            roomNumber: this.roomNumber,
-        })).then(result => result.json()).then(remoteRowData => this.rowDataReservations.value = remoteRowData);
+        fetch('/api/rsv/all').then(result => result.json()).then(remoteRowData => this.rowDataReservations.value = remoteRowData);
+        console.log( this.rowDataReservations);
     },
     methods: {
         onSelectionChanged() {
@@ -154,23 +226,21 @@
                 },
             ]
         },
-        showOrderWindow(){
+        showPopUpWindow(){
             this.popUpWindow = true;
-            var orderWindow = document.querySelector("#order_window");
-            orderWindow.style.visibility = "visible";
+            var popUpWindow = document.querySelector("#pop_up_window");
+            popUpWindow.style.visibility = "visible";
         },
-        closeOrderWindow(){
-            if (confirm('Are you sure you want to cancel this order?')) {
-                this.popUpWindow = false;
-                var orderWindow = document.querySelector("#order_window");
-                orderWindow.style.visibility = "hidden";
-                this.emptyOrderItems();
-                this.selectedCategories =  [],
-                this.selectedProducts = [],
-                this.selectedQty = [],
-                this.selectedItems = []
-                console.log('Order canceled');
-            }
+        closePopUpWindow(){
+            this.popUpWindow = false;
+            var popUpWindow = document.querySelector("#pop_up_window");
+            popUpWindow.style.visibility = "hidden";
+            document.querySelector('#categories_content').style.display = "none";
+            document.querySelector('#products_content').style.display = "none";
+            document.querySelector('#payments_content').style.display = "none";
+            document.querySelector('#admins_content').style.display = "none";
+            document.querySelector('#countries_content').style.display = "none";
+            document.querySelector('#cities_content').style.display = "none";
         },
         confirmOrder(){
             // first POST an empty order
@@ -242,12 +312,39 @@
         onRowClicked(params) {
             console.log(params.node.data.reservationID);
             this.$router.push({ path: '/admin/reservations/' + params.node.data.reservationID });
-        }
+        },
+        showCategoriesContent(){
+            document.querySelector('#categories_content').style.display = "grid";
+        },
+        showProductsContent(){
+            document.querySelector('#products_content').style.display = "grid";
+        },
+        showPaymentContent(){
+            document.querySelector('#payments_content').style.display = "grid";
+        },
+        showAdminsContent(){
+            document.querySelector('#admins_content').style.display = "grid";
+        },
+        showCountriesContent(){
+            document.querySelector('#countries_content').style.display = "grid";
+        },
+        showCitiesContent(){
+            document.querySelector('#cities_content').style.display = "grid";
+        },
   },
 }
 </script>
 
 <style scoped>
+
+    label{
+        align-self: start;
+    }
+
+    input{
+        align-self: end;
+    }
+
     body{
         margin: 0;
         padding: 0;
@@ -349,7 +446,7 @@
         grid-template-columns: 1fr;
     }
 
-    #payment_box{
+    #payments_box{
         grid-area: 4/2/5/3;
         grid-template-rows: 50px 1fr;
         grid-template-columns: 1fr;
@@ -443,7 +540,7 @@
         grid-area: 1/1/1/-1;
     }
 
-    #order_window{
+    #pop_up_window{
         width: 1000px;
         z-index: 100;
         height: 800px;
@@ -467,6 +564,17 @@
         grid-template-rows: 1fr;
     }
 
+    .pop_up_window_content{
+        grid-area: 2/2/3/3;
+        display: grid;
+        grid-template-rows: 100px 1fr;
+        grid-template-columns: 1fr;
+    }
+
+    #pop_up_window_table{
+        grid-area: 2/1/3/3;
+    }
+
     #order_window_navbar{
         text-align: left;
         grid-area: 1/1/2/2;
@@ -483,7 +591,7 @@
         cursor: pointer;
     }
 
-    #order_window_footer{
+    #pop_up_window_footer{
         grid-area: 3/2/4/3;
         display: grid;
         grid-template-rows: 1fr;
@@ -493,7 +601,7 @@
         align-items: center;
     }
 
-    .order_window_confirm_order_button{
+    .pop_up_window_confirm_edit_button{
         grid-area: 1/4/2/5;
         width: 200px;
         height: 40px;
@@ -507,14 +615,14 @@
         cursor: pointer;
     }
 
-    .order_window_add_item_button{
-        grid-area: 1/3/2/4;
-        width: 200px;
+    .pop_up_window_add_edit_button{
+        grid-area: 1/-1/2/-1;
+        width: 100px;
         height: 40px;
         background: #35d38c;
         color: white;
         font-size: 16px;
-        align-self: center;
+        align-self: end;
         justify-self: center;
         border: none;
 	    padding: 0;
@@ -527,14 +635,14 @@
     }
 
     .order_list_row{
+        grid-area: 1/2/2/3;
         width: 970px;
-        height: 36px;
+        height: 72px;
         display: grid;
         grid-template-rows: 1fr;
-        grid-template-columns: 210px 210px 50px 210px 210px;
+        grid-template-columns: 300px 1fr;
         grid-gap: 20px;
         justify-items: start;
-        margin-bottom: 15px;
         text-align: left;
         line-height: 36px;
     }
@@ -542,6 +650,7 @@
     #category{
         grid-area: 1/1/2/2;
         width: 100%;
+        height: 36px;
     }
 
     #product{
@@ -585,6 +694,30 @@
         border: none;
         cursor: pointer;
         grid-area: 2/4/3/5;
+    }
+
+    #categories_content{
+        display: none;
+    }
+
+    #products_content{
+        display: none;
+    }
+
+    #payments_content{
+        display: none;
+    }
+
+    #admins_content{
+        display: none;
+    }
+
+    #countries_content{
+        display: none;
+    }
+
+    #cities_content{
+        display: none;
     }
 
 </style>

@@ -573,7 +573,6 @@
         grid-row: 8/9;   
     }
 
-
     #rooms_details_box{
         grid-area: 4/2/4/4;
         grid-template-rows: 50px 1fr 100px;

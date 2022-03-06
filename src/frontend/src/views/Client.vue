@@ -386,133 +386,114 @@
             },
             confirmReservation(){
 
-                // <form id="reservation_form" name="reservation_form">
-                // <label for="fname">First name*</label><br>
-                // <input type="text" class="form_input" name="fname"><br>
-                // <label for="lname">Last name*</label><br>
-                // <input type="text" class="form_input" name="lname"><br>
-                // <label for="birth">Date of Birth*</label><br>
-                // <input type="date" class="form_input" name="birth"><br>
-                // <label for="country">Country*</label><br>
-                // <select name="country" class="form_input" v-model=country>
-                //     <option v-for="country in items.map(a => a.countryName)" :key=country>{{ country }}</option>
-                // </select>
-                // <label for="city">City*</label><br>
-                // <select name="city" class="form_input" v-model=city>
-                //     <!-- <option v-for="city in country.length != 0 (items.find(o => o.countryName === country).cities.map(a => a.cityName))" :key=city>{{city}}</option> -->
-                //     <option v-for="city in country.length != 0 ? (items.find(o => o.countryName === country).cities.map(a => a.cityName)) : []" :key=city>{{city}}</option>
-                // </select>
-                // <label for="street">Street*</label><br>
-                // <input type="text" class="form_input" name="street"><br>
-                // <label for="street">Building / Apartment Number </label><br>
-                // <input type="text" class="form_input" name="number"><br>
-                // <label for="telephone">Telephone*</label><br>
-                // <input type="text" class="form_input" name="telephone"><br>
-                // <label for="payment">Payment Method*</label><br>
-                // <select name="payment" class="form_input" v-model=paymentMethod>
-                //     <option v-for="method in paymentMethods" :key=method>{{method}}</option>
-                // </select>
                 // convert personal data form into JSON
                 var formData = new FormData(document.querySelector("#reservation_form"));
                 var object = {};
                 formData.forEach((value, key) => object[key] = value);
                 console.log(object);
 
-                if (object.fname.length != 0 &&
-                    object.lname.length != 0 &&
-                    object.birth.length != 0 &&
-                    object.country.length != 0 &&
-                    object.city.length != 0 &&
-                    object.street.length != 0 &&
-                    object.number.split('/')[0].length != 0 &&
-                    object.telephone.length != 0 &&
-                    object.payment.length != 0
-                ){
-                        // create an address JSON and POST
-                    var addressObject = {
-                        cityName: object.city,
-                        streetName: object.street,
-                        buildingNumber: object.number,
-                        apartmentNumber: object.number
-                    };
-                    
-                    var addressId;
-
-                    fetch("/api/address/add", {
-                        method: "POST",
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(addressObject)
-                    }).then(response => response.json()).then(data => {
-                        addressId = data;
-
-                        // create a guest JSON and POST
-                        var guestObject = {
-                            firstName: object.fname,
-                            lastName: object.lname,
-                            dateOfBirth: object.birth,
-                            telephone: object.telephone,
-                            addressID: addressId
+                if (Object.keys(object).length == 9){
+                    if (object.fname.length != 0 &&
+                        object.lname.length != 0 &&
+                        object.birth.length != 0 &&
+                        object.country.length != 0 &&
+                        object.city.length != 0 &&
+                        object.street.length != 0 &&
+                        object.number.split('/')[0].length != 0 &&
+                        object.telephone.length != 0 &&
+                        object.payment.length != 0 
+                        
+                    ){
+                        console.log(object.city.length);
+                            // create an address JSON and POST
+                        var addressObject = {
+                            cityName: object.city,
+                            streetName: object.street,
+                            buildingNumber: object.number,
+                            apartmentNumber: object.number
                         };
+                        
+                        var addressId;
 
-                        var guestId;
-
-                        console.log(guestObject);
-                        console.log(JSON.stringify(guestObject));
-
-                        fetch("/api/guest/add", {
+                        fetch("/api/address/add", {
                             method: "POST",
                             headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify(guestObject)
+                            body: JSON.stringify(addressObject)
                         }).then(response => response.json()).then(data => {
-                            guestId = data;
+                            addressId = data;
 
-                            // create a reservation JSON and POST
-
-                            var numberOfGuests = this.rooms_added.reduce((a,b)=>a+b,0);
-                            var startDate = this.startDate;
-                            var endDate = this.endDate;
-
-                            var reservationObject = {
-                                numberOfGuests: numberOfGuests,
-                                startDate: startDate,
-                                endDate: endDate,
-                                guestID: guestId,
-                                paymentMethodName: object.payment
+                            // create a guest JSON and POST
+                            var guestObject = {
+                                firstName: object.fname,
+                                lastName: object.lname,
+                                dateOfBirth: object.birth,
+                                telephone: object.telephone,
+                                addressID: addressId
                             };
-                            
-                            var reservationId;
 
-                            fetch("/api/rsv/add", {
+                            var guestId;
+
+                            console.log(guestObject);
+                            console.log(JSON.stringify(guestObject));
+
+                            fetch("/api/guest/add", {
                                 method: "POST",
                                 headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify(reservationObject)
+                                body: JSON.stringify(guestObject)
                             }).then(response => response.json()).then(data => {
-                                reservationId = data;
+                                guestId = data;
 
-                                // create a room list JSON and POST
-                                var roomListObject = {
-                                    reservationID: reservationId,
-                                    rooms: [1,2]
+                                // create a reservation JSON and POST
+
+                                var numberOfGuests = this.rooms_added.reduce((a,b)=>a+b,0);
+                                var startDate = this.startDate;
+                                var endDate = this.endDate;
+
+                                var reservationObject = {
+                                    numberOfGuests: numberOfGuests,
+                                    startDate: startDate,
+                                    endDate: endDate,
+                                    guestID: guestId,
+                                    paymentMethodName: object.payment
                                 };
+                                
+                                var reservationId;
 
-                                fetch("/api/roominrsv/add", {
+                                fetch("/api/rsv/add", {
                                     method: "POST",
                                     headers: {'Content-Type': 'application/json'},
-                                    body: JSON.stringify(roomListObject)
+                                    body: JSON.stringify(reservationObject)
                                 }).then(response => response.json()).then(data => {
-                                    console.log(data);
-                                    this.popUpWindow = false;
-                                    alert('Reservation complete. Thank you!');
+                                    reservationId = data;
+                                    // create a room list JSON and POST
+                                    var roomListObject = {
+                                        reservationID: reservationId,
+                                        rooms: this.rooms_selected.map(el => el[0].number)
+                                    };
+
+                                    fetch("/api/roominrsv/add", {
+                                        method: "POST",
+                                        headers: {'Content-Type': 'application/json'},
+                                        body: JSON.stringify(roomListObject)
+                                    }).then(response => response.json()).then(data => {
+                                        console.log(data);
+                                        this.popUpWindow = false;
+                                        alert('Reservation complete. Thank you!');
+                                    });
                                 });
+
                             });
 
                         });
-
-                    });
+                    }
+                    else{
+                        alert('Please fill all required (*) fields.');
+                    }
                 }
                 else{
-                    alert('Please fill all required (*) fields.');
-                }
+                        alert('Please fill all required (*) fields.');
+                    }
+                
 
 
             },
