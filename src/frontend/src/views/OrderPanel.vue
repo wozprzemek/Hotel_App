@@ -15,6 +15,10 @@
         border: none;
         border-top: 2px solid rgba(60,60,73,1);">
                 <div class="left_bar_text"><router-link to="/admin/orders">Orders</router-link></div>
+                <hr style="width: 200px; height: 0px;
+        border: none;
+        border-top: 2px solid rgba(60,60,73,1);">
+                <div class="left_bar_text"><router-link to="/admin/manage">Manage other data</router-link></div>
             </div>
         </div>
           <div id="content">
@@ -27,6 +31,7 @@
                   :columnDefs="columnDefs"
                   :rowData="rowData.value"
                   @rowClicked="onRowClicked"
+                  :gridOptions="this.gridOptions"
               >
               </ag-grid-vue>
           </div>
@@ -45,6 +50,12 @@ export default {
   components: {
     AgGridVue,
   },
+  data(){
+    return{
+      gridOptions: "",
+    }
+
+  },
   setup() {
     let rowData = reactive([]);
 
@@ -57,15 +68,25 @@ export default {
 
     return {
         columnDefs: [
-          { headerName: "Order ID", field: "orderID",  resizable: true, type: 'rightAligned', width: 150},
-          { headerName: "Total Price", field: "totalPrice" , resizable: true, type: 'rightAligned', width: 150},
-          { headerName: "Time of Order", field: "timeOfOrder" , resizable: true, type: 'rightAligned', width: 150},
+          { headerName: "Order ID", field: "orderID",  resizable: true, type: 'rightAligned', width: 200},
+          { headerName: "Total Price", field: "totalPrice" , resizable: true, type: 'rightAligned', width: 400},
+          { headerName: "Time of Order", field: "timeOfOrder" , resizable: true, type: 'rightAligned', width: 700},
         ],
-      rowData
+      rowData,
     };
   },
   created() {
     this.rowSelection = 'single';
+    this.gridOptions = {
+        defaultColDef: {
+          resizable: true,
+        },
+        columnDefs: this.columnDefs,
+        rowData: null,
+        onColumnResized: (params) => {
+          console.log(params);
+        },
+      };
   },
   methods: {
     onSelectionChanged() {
@@ -76,6 +97,9 @@ export default {
       console.log(params.node.data.orderID);
       this.$router.push({ path: '/admin/orders/' + params.node.data.orderID });
     },
+    sizeToFit() {
+      this.gridOptions.api.sizeColumnsToFit();
+    }
   },
 };
 </script>

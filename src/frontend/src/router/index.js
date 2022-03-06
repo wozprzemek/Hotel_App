@@ -9,6 +9,7 @@ import RoomsPanel from "../views/RoomsPanel.vue"
 import GuestsPanel from "../views/GuestsPanel.vue"
 import Order from "../views/Order.vue"
 import OrderPanel from "../views/OrderPanel.vue"
+import ManageData from "../views/ManageData.vue"
 const routes = [
   {
     path: "/",
@@ -62,6 +63,11 @@ const routes = [
     path: '/admin/orders/:id',
     name: "Order",
     component: Order,
+  },
+  {
+    path: '/admin/manage',
+    name: "ManageData",
+    component: ManageData,
   },
 ];
 
