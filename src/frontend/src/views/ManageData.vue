@@ -34,107 +34,126 @@
     <div id="pop_up_window">
         <div id="order_window_title_bar">
             <div id="order_window_navbar">
-                <div id="order_window_title"><span>New Category</span></div>
+                <div id="order_window_title"><span>New {{currentItem}}</span></div>
             </div>
             <img id="order_window_exit_icon" src="../assets/delete.png" @click="popUpWindow = false; closePopUpWindow()"/>
         </div>
         <!-- CATEGORIES -->
         <div class="pop_up_window_content" id="categories_content">
-            <form class="order_list_row">
+            <form class="new_item_row" id="category_item_row">
                 <label for="category" id="category">Category Name</label>
                 <br>
                 <input name="category" id="category" type="text">
-                <button class="pop_up_window_add_edit_button">Add</button>
+                <button class="pop_up_window_add_edit_button" type="button" @click="addCategory()">Add</button>
             </form>
             <ag-grid-vue
                 class="ag-theme-alpine" id="pop_up_window_table"
-                :columnDefs="columnDefsReservations"
-                :rowData="rowDataReservations.value"
+                :columnDefs="columnDefsCategories"
+                :rowData="rowDataCategories.value"
                 @rowClicked="onRowClickedOrders">
             </ag-grid-vue>
         </div>
 
         <!-- PRODUCTS -->
         <div class="pop_up_window_content" id="products_content">
-            <form class="order_list_row">
+            <form class="new_item_row"  id="product_item_row">
                 <label for="category" id="category">Category Name</label>
                 <br>
-                <input name="category" id="category" type="text">
-                <button class="pop_up_window_add_edit_button">Add</button>
+                <select name="categoryName" id="category">
+                    <option v-for="category in typeof rowDataCategories.value != 'undefined' ? rowDataCategories.value.map(el => el.categoryName): []" :key=category>{{ category }}</option>
+                </select>
+                <label for="productName" id="product">Product Name</label>
+                <br>
+                <input name="productName" id="product" type="text">
+                <label for="productPrice" id="product_price">Product Name</label>
+                <br>
+                <input id="price" type="number" name="productPrice" min=1>
+                <button class="pop_up_window_add_edit_button" type="button" @click="addProduct()">Add</button>
             </form>
             <ag-grid-vue
                 class="ag-theme-alpine" id="pop_up_window_table"
-                :columnDefs="columnDefsReservations"
-                :rowData="rowDataReservations.value"
+                :columnDefs="columnDefsProducts"
+                :rowData="rowDataProducts.value"
                 @rowClicked="onRowClickedOrders">
             </ag-grid-vue>
         </div>
 
         <!-- PAYMENT METHODS -->
         <div class="pop_up_window_content" id="payments_content">
-            <form class="order_list_row">
-                <label for="category" id="category">Category Name</label>
+            <form class="new_item_row" id="payment_item_row">
+                <label for="paymentMethodName" id="payment">Payment Method Name</label>
                 <br>
-                <input name="category" id="category" type="text">
-                <button class="pop_up_window_add_edit_button">Add</button>
+                <input name="paymentMethodName" id="payment" type="text">
+                <button class="pop_up_window_add_edit_button" type="button" @click="addPayment()">Add</button>
             </form>
             <ag-grid-vue
                 class="ag-theme-alpine" id="pop_up_window_table"
-                :columnDefs="columnDefsReservations"
-                :rowData="rowDataReservations.value"
+                :columnDefs="columnDefsPayments"
+                :rowData="rowDataPayments.value"
                 @rowClicked="onRowClickedOrders">
             </ag-grid-vue>
         </div>
 
         <!-- ADMINS -->
         <div class="pop_up_window_content" id="admins_content">
-            <form class="order_list_row">
-                <label for="category" id="category">Category Name</label>
+            <form class="new_item_row" id="admin_item_row">
+                <label for="login" id="login">Login</label>
                 <br>
-                <input name="category" id="category" type="text">
-                <button class="pop_up_window_add_edit_button">Add</button>
+                <input name="login" id="login" type="text">
+                <label for="password" id="password">Password</label>
+                <br>
+                <input name="password" id="password" type="text">
+                <label for="firstName" id="fname">First Name</label>
+                <br>
+                <input name="firstName" id="fname" type="text">
+                <label for="lastName" id="lname">Last Name</label>
+                <br>
+                <input name="lastName" id="lname" type="text">
+                <button class="pop_up_window_add_edit_button" type="button" @click="addAdmin()">Add</button>
             </form>
             <ag-grid-vue
                 class="ag-theme-alpine" id="pop_up_window_table"
-                :columnDefs="columnDefsReservations"
-                :rowData="rowDataReservations.value"
+                :columnDefs="columnDefsAdmins"
+                :rowData="rowDataAdmins.value"
                 @rowClicked="onRowClickedOrders">
             </ag-grid-vue>
         </div>
         
         <!-- COUNTRIES -->
         <div class="pop_up_window_content" id="countries_content">
-            <form class="order_list_row">
-                <label for="category" id="category">Category Name</label>
+            <form class="new_item_row" id="country_item_row">
+                <label for="countryName" id="country">Country Name</label>
                 <br>
-                <input name="category" id="category" type="text">
-                <button class="pop_up_window_add_edit_button">Add</button>
+                <input name="countryName" id="country" type="text">
+                <button class="pop_up_window_add_edit_button" type="button" @click="addCountry()">Add</button>
             </form>
             <ag-grid-vue
                 class="ag-theme-alpine" id="pop_up_window_table"
-                :columnDefs="columnDefsReservations"
-                :rowData="rowDataReservations.value"
+                :columnDefs="columnDefsCountries"
+                :rowData="rowDataCountries.value"
                 @rowClicked="onRowClickedOrders">
             </ag-grid-vue>
         </div>
         
         <!-- CITIES -->
         <div class="pop_up_window_content" id="cities_content">
-            <form class="order_list_row">
-                <label for="category" id="category">Category Name</label>
+            <form class="new_item_row" id="city_item_row">
+                <label for="countryName" id="country">Country Name</label>
                 <br>
-                <input name="category" id="category" type="text">
-                <button class="pop_up_window_add_edit_button">Add</button>
+                <select name="countryName" id="country">
+                    <option v-for="country in typeof rowDataCountries.value != 'undefined' ? rowDataCountries.value.map(el => el.countryName): []" :key=country>{{ country }}</option>
+                </select>
+                <label for="cityName" id="city">City Name</label>
+                <br>
+                <input name="cityName" id="city" type="text">
+                <button class="pop_up_window_add_edit_button" type="button" @click="addCity()">Add</button>
             </form>
             <ag-grid-vue
                 class="ag-theme-alpine" id="pop_up_window_table"
-                :columnDefs="columnDefsReservations"
-                :rowData="rowDataReservations.value"
+                :columnDefs="columnDefsCities"
+                :rowData="rowDataCities.value"
                 @rowClicked="onRowClickedOrders">
             </ag-grid-vue>
-        </div>
-        <div id="pop_up_window_footer">
-            <button class="pop_up_window_confirm_edit_button" @click="confirmOrder()">Confirm</button>
         </div>
     </div>
 </template>
@@ -172,59 +191,58 @@
                 time: "",
             }],
             roomNumber: "",
-            rowDataReservations: reactive([]),
-            columnDefsReservations: [
-                { headerName: "Reservation ID", field: "reservationID",  resizable: true, type: 'rightAligned', width: 130},
-                { headerName: "Guest ID", field: "guestID" , resizable: true, type: 'rightAligned', width: 100},
-                { headerName: "No. of Guests", field: "numberOfGuests" , resizable: true, type: 'rightAligned', width: 150},
-                { headerName: "Start Date", field: "startDate" , resizable: true, type: 'rightAligned',width: 200},
-                { headerName: "End Date", field: "endDate" , resizable: true, type: 'rightAligned', width: 200},
-                { headerName: "Price", field: "price" , resizable: true, type: 'rightAligned', width: 150},
-                { headerName: "Payment Method", field: "paymentMethod" , resizable: true, type: 'rightAligned', width: 200},
-                { headerName: "State", field: "reservationState" , resizable: true, type: 'rightAligned', width: 200},
+            rowDataCategories: reactive([]),
+            columnDefsCategories: [
+                { headerName: "Category ID", field: "id",  resizable: true, type: 'rightAligned', width: 130},
+                { headerName: "Category Name", field: "categoryName" , resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "Start Serving Time", field: "startServingTime" , resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "End Serving Time", field: "endServingTime" , resizable: true, type: 'rightAligned',width: 200},
+            ],
+            rowDataProducts: reactive([]),
+            columnDefsProducts: [
+                { headerName: "Product ID", field: "id",  resizable: true, type: 'rightAligned', width: 130},
+                { headerName: "Product Name", field: "productName" , resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "Product Price", field: "productPrice" , resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "Category Name", field: "categoryName" , resizable: true, type: 'rightAligned',width: 200},
+            ],
+            rowDataPayments: reactive([]),
+            columnDefsPayments: [
+                { headerName: "Payment Method ID", field: "id",  resizable: true, type: 'rightAligned', width: 130},
+                { headerName: "Payment Method Name", field: "paymentMethodName" , resizable: true, type: 'rightAligned', width: 200},
+            ],
+            rowDataAdmins: reactive([]),
+            columnDefsAdmins: [
+                { headerName: "Login", field: "login",  resizable: true, type: 'rightAligned', width: 130},
+                { headerName: "Password", field: "password" , resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "First Name", field: "firstName" , resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "Last Name", field: "lastName" , resizable: true, type: 'rightAligned',width: 200},
+                { headerName: "Last Login", field: "lastLogin" , resizable: true, type: 'rightAligned',width: 200},
+            ],
+            rowDataCountries: reactive([]),
+            columnDefsCountries: [
+                { headerName: "Country ID", field: "countryID",  resizable: true, type: 'rightAligned', width: 130},
+                { headerName: "Country Name", field: "countryName" , resizable: true, type: 'rightAligned', width: 200},
+            ],
+            rowDataCities: reactive([]),
+            columnDefsCities: [
+                { headerName: "City ID", field: "id",  resizable: true, type: 'rightAligned', width: 130},
+                { headerName: "City Name", field: "cityName" , resizable: true, type: 'rightAligned', width: 200},
+                { headerName: "Country Name", field: "countryName" , resizable: true, type: 'rightAligned', width: 200},
             ],
             reservationDetails: {},
             roomDetails: {},
             hasReservation: true,
+            currentItem: "",
         }
     },
     created() {
         this.rowSelection = 'single';
         this.roomNumber = this.$route.params.id;
-
-        // FETCH RESERVATION HISTORY AT LOAD
-        fetch('/api/rsv/all').then(result => result.json()).then(remoteRowData => this.rowDataReservations.value = remoteRowData);
-        console.log( this.rowDataReservations);
     },
     methods: {
         onSelectionChanged() {
         const selectedRows = this.rowData.getSelectedRows();
         console.log(selectedRows.length === 1 ? selectedRows[0].reservation_id : '');
-        },
-        addOrderItem(){
-            this.orderItems.push({
-                id: this.orderItems[this.orderItems.length-1].id,
-                category: "",
-                product: "",
-                qty: 1,
-                time: "",
-                subtotal: 0,
-            });
-            console.log('categories: ', this.selectedCategories);
-            console.log('products: ', this.selectedProducts);
-            console.log('items: ', this.selectedItems);
-        },
-        emptyOrderItems(){
-            this.orderItems = [
-                {
-                    id: 1,
-                    category: "",
-                    product: "",
-                    qty: 0,
-                    time: "",
-                    subtotal: 0,
-                },
-            ]
         },
         showPopUpWindow(){
             this.popUpWindow = true;
@@ -242,94 +260,105 @@
             document.querySelector('#countries_content').style.display = "none";
             document.querySelector('#cities_content').style.display = "none";
         },
-        confirmOrder(){
-            // first POST an empty order
-            var currentdate = new Date(); 
-            var datetime = 
-                currentdate.getFullYear() + "-"
-                + (currentdate.getMonth()+1)  + "-" 
-                + currentdate.getDate() + "T"
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes()
-
-
-            var objectEmptyOrder = {
-                timeOfOrder: datetime,
-                reservationID: this.reservationId,
-            }
-
-            console.log(objectEmptyOrder);
-            
-            const all = document.querySelectorAll('form.order_list_row');
-                // Change the text of multiple elements with a loop
-                var orderItems = [];
-                all.forEach(element => {
-                    var formData = new FormData(element);
-                    var orderRow = {};
-                    formData.forEach((value, key) => orderRow[key] = value);
-                    orderItems.push(orderRow);
-            });
-    
-
-            if (orderItems.map(el => Object.values(el).filter(el => el.length != 0)).filter(el => el.length != 4).length === 0){
-                
-                var orderId;
-                var orderJson = {};
-
-                fetch("/api/order/add", {
-                    method: "POST",
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(objectEmptyOrder)
-                }).then(response => response.json()).then(data => {
-                    orderId = data;
-                    console.log(orderId);
-                    orderJson.orderID = orderId;
-                    orderJson.products = orderItems;
-                    fetch("/api/prodinord/add", {
-                        method: "POST",
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(orderJson)
-                    }).then(response => response.json()).then(data => {
-                        console.log(data);
-
-                        // FETCH ORDERS ON ORDER ADD
-                        fetch('/api/order/all?' + new URLSearchParams({
-                        reservationID: this.reservationId,
-                        })) .then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
-                    });
-                });
-            }
-            else{
-                alert("You have unfinished order items.");
-            }
-        },
-        deleteReservation(){
-            if (confirm('Are you sure you want to DELETE THIS RESERVATION? \nThis action is irreversible!')) {
-                console.log('deleted');
-                this.$router.push({ path: '/admin/reservations/'})
-            }
-        },
-        onRowClicked(params) {
-            console.log(params.node.data.reservationID);
-            this.$router.push({ path: '/admin/reservations/' + params.node.data.reservationID });
-        },
         showCategoriesContent(){
+            this.currentItem = 'Category';
+            console.log('aaa');
             document.querySelector('#categories_content').style.display = "grid";
+            fetch('/api/cat/all').then(result => result.json()).then(remoteRowData => this.rowDataCategories.value = remoteRowData);
         },
         showProductsContent(){
+            this.currentItem = 'Product';
             document.querySelector('#products_content').style.display = "grid";
+            fetch('/api/cat/all').then(result => result.json()).then(
+                remoteRowData => this.rowDataCategories.value = remoteRowData);
+            fetch('/api/product/all').then(result => result.json()).then(remoteRowData => this.rowDataProducts.value = remoteRowData);
+            
         },
         showPaymentContent(){
+            this.currentItem = 'Payment Method';
             document.querySelector('#payments_content').style.display = "grid";
+            fetch('/api/pay/details').then(result => result.json()).then(remoteRowData => this.rowDataPayments.value = remoteRowData);
         },
         showAdminsContent(){
+            this.currentItem = 'Admin';
             document.querySelector('#admins_content').style.display = "grid";
+            fetch('/api/admin/all').then(result => result.json()).then(remoteRowData => this.rowDataAdmins.value = remoteRowData);
         },
         showCountriesContent(){
+            this.currentItem = 'Country';
             document.querySelector('#countries_content').style.display = "grid";
+            fetch('/api/country/details').then(result => result.json()).then(remoteRowData => this.rowDataCountries.value = remoteRowData);
         },
         showCitiesContent(){
+            this.currentItem = 'City';
             document.querySelector('#cities_content').style.display = "grid";
+            fetch('/api/city/all').then(result => result.json()).then(remoteRowData => this.rowDataCities.value = remoteRowData);
+        },
+        addCategory(){
+            var formData = new FormData(document.querySelector("#category_item_row"));
+                var object = {};
+                formData.forEach((value, key) => object[key] = value);
+                console.log(object);
+            fetch('/api/cat/add?' + new URLSearchParams(object), {
+                method: "POST"}).then(data => {
+                console.log(data);
+                fetch('/api/cat/all').then(result => result.json()).then(remoteRowData => this.rowDataCategories.value = remoteRowData);
+            });
+        },
+        addProduct(){
+            var formData = new FormData(document.querySelector("#product_item_row"));
+                var object = {};
+                formData.forEach((value, key) => object[key] = value);
+                console.log(object);
+            fetch('/api/product/add?' + new URLSearchParams(object), {
+                method: "POST"}).then(data => {
+                console.log(data);
+                fetch('/api/product/all').then(result => result.json()).then(remoteRowData => this.rowDataProducts.value = remoteRowData);
+            });
+        },
+        addPayment(){
+            var formData = new FormData(document.querySelector("#payment_item_row"));
+                var object = {};
+                formData.forEach((value, key) => object[key] = value);
+                console.log(object);
+            fetch('/api/pay/add?' + new URLSearchParams(object), {
+                method: "POST"}).then(data => {
+                console.log(data);
+                fetch('/api/pay/details').then(result => result.json()).then(remoteRowData => this.rowDataPayments.value = remoteRowData);
+            });
+        },
+        addAdmin(){
+            var formData = new FormData(document.querySelector("#admin_item_row"));
+                var object = {};
+                formData.forEach((value, key) => object[key] = value);
+                console.log(object);
+            fetch('/api/admin/add?' + new URLSearchParams(object), {
+                method: "POST"}).then(data => {
+                console.log(data);
+                fetch('/api/admin/all').then(result => result.json()).then(remoteRowData => this.rowDataAdmins.value = remoteRowData);
+            }); 
+        },
+        addCountry(){
+            var formData = new FormData(document.querySelector("#country_item_row"));
+                var object = {};
+                formData.forEach((value, key) => object[key] = value);
+                console.log(object);
+            fetch('/api/country/add?' + new URLSearchParams(object), {
+                method: "POST"}).then(data => {
+                console.log(data);
+                fetch('/api/country/details').then(result => result.json()).then(remoteRowData => this.rowDataCountries.value = remoteRowData);
+            }); 
+        },
+        addCity(){
+            var formData = new FormData(document.querySelector("#city_item_row"));
+                var object = {};
+                formData.forEach((value, key) => object[key] = value);
+                console.log(object);
+            fetch('/api/city/add?' + new URLSearchParams(object), {
+                method: "POST"}).then(data => {
+                console.log(data);
+                fetch('/api/city/all').then(result => result.json()).then(remoteRowData => this.rowDataCities.value = remoteRowData);
+            }); 
         },
   },
 }
@@ -342,6 +371,10 @@
     }
 
     input{
+        align-self: end;
+    }
+
+    select{
         align-self: end;
     }
 
@@ -616,7 +649,7 @@
     }
 
     .pop_up_window_add_edit_button{
-        grid-area: 1/-1/2/-1;
+        grid-area: 1/-1/2/-2;
         width: 100px;
         height: 40px;
         background: #35d38c;
@@ -634,14 +667,14 @@
         padding-top: 20px;
     }
 
-    .order_list_row{
+    .new_item_row{
         grid-area: 1/2/2/3;
         width: 970px;
         height: 72px;
         display: grid;
         grid-template-rows: 1fr;
-        grid-template-columns: 300px 1fr;
-        grid-gap: 20px;
+        grid-template-columns: 192.5px 192.5px 192.5px 192.5px 1fr;
+        column-gap: 20px;
         justify-items: start;
         text-align: left;
         line-height: 36px;
@@ -653,26 +686,60 @@
         height: 36px;
     }
 
+    #payment{
+        grid-area: 1/1/2/2;
+        width: 100%;
+        height: 36px;
+    }
+
+    #country{
+        grid-area: 1/1/2/2;
+        width: 100%;
+        height: 36px;
+    }
+
+    #login{
+        grid-area: 1/1/2/2;
+        width: 100%;
+        height: 36px;
+    }
+
     #product{
         grid-area: 1/2/2/3;
         width: 100%;
+        height: 36px;
     }
 
-    #qty{
+    #city{
+        grid-area: 1/2/2/3;
+        width: 100%;
+        height: 36px;
+    }
+
+    #password{
+        grid-area: 1/2/2/3;
+        width: 100%;
+        height: 36px;
+    }
+
+    #price{
         grid-area: 1/3/2/4;
         width: 100%;
+        height: 36px;
     }
 
-    #time{
+    #fname{
+        grid-area: 1/3/2/4;
+        width: 100%;
+        height: 36px;
+    }
+
+    #lname{
         grid-area: 1/4/2/5;
         width: 100%;
+        height: 36px;
     }
 
-    #subtotal{
-        grid-area: 1/5/2/6;
-        width: 100%;
-        padding-left: 35px;
-    }
 
     hr{
         margin: 0;
@@ -719,5 +786,6 @@
     #cities_content{
         display: none;
     }
+
 
 </style>
