@@ -373,17 +373,40 @@
             }
         },
         cancelReservation(){
-            if (confirm('Are you sure you want to DELETE THIS RESERVATION? \nThis action is irreversible!')) {
-                console.log('deleted');
+            if (confirm('Are you sure you want to CANCEL THIS RESERVATION? \nThis action is irreversible!')) {
+                fetch('/api/rsv/state?' + new URLSearchParams({
+                    reservationID: this.reservationId,
+                    stateName: "CANCELED",
+                }),{
+                    method: "POST"}).then(data => {
+                    console.log(data);
+                    window.location.reload();
+                });
+                console.log('canceled');
             }
         },
         startReservation(){
             if (confirm('Are you sure you want to START THIS RESERVATION? \nThis action is irreversible!')) {
-                console.log('started');
+                fetch('/api/rsv/state?' + new URLSearchParams({
+                    reservationID: this.reservationId,
+                    stateName: "IN PROGRESS",
+                }),{
+                    method: "POST"}).then(data => {
+                    console.log(data);
+                    // window.location.reload();
+                });
             }
         },
         completeReservation(){
             if (confirm('Are you sure you want to COMPLETE THIS RESERVATION? \nThis action is irreversible!')) {
+                fetch('/api/rsv/state?' + new URLSearchParams({
+                    reservationID: this.reservationId,
+                    stateName: "COMPLETED",
+                }),{
+                    method: "POST"}).then(data => {
+                    console.log(data);
+                    window.location.reload();
+                });
                 console.log('completed');
             }
         },
