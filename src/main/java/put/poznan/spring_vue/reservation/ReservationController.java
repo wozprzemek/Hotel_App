@@ -164,4 +164,18 @@ public class ReservationController {
         }
     }
 
+    @PostMapping(path="/state")
+    public ResponseEntity<Reservation> changeReservationState (@RequestParam("reservationID") int reservationID, @RequestParam("stateName") String stateName) {
+        try{
+            Reservation reservation = reservationRepository.findByReservationID(reservationID);
+            ReservationState reservationState = reservationRepository.findReservationStateByName(stateName);
+            reservation.setReservationState(reservationState);
+            reservation = reservationRepository.save(reservation);
+            return new ResponseEntity<>(reservation, HttpStatus.CREATED);
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

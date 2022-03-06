@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import put.poznan.spring_vue.category.Category;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController // This means that this class is a Controller
@@ -16,11 +18,22 @@ public class AdminController {
     private AdminRepository adminRepository;
 
     @PostMapping(path="/add") // Map ONLY POST Requests
-    public ResponseEntity<Admin> addNewAdmin (@RequestBody Admin admin) {
+    public ResponseEntity<Integer> addNewAdmin (@RequestParam("login") String login, @RequestParam("password") String password, @RequestParam("firstName") String firstName, @RequestParam("lastName") String lastName) {
         try{
-            Admin _admin = adminRepository.save(admin);
-            return new ResponseEntity<>(_admin, HttpStatus.CREATED);
+            List<Admin> existingAdmins = adminRepository.findByLogin(login);
+            if(existingAdmins.isEmpty()){
+                Admin _admin = new Admin();
+                _admin.setLogin(login);
+                _admin.setPassword(password);
+                _admin.setFirstName(firstName);
+                _admin.setLastName(lastName);
+                _admin.setLastLogin(new Date());
+                adminRepository.save(_admin);
+                return new ResponseEntity<>(1, HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(0, HttpStatus.CONFLICT);
         } catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

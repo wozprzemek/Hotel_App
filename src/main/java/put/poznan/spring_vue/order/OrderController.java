@@ -13,6 +13,7 @@ import put.poznan.spring_vue.roomInReservation.RoomInReservationDetails;
 import put.poznan.spring_vue.roomInReservation.RoomInReservationGetter;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -71,5 +72,17 @@ public class OrderController {
         }
     }
 
+    @PostMapping(path="/delete")
+    @Transactional
+    public ResponseEntity<Integer> deleteOrder(@RequestParam int orderID) {
+        try {
+            orderRepository.deleteProductInOrderByOrderID(orderID);
+            orderRepository.deleteById(orderID);
+            return new ResponseEntity<>(1, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

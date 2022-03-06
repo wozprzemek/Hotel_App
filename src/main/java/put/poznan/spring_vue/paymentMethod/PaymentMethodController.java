@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import put.poznan.spring_vue.category.Category;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +15,17 @@ public class PaymentMethodController {
     @Autowired
     private PaymentMethodRepository paymentMethodRepository;
 
-    @PostMapping(path="/add") // Map ONLY POST Requests
-    public ResponseEntity<PaymentMethod> addNewPaymentMethod (@RequestBody PaymentMethod paymentMethod) {
+    @PostMapping(path="/add")
+    public ResponseEntity<Integer> addNewCategory(@RequestParam("paymentMethodName") String paymentMethodName) {
         try{
-            PaymentMethod _paymentMethod = paymentMethodRepository.save(paymentMethod);
-            return new ResponseEntity<>(_paymentMethod, HttpStatus.CREATED);
+            PaymentMethod existingPaymentMethod = paymentMethodRepository.findByPaymentMethodName(paymentMethodName);
+            if(existingPaymentMethod == null){
+                PaymentMethod _paymentMethod = new PaymentMethod();
+                _paymentMethod.setPaymentMethodName(paymentMethodName);
+                paymentMethodRepository.save(_paymentMethod);
+                return new ResponseEntity<>(1, HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(0, HttpStatus.CONFLICT);
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -37,6 +44,20 @@ public class PaymentMethodController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(toReturn, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(path="/details")
+    public @ResponseBody ResponseEntity<List<PaymentMethod>> getAllPaymentMethodsWithDetails() {
+        try {
+            List<PaymentMethod> paymentMethods = new ArrayList<PaymentMethod>(paymentMethodRepository.findAll());
+            if (paymentMethods.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(paymentMethods, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -37,6 +37,7 @@ public class RoomInReservationController {
                 RoomInReservation _roomInReservation = roomInReservationRepository.save(roomInReservation);
                 roomInReservationRepository.setFullRoomPrice(reservation.getStartDate(), reservation.getEndDate(), rooms.get(i), _roomInReservation.getId());
                 roomInReservation.setRoomTotalPrice(roomInReservationRepository.findById(_roomInReservation.getId()).getRoomTotalPrice());
+                roomInReservationRepository.save(roomInReservation);
                 toReturn.add(roomInReservation.getRoom());
             }
 

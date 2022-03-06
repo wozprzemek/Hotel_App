@@ -16,4 +16,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query("SELECT product FROM Product product WHERE product.category.categoryName = :category_name")
     List<Product> findAllProducts(@Param("category_name") String category_name);
 
+    Category findByCategoryName(String categoryName);
+
 }

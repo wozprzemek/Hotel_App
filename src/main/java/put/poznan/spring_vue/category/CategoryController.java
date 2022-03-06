@@ -9,17 +9,25 @@ import put.poznan.spring_vue.product.Product;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController // This means that this class is a Controller
-@RequestMapping(path="/api/cat") // This means URL's start with /demo (after Application path)
+@RestController
+@RequestMapping(path="/api/cat")
 public class CategoryController {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @PostMapping(path="/add") // Map ONLY POST Requests
-    public ResponseEntity<Category> addNewCategory (@RequestBody Category category) {
+    @PostMapping(path="/add")
+    public ResponseEntity<Integer> addNewCategory(@RequestParam("category") String category) {
         try{
-            Category _category = categoryRepository.save(category);
-            return new ResponseEntity<>(_category, HttpStatus.CREATED);
+            Category existingCategory = categoryRepository.findByCategoryName(category);
+            if(existingCategory == null){
+                Category _category = new Category();
+                _category.setCategoryName(category);
+                _category.setStartServingTime(0);
+                _category.setEndServingTime(24);
+                categoryRepository.save(_category);
+                return new ResponseEntity<>(1, HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(0, HttpStatus.CONFLICT);
         } catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
