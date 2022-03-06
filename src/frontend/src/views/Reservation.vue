@@ -25,8 +25,8 @@
             <button v-if="reservationState == 'BOOKED'" id="start_button" @click="startReservation()">Start Reservation</button>
             <button v-if="reservationState == 'BOOKED'" id="cancel_button" @click="cancelReservation()">Cancel Reservation</button>
 
-            <button v-if="reservationState == 'IN PROGRESS'" id="complete_button" @click="completeReservation()">Complete Reservation</button>
-            <button v-if="reservationState == 'IN PROGRESS'" id="cancel_button" @click="cancelReservation()">Cancel Reservation</button>
+            <button v-if="reservationState == 'IN_PROGRESS'" id="complete_button" @click="completeReservation()">Complete Reservation</button>
+            <button v-if="reservationState == 'IN_PROGRESS'" id="cancel_button" @click="cancelReservation()">Cancel Reservation</button>
             <div id="navbar">
                 <router-link to="/admin/reservations">Reservations</router-link> /
                 <span> Reservation #{{$route.params.id}}</span>
@@ -389,7 +389,7 @@
             if (confirm('Are you sure you want to START THIS RESERVATION? \nThis action is irreversible!')) {
                 fetch('/api/rsv/state?' + new URLSearchParams({
                     reservationID: this.reservationId,
-                    stateName: "IN PROGRESS",
+                    stateName: "IN_PROGRESS",
                 }),{
                     method: "POST"}).then(data => {
                     console.log(data);
