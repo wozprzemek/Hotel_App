@@ -1,38 +1,26 @@
 # Hotel_App
 
-# Frontend - Get Started
+# Running the client
 
-1. Delete the node_modules directory from /src/frontent
+1. Install the dependencies in /src/frontend:
 
-2. Run in /src/frontend:
-
-`npm install `
-
-3. Run the project from the /src/frontend directory:
-
-`npm run serve`
-
-
-
-
-
-----------OR-----------
-
-
-
-
-1. Set up vue with the following commands (use them within the /src/frontend direcotry!!!!):
-
-`sudo apt install npm`
-
-`npm install vue@next`
-
-`npm install -D @vue/compiler-sfc`
-
-`npm install @vue/cli`
-
-`npm install ag-grid-vue3 ag-grid-community vue-class-component@next`
+`npm install`
 
 2. Run the project from the /src/frontend directory:
 
 `npm run serve`
+
+# Running the backend
+
+Run the Java project (SpringVueApplication class) using the IDE of choice (for now).
+
+# Usage
+
+Open the url displayed after running the `npm run serve` command (typically `http://localhost:3000`).
+
+## Client panel
+The default view at `localhost:port` is the client panel.
+
+## Admin panel
+Go to `localhost:port/admin` to login. Default credentials: `login: admin` `password: admin`.
+You will be directed to the main admin panel.
