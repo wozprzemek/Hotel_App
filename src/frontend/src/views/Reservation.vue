@@ -308,7 +308,7 @@
             address += ", " + this.editGuestDetails.city + ", " + this.editGuestDetails.country
             this.editGuestDetails.country = address.split(',')[2];
             this.editGuestDetails.city = address.split(',')[1];
-            this.editGuestDetails.streetName = address.split(',')[0];
+            this.editGuestDetails.streetName = address.split(',')[0].split(' ')[0];
             this.editGuestDetails.buildingNumber = address.split(',')[0].split(' ')[1].split('/')[0];
             this.editGuestDetails.apartmentNumber = null;
             this.editMode = false;
@@ -316,20 +316,21 @@
             fetch("/api/guest/change", {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(editGuestDetails)
+                body: JSON.stringify(this.editGuestDetails)
             }).then(data => {
                 console.log(data);
+                window.location.reload();
             })
 
             fetch('/api/guest/details?' + new URLSearchParams({
                 reservationID: this.reservationId,
             })).then(response => response.json()).then(data => {
             this.guestDetails = data;
-            document.querySelector("#guest_id").textContent = this.guestDetails.guestID;
-            document.querySelector("#first_name").textContent = this.guestDetails.firstName;
-            document.querySelector("#last_name").textContent = this.guestDetails.lastName;
-            document.querySelector("#date_of_birth").textContent = this.guestDetails.dateOfBirth.split('T')[0];
-            document.querySelector("#telephone").textContent = this.guestDetails.telephone;
+                document.querySelector("#guest_id").textContent = this.guestDetails.guestID;
+                document.querySelector("#first_name").textContent = this.guestDetails.firstName;
+                document.querySelector("#last_name").textContent = this.guestDetails.lastName;
+                document.querySelector("#date_of_birth").textContent = this.guestDetails.dateOfBirth.split('T')[0];
+                document.querySelector("#telephone").textContent = this.guestDetails.telephone;
 
             var address = this.guestDetails.streetName + " " + this.guestDetails.buildingNumber;
             if (this.guestDetails.apartmentNumber != null){
@@ -469,7 +470,7 @@
                 }),{
                     method: "POST"}).then(data => {
                     console.log(data);
-                    // window.location.reload();
+                    window.location.reload();
                 });
             }
         },
