@@ -22,5 +22,5 @@ Open the url displayed after running the `npm run serve` command (typically `htt
 The default view at `localhost:port` is the client panel.
 
 ## Admin panel
-Go to `localhost:port/admin` to login. Default credentials: `login: admin` `password: admin`.
+Go to `localhost:port/admin` to sign in. Default credentials: `login: admin` `password: admin`.
 You will be directed to the main admin panel.
