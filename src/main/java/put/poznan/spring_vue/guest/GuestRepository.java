@@ -20,4 +20,7 @@ public interface GuestRepository extends JpaRepository<Guest, Long> {
 
     @Query("SELECT ord FROM Order ord WHERE ord.id = :ord_id")
     Order findOrderByOrderID(@Param("ord_id") int ord_id);
+
+    @Query("SELECT ad FROM Address ad WHERE ad.streetName = :st_name AND ad.buildingNumber = :building_no")
+    Address findAddress(@Param("st_name") String st_name, @Param("building_no") String building_no);
 }

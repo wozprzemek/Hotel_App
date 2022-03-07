@@ -32,7 +32,16 @@ public class Guest implements Serializable{
 
     @ManyToOne
     @JoinColumn(name="ADDRESS_ID")
-    private Address address;;
+    private Address address;
+
+    public Guest(int id, String firstName, String lastName, String telephone, Date dateOfBirth, Address address) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.telephone = telephone;
+        this.dateOfBirth = dateOfBirth;
+        this.address = address;
+    }
 
     public Guest(String firstName, String lastName, String telephone, Date dateOfBirth, Address address) {
         this.firstName = firstName;
