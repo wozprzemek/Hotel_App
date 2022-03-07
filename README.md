@@ -2,11 +2,11 @@
 
 # Running the client
 
-1. Install the dependencies in /src/frontend:
+Install the dependencies in /src/frontend:
 
 `npm install`
 
-2. Run the project from the /src/frontend directory:
+Run the project from the /src/frontend directory:
 
 `npm run serve`
 
