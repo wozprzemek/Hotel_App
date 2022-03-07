@@ -56,7 +56,7 @@ public class AdminController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @PostMapping(path="/auth")
     public @ResponseBody ResponseEntity<Integer> authenticate(@RequestParam(name = "login") String login, @RequestParam(name = "password") String password) {
         try {

@@ -1,5 +1,6 @@
 package put.poznan.spring_vue.guest;
 
+import org.elasticsearch.cluster.metadata.AliasAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -109,6 +110,21 @@ public class GuestController {
             return new ResponseEntity<>(guestGetter, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+    @PostMapping(path="/change") // Map ONLY POST Requests
+    public ResponseEntity<Integer> changeGuest (@RequestBody GuestGetter guestGetter){
+        try{
+            Address address = guestRepository.findAddress(guestGetter.getStreetName(), guestGetter.getBuildingNumber());
+            Guest _guest = new Guest(guestGetter.getGuestID(), guestGetter.getFirstName(), guestGetter.getLastName(), guestGetter.getTelephone(), guestGetter.getDateOfBirth(), address);
+            _guest = guestRepository.save(_guest);
+            return new ResponseEntity<>(_guest.getId(), HttpStatus.CREATED);
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
