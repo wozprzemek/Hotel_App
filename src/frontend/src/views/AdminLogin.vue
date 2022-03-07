@@ -2,28 +2,66 @@
     <div id="container">
         <div id="title">Hotel Admin </div>
         <div id="content">
-            <div id="login_area">
-                <div id="text">Username</div>
-                <input type="text" placeholder="Enter Username" id="box">
-            </div>
-            
-            <div id="password_area">
-                <div id="text">Password</div>
-                <input type="password" placeholder="Enter Password" id="box">
-            </div>
+            <form id="login_form">
+                <label for="login">Username</label>
+                <br>
+                <input type="text" name="login" placeholder="Enter Username" id="box">
+                <br>
+                <label for="login">Password</label>
+                <br>
+                <input type="password" name="password" placeholder="Enter Password" id="box">
+            </form>
 
-            <button id="login_button">Sign In</button>
+            <button id="login_button" @click="signIn()">Sign In</button>
         </div>
     </div>
 </template>
 
 <script>
     export default {
-        
+        name: "OrderPanel",
+
+        data(){
+            return{
+                
+            }
+        },
+        created(){
+
+        },
+        methods: {
+            signIn(){
+                var formData = new FormData(document.querySelector("#login_form"));
+                var object = {};
+                formData.forEach((value, key) => object[key] = value);
+                console.log(object);
+                fetch('/api/admin/auth?' + new URLSearchParams(object), {
+                method: "POST"}).then(result => result.json()).then(data => {
+                    console.log(data);
+                    if (data == 1){
+                        this.$router.push({ path: '/admin/reservations' });
+                    }
+                    else{
+                        alert('Wrong username or password!');
+                    }
+                    // fetch('/api/cat/all').then(result => result.json()).then(remoteRowData => this.rowDataCategories.value = remoteRowData);
+                });
+            },
+        },
     }
 </script>
 
 <style scoped>
+
+    label{
+        margin-bottom: 10px;
+        display:inline-block;
+    }
+
+    input{
+        margin-bottom: 50px;
+    }
+
     body{
         padding: 0;
         margin: 0;

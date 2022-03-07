@@ -46,7 +46,7 @@ import {reactive, onMounted} from "vue";
 
 
 export default {
-  name: "ReservationsPanel",
+  name: "OrderPanel",
   components: {
     AgGridVue,
   },

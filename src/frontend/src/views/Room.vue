@@ -22,7 +22,6 @@
             </div>
         </div>
         <div id="content">
-            <button id="delete_button" @click="deleteReservation()">Delete Room</button>
             <div id="navbar">
                 <router-link to="/admin/rooms">Rooms</router-link> /
                 <span> Room {{$route.params.id}}</span>

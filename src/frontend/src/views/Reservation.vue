@@ -71,24 +71,32 @@
                     </div>
                     <div class="details_row">
                         <div class="details_field_name">First Name</div>
-                        <div class="details_field_value" id="first_name"></div>
+                        <input type="text" class="details_field_value" id="first_name" v-if="editMode" v-model="editGuestDetails.firstName">
+                        <div class="details_field_value" id="first_name" v-else></div>
                     </div>
                     <div class="details_row">
                         <div class="details_field_name">Last Name</div>
-                        <div class="details_field_value" id="last_name"></div>
+                        <input type="text" class="details_field_value" id="last_name" v-if="editMode" v-model="editGuestDetails.lastName">
+                        <div class="details_field_value" id="last_name" v-else></div>
                     </div>
                     <div class="details_row">
                         <div class="details_field_name">Date of Birth</div>
-                        <div class="details_field_value" id="date_of_birth"></div>
+                        <input type="text" class="details_field_value" id="date_of_birth" v-if="editMode" v-model="editGuestDetails.dateOfBirth">
+                        <div class="details_field_value" id="date_of_birth" v-else></div>
                     </div>
                     <div class="details_row">
                         <div class="details_field_name">Telephone</div>
-                        <div class="details_field_value" id="telephone"></div>
+                        <input type="text" class="details_field_value" id="telephone" v-if="editMode" v-model="editGuestDetails.telephone">
+                        <!-- <input type="text" class="details_field_value" name="telephone" maxlength="11" v-if="editMode" oninput="this.value = this.value.replace(/[^0-9]/g, '');"><br>  -->
+                        <div class="details_field_value" id="telephone" v-else></div>
                     </div>
                     <div class="details_row">
                         <div class="details_field_name">Address</div>
-                        <div class="details_field_value" id="address"></div>
+                        <input type="text" class="details_field_value" id="address" v-if="editMode" v-model="editGuestDetails.address">
+                        <div class="details_field_value" id="address" v-else></div>
                     </div>
+                    <button id="button_confirm" v-if="editMode" @click="editGuestConfirm()">Confirm</button>
+                    <button id="button" v-else @click="editGuest()">Edit</button>
                 </div>
             </div>
             <div class="details_box" id="rooms_details_box">
@@ -161,6 +169,7 @@
     },
     data(){
         return{
+            editMode: false,
             popUpWindow: false,
             orderItems: [
                 {
@@ -201,6 +210,14 @@
             ],
             reservationDetails: {},
             guestDetails: {},
+            editGuestDetails: {
+                guestID: "",
+                firstName: "",
+                lastName: "",
+                dateOfBirth: "",
+                telephone: "",
+                address: "",
+            },
         }
     },
     created() {
@@ -223,7 +240,7 @@
             this.reservationState = this.reservationDetails.reservationState;
         });
 
-        // TODO: FETCH GUEST DETAILS AT LOAD
+        // FETCH GUEST DETAILS AT LOAD
         fetch('/api/guest/details?' + new URLSearchParams({
                 reservationID: this.reservationId,
         })).then(response => response.json()).then(data => {
@@ -264,6 +281,65 @@
         
     },
     methods: {
+        editGuest(){
+            this.editMode = true;
+            // FETCH GUEST DETAILS AT LOAD
+            fetch('/api/guest/details?' + new URLSearchParams({
+                    reservationID: this.reservationId,
+            })).then(response => response.json()).then(data => {
+                this.guestDetails = data;
+                this.editGuestDetails = this.guestDetails;
+
+                var address = this.guestDetails.streetName + " " + this.guestDetails.buildingNumber;
+                if (this.guestDetails.apartmentNumber != null){
+                    address += " / " + this.guestDetails.apartmentNumber;
+                }
+                address += ", " + this.guestDetails.city + ", " + this.guestDetails.country
+                document.querySelector("#address").value = address;
+                console.log(this.guestDetails);
+            });
+        },
+        editGuestConfirm(){
+            console.log(this.editGuestDetails);
+            var address = this.editGuestDetails.streetName + " " + this.editGuestDetails.buildingNumber;
+            if (this.editGuestDetails.apartmentNumber != null){
+                address += " / " + this.editGuestDetails.apartmentNumber;
+            }
+            address += ", " + this.editGuestDetails.city + ", " + this.editGuestDetails.country
+            this.editGuestDetails.country = address.split(',')[2];
+            this.editGuestDetails.city = address.split(',')[1];
+            this.editGuestDetails.streetName = address.split(',')[0];
+            this.editGuestDetails.buildingNumber = address.split(',')[0].split(' ')[1].split('/')[0];
+            this.editGuestDetails.apartmentNumber = null;
+            this.editMode = false;
+            console.log(this.editGuestDetails);
+            fetch("/api/guest/change", {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(editGuestDetails)
+            }).then(data => {
+                console.log(data);
+            })
+
+            fetch('/api/guest/details?' + new URLSearchParams({
+                reservationID: this.reservationId,
+            })).then(response => response.json()).then(data => {
+            this.guestDetails = data;
+            document.querySelector("#guest_id").textContent = this.guestDetails.guestID;
+            document.querySelector("#first_name").textContent = this.guestDetails.firstName;
+            document.querySelector("#last_name").textContent = this.guestDetails.lastName;
+            document.querySelector("#date_of_birth").textContent = this.guestDetails.dateOfBirth.split('T')[0];
+            document.querySelector("#telephone").textContent = this.guestDetails.telephone;
+
+            var address = this.guestDetails.streetName + " " + this.guestDetails.buildingNumber;
+            if (this.guestDetails.apartmentNumber != null){
+                address += " / " + this.guestDetails.apartmentNumber;
+            }
+            address += ", " + this.guestDetails.city + ", " + this.guestDetails.country
+            document.querySelector("#address").textContent = address;
+            console.log(this.guestDetails);
+            });
+        },
         onSelectionChanged() {
         const selectedRows = this.rowData.getSelectedRows();
         console.log(selectedRows.length === 1 ? selectedRows[0].reservation_id : '');
@@ -556,7 +632,7 @@
     }
 
     .details_row:first-child{
-        margin-top: 40px;
+        margin-top: 20px;
     }
 
     .details_field_name{
@@ -622,6 +698,20 @@
         height: 35px;
         grid-area: -2/2/-1/3;
         background: #3A86FF;
+        color: white;
+        font-size: 16px;
+        align-self: center;
+        justify-self: center;
+        border-radius: 2px;
+        border: none;
+        cursor: pointer;
+    }
+
+    #button_confirm{
+        width: 120px;
+        height: 35px;
+        grid-area: -2/2/-1/3;
+        background: #35d38c;
         color: white;
         font-size: 16px;
         align-self: center;

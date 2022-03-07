@@ -9,6 +9,7 @@ import put.poznan.spring_vue.category.Category;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RestController // This means that this class is a Controller
 @RequestMapping(path="/api/admin") // This means URL's start with /demo (after Application path)

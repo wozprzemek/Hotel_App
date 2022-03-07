@@ -162,7 +162,7 @@
     import {AgGridVue} from "ag-grid-vue3";
     import {reactive} from "vue";
     export default {
-        name: "Reservation",
+        name: "ManageData",
         components: {
     AgGridVue,
     },
@@ -300,8 +300,11 @@
                 formData.forEach((value, key) => object[key] = value);
                 console.log(object);
             fetch('/api/cat/add?' + new URLSearchParams(object), {
-                method: "POST"}).then(data => {
+                method: "POST"}).then(result => result.json()).then(data => {
                 console.log(data);
+                if (data == 0){
+                    alert('Category already exists.');
+                }
                 fetch('/api/cat/all').then(result => result.json()).then(remoteRowData => this.rowDataCategories.value = remoteRowData);
             });
         },
@@ -311,8 +314,11 @@
                 formData.forEach((value, key) => object[key] = value);
                 console.log(object);
             fetch('/api/product/add?' + new URLSearchParams(object), {
-                method: "POST"}).then(data => {
+                method: "POST"}).then(result => result.json()).then(data => {
                 console.log(data);
+                if (data == 0){
+                    alert('Product already exists.');
+                }
                 fetch('/api/product/all').then(result => result.json()).then(remoteRowData => this.rowDataProducts.value = remoteRowData);
             });
         },
@@ -322,8 +328,11 @@
                 formData.forEach((value, key) => object[key] = value);
                 console.log(object);
             fetch('/api/pay/add?' + new URLSearchParams(object), {
-                method: "POST"}).then(data => {
+                method: "POST"}).then(result => result.json()).then(data => {
                 console.log(data);
+                if (data == 0){
+                    alert('Payment method already exists.');
+                }
                 fetch('/api/pay/details').then(result => result.json()).then(remoteRowData => this.rowDataPayments.value = remoteRowData);
             });
         },
@@ -333,8 +342,11 @@
                 formData.forEach((value, key) => object[key] = value);
                 console.log(object);
             fetch('/api/admin/add?' + new URLSearchParams(object), {
-                method: "POST"}).then(data => {
+                method: "POST"}).then(result => result.json()).then(data => {
                 console.log(data);
+                if (data == 0){
+                    alert('Admin already exists.');
+                }
                 fetch('/api/admin/all').then(result => result.json()).then(remoteRowData => this.rowDataAdmins.value = remoteRowData);
             }); 
         },
@@ -344,8 +356,11 @@
                 formData.forEach((value, key) => object[key] = value);
                 console.log(object);
             fetch('/api/country/add?' + new URLSearchParams(object), {
-                method: "POST"}).then(data => {
+                method: "POST"}).then(result => result.json()).then(data => {
                 console.log(data);
+                if (data == 0){
+                    alert('Country already exists.');
+                }
                 fetch('/api/country/details').then(result => result.json()).then(remoteRowData => this.rowDataCountries.value = remoteRowData);
             }); 
         },
@@ -355,8 +370,11 @@
                 formData.forEach((value, key) => object[key] = value);
                 console.log(object);
             fetch('/api/city/add?' + new URLSearchParams(object), {
-                method: "POST"}).then(data => {
+                method: "POST"}).then(result => result.json()).then(data => {
                 console.log(data);
+                if (data == 0){
+                    alert('City already exists.');
+                }
                 fetch('/api/city/all').then(result => result.json()).then(remoteRowData => this.rowDataCities.value = remoteRowData);
             }); 
         },
