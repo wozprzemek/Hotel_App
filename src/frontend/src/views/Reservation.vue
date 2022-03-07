@@ -15,14 +15,18 @@
         border: none;
         border-top: 2px solid rgba(60,60,73,1);">
                 <div class="left_bar_text"><router-link to="/admin/orders">Orders</router-link></div>
+                <hr style="width: 200px; height: 0px;
+        border: none;
+        border-top: 2px solid rgba(60,60,73,1);">
+                <div class="left_bar_text"><router-link to="/admin/manage">Manage other data</router-link></div>
             </div>
         </div>
         <div id="content">
             <button v-if="reservationState == 'BOOKED'" id="start_button" @click="startReservation()">Start Reservation</button>
             <button v-if="reservationState == 'BOOKED'" id="cancel_button" @click="cancelReservation()">Cancel Reservation</button>
 
-            <button v-if="reservationState == 'IN PROGRESS'" id="start_button" @click="startReservation()">Complete Reservation</button>
-            <button v-if="reservationState == 'IN PROGRESS'" id="cancel_button" @click="cancelReservation()">Cancel Reservation</button>
+            <button v-if="reservationState == 'IN_PROGRESS'" id="complete_button" @click="completeReservation()">Complete Reservation</button>
+            <button v-if="reservationState == 'IN_PROGRESS'" id="cancel_button" @click="cancelReservation()">Cancel Reservation</button>
             <div id="navbar">
                 <router-link to="/admin/reservations">Reservations</router-link> /
                 <span> Reservation #{{$route.params.id}}</span>
@@ -202,6 +206,7 @@
     created() {
         this.rowSelection = 'single';
         this.reservationId = this.$route.params.id;
+        console.log(this.reservationId);
 
         // FETCH RESERVATION DETAILS AT LOAD
         fetch('/api/rsv/all?' + new URLSearchParams({
@@ -215,6 +220,7 @@
             document.querySelector("#end_date").textContent = this.reservationDetails.endDate.split('T')[0];
             document.querySelector("#payment_method").textContent = this.reservationDetails.paymentMethod;
             document.querySelector("#reservation_state").textContent = this.reservationDetails.reservationState;
+            this.reservationState = this.reservationDetails.reservationState;
         });
 
         // TODO: FETCH GUEST DETAILS AT LOAD
@@ -286,7 +292,6 @@
             ]
         },
         showOrderWindow(){
-            console.log(this.items.find(o => o.category === 'LUNCH').products.find(o => o.productName === 'SALMON').productPrice);
             this.popUpWindow = true;
             var orderWindow = document.querySelector("#order_window");
             orderWindow.style.visibility = "visible";
@@ -361,15 +366,48 @@
                         })).then(result => result.json()).then(remoteRowData => this.rowDataOrders.value = remoteRowData);
                     });
                 });
+                this.closeOrderWindow
             }
             else{
                 alert("You have unfinished order items.");
             }
         },
         cancelReservation(){
-            if (confirm('Are you sure you want to DELETE THIS RESERVATION? \nThis action is irreversible!')) {
-                console.log('deleted');
-                this.$router.push({ path: '/admin/reservations/'})
+            if (confirm('Are you sure you want to CANCEL THIS RESERVATION? \nThis action is irreversible!')) {
+                fetch('/api/rsv/state?' + new URLSearchParams({
+                    reservationID: this.reservationId,
+                    stateName: "CANCELED",
+                }),{
+                    method: "POST"}).then(data => {
+                    console.log(data);
+                    window.location.reload();
+                });
+                console.log('canceled');
+            }
+        },
+        startReservation(){
+            if (confirm('Are you sure you want to START THIS RESERVATION? \nThis action is irreversible!')) {
+                fetch('/api/rsv/state?' + new URLSearchParams({
+                    reservationID: this.reservationId,
+                    stateName: "IN_PROGRESS",
+                }),{
+                    method: "POST"}).then(data => {
+                    console.log(data);
+                    // window.location.reload();
+                });
+            }
+        },
+        completeReservation(){
+            if (confirm('Are you sure you want to COMPLETE THIS RESERVATION? \nThis action is irreversible!')) {
+                fetch('/api/rsv/state?' + new URLSearchParams({
+                    reservationID: this.reservationId,
+                    stateName: "COMPLETED",
+                }),{
+                    method: "POST"}).then(data => {
+                    console.log(data);
+                    window.location.reload();
+                });
+                console.log('completed');
             }
         },
         onRowClickedRooms(params) {
@@ -557,7 +595,6 @@
     .details_box .details_text:nth-child(6n+7){
         grid-row: 8/9;   
     }
-
 
     #rooms_details_box{
         grid-area: 4/2/4/4;
@@ -790,6 +827,36 @@
         border: none;
         cursor: pointer;
         grid-area: 2/4/3/5;
+    }
+
+    #start_button{
+        background: #0BEA86;
+        width: 200px;
+        height: 40px;
+        color: white;
+        font-size: 16px;
+        align-self: center;
+        justify-self: end;
+        border-radius: 2px;
+        border: none;
+        cursor: pointer;
+        grid-area: 2/4/3/5;
+        margin-right: 225px;
+    }
+
+    #complete_button{
+        background: #1993f0;
+        width: 200px;
+        height: 40px;
+        color: white;
+        font-size: 16px;
+        align-self: center;
+        justify-self: end;
+        border-radius: 2px;
+        border: none;
+        cursor: pointer;
+        grid-area: 2/4/3/5;
+        margin-right: 225px;
     }
 
 </style>

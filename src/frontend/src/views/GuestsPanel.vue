@@ -15,6 +15,10 @@
         border: none;
         border-top: 2px solid rgba(60,60,73,1);">
                 <div class="left_bar_text"><router-link to="/admin/orders">Orders</router-link></div>
+                <hr style="width: 200px; height: 0px;
+        border: none;
+        border-top: 2px solid rgba(60,60,73,1);">
+                <div class="left_bar_text"><router-link to="/admin/manage">Manage other data</router-link></div>
             </div>
         </div>
           <div id="content">
