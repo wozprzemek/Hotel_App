@@ -9,6 +9,7 @@ import put.poznan.spring_vue.category.Category;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RestController // This means that this class is a Controller
 @RequestMapping(path="/api/admin") // This means URL's start with /demo (after Application path)
@@ -51,6 +52,23 @@ public class AdminController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             return new ResponseEntity<>(admins, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(path="/auth")
+    public @ResponseBody ResponseEntity<Integer> authenticate(@RequestParam(name = "login") String login, @RequestParam(name = "password") String password) {
+        try {
+            List<Admin> admin = adminRepository.findByLogin(login);
+            if (admin.isEmpty()) {
+                return new ResponseEntity<>(0, HttpStatus.OK);
+            } else {
+                if (Objects.equals(admin.get(0).getPassword(), password)){
+                    return new ResponseEntity<>(1, HttpStatus.OK);
+                }
+            }
+            return new ResponseEntity<>(0, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
