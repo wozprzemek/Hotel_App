@@ -27,7 +27,7 @@ You will be directed to the main admin panel.
 
 ## Application views
 
-![client1](screenshots/img1.png)
+![Screenshot](screenshots/img1.png)
 ![client2](screenshots/img2.png)
 ![client3](screenshots/img3.png)
 ![auth](screenshots/img4.png)
